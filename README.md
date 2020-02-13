@@ -18,3 +18,4 @@ https://imgur.com/a/5dWJBxl
 Sadly I'm don't have time to play WoW anymore so I can't finish the backport.  
 My goal was to finish this AddOn and then publish it, but didn't manage to do so :P  
 If anyone is interested in continuing my work feel free to do so (just mention my name somewhere, it's my baby <3).
+I will most probably update it when I start playing WoW again.
