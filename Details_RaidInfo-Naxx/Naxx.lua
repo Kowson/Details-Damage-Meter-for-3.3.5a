@@ -403,18 +403,30 @@ local naxx = {
 			boss =	L["STRING_INSTRUCTOR"],
 			portrait = [[Interface\AddOns\Details_RaidInfo-Naxx\images\razuvious]],
 			
+			combat_end = {1, 16061},
+
 			spell_mechanics = {
 			},
 
 			continuo = {
+				55470, -- Unbalacing Strike
+				55550, -- Jagged Knife
+				55543, -- Disrupting Shout 10
+				29107, -- Disrupting Shout 25
+
+				61696, -- Understudy Blood Strike
+				29060, -- Understudy Taunt
+				29061, -- Understudy Bone Barrier
+				29125, -- Understudy Hopeless
 			},
 			
 			phases = { 
 				{
 					adds = {		
+						16061, -- Razuvious
+						16803, -- Understudy
 					},
 					spells = {
-
 					}
 				},
 			}
@@ -432,11 +444,42 @@ local naxx = {
 			},
 			
 			phases = { 
-				{
+				{ -- Phase 1: Adds
 					adds = {		
+						16124, -- Trainee
+						16125, -- Death Knight
+						16126, -- Rider
+						16127, -- Undead Trainee
+						16148, -- Undead Death Knight
+						16150, -- Undead Rider
+						16149, -- Undead Horse
 					},
 					spells = {
-
+						55604, -- Death Plague 10
+						55645, -- Death Plague 25
+						27825, -- Shadow Mark 
+						55606, -- Unholy Aura 10
+						55608, -- Unholy Aura 25
+						27831, -- Shadow Bolt Volley 10
+						55638, -- Shadow Bolt Volley 25
+						27989, -- Arcane Explosion 10
+						56407, -- Arcane Explosion 25
+						56408, -- Whirlwind
+						27994, -- Drain Life 10
+						55646, -- Drain Life 25
+						55648, -- Unholy Frenzy 10
+						27995, -- Unholy Frenzy 25
+						27993, -- Stomp
+					}
+				},
+				{ -- Phase 1: Gothik
+					adds = {		
+						16060, -- Gothik
+					},
+					spells = {
+						29317, -- Shadow Bolt 10
+						56405, -- Shadow Bolt 25
+						28679, -- Harvest Soul
 					}
 				},
 			}
@@ -451,11 +494,36 @@ local naxx = {
 			},
 
 			continuo = {
+				-- Thane
+				28832, -- Mark
+				28884, -- Meteor 10
+				57467, -- Meteor 25
+				-- Blaumeux
+				28833, -- Mark
+				57374, -- Shadow Bolt 10
+				28863, -- Void Zone 10
+				57381, -- Unyielding Pain
+				57464, -- Shadow Bolt 25
+				57463, -- Void Zone 25
+				-- Rivendare
+				28834, -- Mark
+				28882, -- Unholy Shadow 10
+				57369, -- Unholy Shadow 25
+				-- Zelik
+				28835, -- Mark
+				57376, -- Holy Bolt
+				28883, -- Holy Wrath 10
+				57377, -- Condemnation
+				57466, -- Holy Wrath 25
 			},
 			
 			phases = { 
 				{
-					adds = {		
+					adds = {
+						16064, -- Thane
+						16065, -- Blaumeux
+						30549, -- Rivendare
+						16063, -- Zelik
 					},
 					spells = {
 
