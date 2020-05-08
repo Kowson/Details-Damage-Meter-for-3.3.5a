@@ -53,7 +53,7 @@ local naxx = {
 				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
 				if (serial == 15990) then -- KT
 					return 15 --> kt 
-				elseif (serial ==16064) -- thane horseman guy
+				elseif (serial ==16064) then -- thane horseman guy
 					return 9 -- horsemen 
 				end
 			end
@@ -372,7 +372,7 @@ local naxx = {
 				[29232] = {0x1}, -- Fungal Creep
 				[29865] = {0x4}, -- Deathbloom 10
 				[55053] = {0x4}, -- Deathbloom 25
-				[29204] = {0x100} -- Inevitable Doom 10
+				[29204] = {0x100}, -- Inevitable Doom 10
 				[55052] = {0x100} -- Inevitable Doom 25
 			},
 
