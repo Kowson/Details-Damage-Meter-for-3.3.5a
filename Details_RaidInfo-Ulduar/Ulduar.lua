@@ -47,11 +47,11 @@ local ulduar = {
 	},
 	
 	find_boss_encounter = function()
-		--> find Assembly of Iron (this encounter doesn't have a boss frames before Assembly of Iron comes into in play)
+		--> find Assembly of Iron 
 		if (_details.table_current and _details.table_current[1] and _details.table_current[1]._ActorTable) then
 			for _, damage_actor in ipairs (_details.table_current[1]._ActorTable) do
 				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
-				if (serial == 73909) then --Archmage Aethas Sunreaver
+				if (serial == 32867) then --Assembly of Iron Guy
 					return 5 --> Assembly of Iron boss index
 				end
 			end
@@ -60,47 +60,47 @@ local ulduar = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			852, 849, 866, 867, 881, 864, 856, 850, 846, 870, 851, 865, 853, 869,
+		744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757,
 		-- The Siege of Ulduar
-			[852] = 1, -- Flame Leviathan
-			[849] = 2, -- Ignis the Furnace Master
-			[866] = 3, -- Razorscale
-			[867] = 4, -- XT-002 Deconstructor
+			[744] = 1, -- Flame Leviathan
+			[745] = 2, -- Ignis the Furnace Master
+			[746] = 3, -- Razorscale
+			[747] = 4, -- XT-002 Deconstructor
 		-- The Antechamber of Ulduar
-			[881] = 5, -- Assembly of Iron
-			[864] = 6, -- Kologarn
-			[856] = 7, -- Auriaya
+			[748] = 5, -- Assembly of Iron
+			[749] = 6, -- Kologarn
+			[750] = 7, -- Auriaya
 		-- The Keepers of Ulduar
-			[850] = 8, -- Hodir
-			[846] = 9, -- Thorim
-			[870] = 10, -- Freya
-			[851] = 11, -- Mimiron
+			[751] = 8, -- Hodir
+			[752] = 9, -- Thorim
+			[753] = 10, -- Freya
+			[754] = 11, -- Mimiron
 		-- The Descent Into Madness
-			[865] = 12, -- General Vezax
-			[853] = 13, -- Yogg-Saron
+			[755] = 12, -- General Vezax
+			[756] = 13, -- Yogg-Saron
 		-- Supermassive
-			[869] = 14, -- Algalon
+			[757] = 14, -- Algalon
 	},
 	
 	encounter_ids2 = {
 		-- The Siege of Ulduar
-			[1602] = 1, -- Flame Leviathan
-			[1598] = 2, -- Ignis the Furnace Master
-			[1624] = 3, -- Razorscale
-			[1604] = 4, -- XT-002 Deconstructor
+			[758] = 1, -- Flame Leviathan
+			[759] = 2, -- Ignis the Furnace Master
+			[760] = 3, -- Razorscale
+			[761] = 4, -- XT-002 Deconstructor
 		-- The Antechamber of Ulduar
-			[1622] = 5, -- Assembly of Iron
-			[1600] = 6, -- Kologarn
-			[1606] = 7, -- Auriaya
-			[1603] = 8, -- Hodir
+			[762] = 5, -- Assembly of Iron
+			[763] = 6, -- Kologarn
+			[762] = 7, -- Auriaya
+			[763] = 8, -- Hodir
 		-- The Keepers of Ulduar
-			[1595] = 9, -- Thorim
-			[1594] = 10, -- Freya
-			[1599] = 11, -- Mimiron
+			[764] = 9, -- Thorim
+			[765] = 10, -- Freya
+			[766] = 11, -- Mimiron
 		-- The Descent Into Madness
-			[1601] = 12, -- General Vezax
-			[1593] = 13, -- Yogg-Saron
-			[1623] = 14, -- Algalon
+			[767] = 12, -- General Vezax
+			[768] = 13, -- Yogg-Saron
+			[769] = 14, -- Algalon
 	},
 	
 	boss_ids = {
