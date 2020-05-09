@@ -67,7 +67,7 @@ local warnShadowStrike		= mod:NewSpellAnnounce(66134, 4)
 local specWarnShadowStrike	= mod:NewSpecialWarning("SpecWarnShadowStrike", mod:IsTank())
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 205, "Anub'arak")
+	DBM:FireCustomEvent("DBM_EncounterStart", 645, "Anub'arak")
 	Burrowed = false 
 	-- Adds
 	timerAdds:Start(9-delay) 
@@ -89,7 +89,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 205, "Anub'arak", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 645, "Anub'arak", wipe)
 end
 
 function mod:Adds() 

@@ -34,13 +34,13 @@ local toc = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			1088, 1087, 1086, 1089, 1085,
+		629, 633, 637, 1089, 645,
 		-- Trial of the Crusader
-			[1088] = 1, -- Beasts of Northrend
-			[1087] = 2, -- Lord Jaraxxus
-			[1086] = 3, -- Faction Champions
-			[1089] = 4, -- Twin Val'kyr
-			[1085] = 5, -- Anub'arak
+			[629] = 1, -- Beasts of Northrend
+			[633] = 2, -- Lord Jaraxxus
+			[637] = 3, -- Faction Champions
+			[641] = 4, -- Twin Val'kyr
+			[645] = 5, -- Anub'arak
 	},
 	
 	encounter_ids2 = {
