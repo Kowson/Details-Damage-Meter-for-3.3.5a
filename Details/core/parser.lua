@@ -342,7 +342,7 @@
 	--> early checks and fixes
 	
 		if (src_serial == "0x0000000000000000") then
-			if (src_flags and _bit_band(src_flags, OBJECT_TYPE_PETS) ~= 0) then --> é um pet
+			if (src_flags and _bit_band(src_flags, OBJECT_TYPE_PETS) ~= 0) then --> ï¿½ um pet
 				--> pets must have an serial
 				return
 			end
@@ -370,7 +370,7 @@
 				(not _details.in_group and src_flags and _bit_band(src_flags, AFFILIATION_GROUP) ~= 0)
 				)
 			) then 
-				--> não entra em combat se for DOT
+				--> nï¿½o entra em combat se for DOT
 				--if (_details.encounter_table.id and _details.encounter_table["start"] >= _G.time()-3 and _details.announce_firsthit.enabled) then
 				--[[
 				if(IsInInstance()) then
@@ -400,15 +400,15 @@
 		
 			this_player, mine_owner, src_name = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
 			
-			if (mine_owner) then --> é um pet
+			if (mine_owner) then --> ï¿½ um pet
 				damage_cache_pets[src_serial] = this_player
 				damage_cache_petsOwners[src_serial] = mine_owner
-				--conferir se o owner já this no cache
+				--conferir se o owner jï¿½ this no cache
 				if (not damage_cache[mine_owner.name]) then
 					damage_cache[mine_owner.name] = mine_owner
 				end
 			else
-				if (src_flags) then --> ter certeza que não é um pet
+				if (src_flags) then --> ter certeza que nï¿½o ï¿½ um pet
 					damage_cache[src_name] = this_player
 					--> se for spell actor
 					if (src_name:find("[*]")) then
@@ -431,12 +431,12 @@
 			if (dst_owner) then
 				damage_cache_pets[dst_serial] = player_dst
 				damage_cache_petsOwners[dst_serial] = dst_owner
-				--conferir se o owner já this no cache
+				--conferir se o owner jï¿½ this no cache
 				if (not damage_cache[dst_owner.name]) then
 					damage_cache[dst_owner.name] = dst_owner
 				end
 			else
-				if (dst_flags) then --> ter certeza que não é um pet
+				if (dst_flags) then --> ter certeza que nï¿½o ï¿½ um pet
 					damage_cache[dst_name] = player_dst
 				end
 			end
@@ -602,7 +602,7 @@
 				t.n = i
 			end
 		
-			--> faz a adução do friendly fire
+			--> faz a aduï¿½ï¿½o do friendly fire
 			this_player.friendlyfire_total = this_player.friendlyfire_total + amount
 			
 			local amigo = this_player.friendlyfire._NameIndexTable[dst_name]
@@ -635,7 +635,7 @@
 			--> add owner targets
 			local owner_target = mine_owner.targets._NameIndexTable[dst_name]
 			if (not owner_target) then
-				owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> ALVO_DA_HABILIDADE:Newtable()
+				owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
 			else
 				owner_target = mine_owner.targets._ActorTable[owner_target]
 			end
@@ -653,7 +653,7 @@
 		--> actor targets
 		local this_dst = this_player.targets._NameIndexTable[dst_name]
 		if (not this_dst) then
-			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> ALVO_DA_HABILIDADE:Newtable()
+			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
 		else
 			this_dst = this_player.targets._ActorTable[this_dst]
 		end
@@ -760,7 +760,7 @@
 	
 		--> pet summon another pet
 		local sou_pet = _details.table_pets.pets[src_serial]
-		if (sou_pet) then --> okey, ja é um pet
+		if (sou_pet) then --> okey, ja ï¿½ um pet
 			src_name, src_serial, src_flags = sou_pet[1], sou_pet[2], sou_pet[3]
 		end
 		
@@ -788,7 +788,7 @@
 	
 		--> check nil serial against pets
 		if (src_serial == "0x0000000000000000") then
-			if (src_flags and _bit_band(src_flags, OBJECT_TYPE_PETS) ~= 0) then --> é um pet
+			if (src_flags and _bit_band(src_flags, OBJECT_TYPE_PETS) ~= 0) then --> ï¿½ um pet
 				return
 			end
 			--src_serial = nil
@@ -951,7 +951,7 @@
 				
 				local owner_target = mine_owner.targets._NameIndexTable[dst_name]
 				if (not owner_target) then
-					owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> ALVO_DA_HABILIDADE:Newtable()
+					owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
 				else
 					owner_target = mine_owner.targets._ActorTable[owner_target]
 				end
@@ -1031,7 +1031,21 @@
 				if (defensive_cooldown_spell_list[spellid]) then
 					--> usou cooldown
 					return parser:add_defensive_cooldown(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname)
-				
+
+			------------------------------------------------------------------------------------------------
+			--> healing done absorbs
+				if (absorb_spell_list [spellid] and _recording_healing and amount) then
+					if (not shield [dst_name]) then 
+						shield [dst_name] = {}
+						shield [dst_name] [spellid] = {}
+						shield [dst_name] [spellid] [src_name] = amount
+					elseif (not shield [dst_name] [spellid]) then 
+						shield [dst_name] [spellid] = {}
+						shield [dst_name] [spellid] [src_name] = amount
+					else
+						shield [dst_name] [spellid] [src_name] = amount
+					end
+			end
 			------------------------------------------------------------------------------------------------
 			--> recording buffs
 				elseif (_recording_self_buffs) then
@@ -1064,7 +1078,7 @@
 						--> call record debuffs uptime
 	--[[not tail call, need to fix this]]	parser:add_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, "DEBUFF_UPTIME_IN")
 	
-					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst é da raide é alguem de fora da raide
+					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst ï¿½ da raide ï¿½ alguem de fora da raide
 	--[[not tail call, need to fix this]]	parser:add_bad_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, "DEBUFF_UPTIME_IN")
 					end
 				end
@@ -1161,22 +1175,34 @@
 				end
 		
 			------------------------------------------------------------------------------------------------
-			--> healing done(shields)
-				--[[ if (absorb_spell_list[spellid] and _recording_healing and amount) then
+			--> healing done(shields) -- copied from bfa details, hope it works
+			if (absorb_spell_list [spellid] and _recording_healing and amount) then
 					
-					if (shield[dst_name] and shield[dst_name][spellid] and shield[dst_name][spellid][src_name]) then
-					
-						local absorb = shield[dst_name][spellid][src_name] - amount
-						local overheal = amount - absorb
-						shield[dst_name][spellid][src_name] = amount
-						
-						--if (absorb > 0) then
-							return parser:heal(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, nil, _math_ceil(absorb), _math_ceil(overheal), 0, 0, true)
-						--end
-					else
-						--> should apply aura if not found in already applied buff list?
+				if (shield [dst_name] and shield [dst_name][spellid] and shield [dst_name][spellid][src_name]) then
+
+					if (ignored_overheal [spellid]) then
+						shield [dst_name][spellid][src_name] = amount -- refresh jï¿½ vem o valor atualizado
+						return
 					end
-				]]--
+					
+					--shield antigo ï¿½ dropado, novo ï¿½ posto
+					local overheal = shield [dst_name][spellid][src_name]
+					shield [dst_name][spellid][src_name] = amount
+					
+					if (overheal > 0) then
+						return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, dst_flags2, spellid, spellname, nil, 0, _math_ceil (overheal), 0, 0, nil, true)
+					end
+				
+					--local absorb = shield [dst_name][spellid][src_name] - amount
+					--local overheal = amount - absorb
+					--shield [dst_name][spellid][src_name] = amount
+					
+					--if (absorb > 0) then
+						--return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, nil, _math_ceil (absorb), _math_ceil (overheal), 0, 0, nil, true)
+					--end
+				else
+					-- shield nï¿½o encontrado :(
+				end
 			------------------------------------------------------------------------------------------------
 			--> defensive cooldowns
 				if (defensive_cooldown_spell_list[spellid]) then
@@ -1213,7 +1239,7 @@
 					if (raid_members_cache[src_serial]) then
 						--> call record debuffs uptime
 	--[[not tail call, need to fix this]]	parser:add_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, "DEBUFF_UPTIME_REFRESH")
-					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst é da raide e o caster é enemy
+					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst ï¿½ da raide e o caster ï¿½ enemy
 	--[[not tail call, need to fix this]]	parser:add_bad_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, "DEBUFF_UPTIME_REFRESH")
 					end
 				end
@@ -1290,6 +1316,28 @@
 	--[[not tail call, need to fix this]]	parser:add_buff_uptime(token, time, dst_serial, dst_name, dst_flags, dst_serial, dst_name, dst_flags, spellid, spellname, "BUFF_UPTIME_OUT")
 					end
 				end
+
+			------------------------------------------------------------------------------------------------
+			--> healing done (shields)
+			if (absorb_spell_list [spellid] and _recording_healing) then
+				if (shield [dst_name] and shield [dst_name][spellid] and shield [dst_name][spellid][src_name]) then
+					if (amount) then
+						-- o amount ï¿½ o que sobrou do shield
+						
+						local overheal = shield [dst_name][spellid][src_name]
+						shield [dst_name][spellid][src_name] = 0
+
+						--> can't use monk guard since its overheal is computed inside the unbuff
+						if (overheal and overheal > 0 and spellid ~= SPELLID_MONK_GUARD) then
+							--> removing the nil at the end before true for is_shield, I have no documentation change about it, not sure the reason why it was addded
+							return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, dst_flags2, spellid, spellname, nil, 0, _math_ceil (overheal), 0, 0, true) --0, 0, nil, true
+						else
+							return
+						end
+					end
+					shield [dst_name][spellid][src_name] = 0
+				end
+			--end
 			------------------------------------------------------------------------------------------------
 			--> recording buffs
 				if (_recording_self_buffs) then
@@ -1315,7 +1363,7 @@
 					if (raid_members_cache[src_serial]) then
 						--> call record debuffs uptime
 	--[[not tail call, need to fix this]]	parser:add_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, "DEBUFF_UPTIME_OUT")
-					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst é da raide e o caster é enemy
+					elseif (raid_members_cache[dst_serial] and not raid_members_cache[src_serial]) then --> dst ï¿½ da raide e o caster ï¿½ enemy
 	--[[not tail call, need to fix this]]	parser:add_bad_debuff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, "DEBUFF_UPTIME_OUT")
 					end
 				end
@@ -1373,7 +1421,7 @@
 		
 		------------------------------------------------------------------------------------------------
 		--> get actors
-			--> name do debuff será usado para armazenar o name do ator
+			--> name do debuff serï¿½ usado para armazenar o name do ator
 			local this_player = misc_cache[spellname]
 			if (not this_player) then --> pode ser um desconhecido ou um pet
 				this_player = _current_misc_container:CatchCombatant(src_serial, spellname, src_flags, true)
@@ -1613,7 +1661,7 @@
 		local this_player, mine_owner = energy_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_energy_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				energy_cache[src_name] = this_player
 			end
 		end
@@ -1630,7 +1678,7 @@
 		--> actor targets
 		local this_dst = this_player.targets._NameIndexTable[dst_name]
 		if (not this_dst) then
-			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> ALVO_DA_HABILIDADE:Newtable()
+			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
 		else
 			this_dst = this_player.targets._ActorTable[this_dst]
 		end
@@ -1694,7 +1742,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -1704,12 +1752,12 @@
 
 		if (not this_player.cooldowns_defensive) then
 			this_player.cooldowns_defensive = _details:GetOrderNumber(src_name)
-			this_player.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			this_player.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			this_player.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities
 			
 			if (not this_player.shadow.cooldowns_defensive_targets) then
 				this_player.shadow.cooldowns_defensive = _details:GetOrderNumber(src_name)
-				this_player.shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				this_player.shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				this_player.shadow.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
 			end
 
@@ -1734,7 +1782,7 @@
 				local damage_actor = damage_cache[src_name]
 				if (not damage_actor) then --> pode ser um desconhecido ou um pet
 					damage_actor = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
-					if (src_flags) then --> se não for um pet, adicionar no cache
+					if (src_flags) then --> se nï¿½o for um pet, adicionar no cache
 						damage_cache[src_name] = damage_actor
 					end
 				end
@@ -1820,7 +1868,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -1830,13 +1878,13 @@
 		
 		if (not this_player.interrupt) then
 			this_player.interrupt = _details:GetOrderNumber(src_name)
-			this_player.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			this_player.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			this_player.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			this_player.interrompeu_oque = {}
 			
 			if (not this_player.shadow.interrupt_targets) then
 				this_player.shadow.interrupt = _details:GetOrderNumber(src_name)
-				this_player.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				this_player.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				this_player.shadow.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 				this_player.shadow.interrompeu_oque = {}
 			end
@@ -1890,13 +1938,13 @@
 			
 			if (not mine_owner.interrupt) then
 				mine_owner.interrupt = 0
-				mine_owner.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				mine_owner.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				mine_owner.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 				mine_owner.interrompeu_oque = {}
 				
 				if (not mine_owner.shadow.interrupt_targets) then
 					mine_owner.shadow.interrupt = 0
-					mine_owner.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+					mine_owner.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 					mine_owner.shadow.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 					mine_owner.shadow.interrompeu_oque = {}
 				end
@@ -1947,7 +1995,7 @@
 	--> search key: ~spellcast ~castspell ~cast
 	function parser:spellcast(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype)
 	
-		--print(token, time, "WHO:",src_serial, src_name, src_flags, "TARGET:",dst_serial, dst_name, dst_flags, "SPELL:",spellid, spellname, spelltype)
+		--print(token, time, "src:",src_serial, src_name, src_flags, "TARGET:",dst_serial, dst_name, dst_flags, "SPELL:",spellid, spellname, spelltype)
 
 	------------------------------------------------------------------------------------------------
 	--> record cooldowns cast which can't track with buff applyed.
@@ -2010,7 +2058,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -2020,7 +2068,7 @@
 	--> build containers on the fly
 
 		if (not this_player.spellcast) then
-			--> constrói aqui a table dele
+			--> constrï¿½i aqui a table dele
 			this_player.spellcast = 0
 			this_player.spellcast_spell_tables = container_abilities:NewContainer(container_misc)
 
@@ -2059,7 +2107,7 @@
 	------------------------------------------------------------------------------------------------
 	--> early checks and fixes
 		
-		--> this dando erro onde o name é NIL, fazendo um fix para isso
+		--> this dando erro onde o name ï¿½ NIL, fazendo um fix para isso
 		if (not src_name) then
 			src_name = "[*] "..extraSpellName
 		end
@@ -2081,7 +2129,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -2091,7 +2139,7 @@
 	--> build containers on the fly
 
 		if (not this_player.dispell) then
-			--> constrói aqui a table dele
+			--> constrï¿½i aqui a table dele
 			this_player.dispell = _details:GetOrderNumber(src_name)
 			this_player.dispell_targets = container_combatants:NewContainer(container_damage_target)
 			this_player.dispell_spell_tables = container_abilities:NewContainer(container_misc)
@@ -2154,7 +2202,7 @@
 		if (mine_owner) then
 			
 			if (not mine_owner.dispell) then
-				--> constrói aqui a table dele
+				--> constrï¿½i aqui a table dele
 				mine_owner.dispell = 0
 				mine_owner.dispell_targets = container_combatants:NewContainer(container_damage_target)
 				mine_owner.dispell_spell_tables = container_abilities:NewContainer(container_misc)
@@ -2215,7 +2263,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -2224,14 +2272,14 @@
 	--> build containers on the fly
 
 		if (not this_player.ress) then
-			--> constrói aqui a table dele
+			--> constrï¿½i aqui a table dele
 			this_player.ress = _details:GetOrderNumber(src_name)
-			this_player.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			this_player.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			this_player.ress_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			
 			if (not this_player.shadow.ress_targets) then
 				this_player.shadow.ress = _details:GetOrderNumber(src_name)
-				this_player.shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				this_player.shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				this_player.shadow.ress_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			end
 
@@ -2258,7 +2306,7 @@
 		
 		--> add battle ress
 		if (_UnitAffectingCombat(src_name)) then 
-			--> proheal a última death do dst na table do combat:
+			--> proheal a ï¿½ltima death do dst na table do combat:
 			for i = 1, #_current_combat.last_events_tables do 
 				if (_current_combat.last_events_tables[i][3] == dst_name) then
 
@@ -2340,7 +2388,7 @@
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se não for um pet, adicionar no cache
+			if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 				misc_cache[src_name] = this_player
 			end
 		end
@@ -2350,15 +2398,15 @@
 	--> build containers on the fly
 		
 		if (not this_player.cc_break) then
-			--> constrói aqui a table dele
+			--> constrï¿½i aqui a table dele
 			this_player.cc_break = _details:GetOrderNumber(src_name)
-			this_player.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			this_player.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			this_player.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			this_player.cc_break_oque = {}
 			
 			if (not this_player.shadow.cc_break) then
 				this_player.shadow.cc_break = _details:GetOrderNumber(src_name)
-				this_player.shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				this_player.shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				this_player.shadow.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 				this_player.shadow.cc_break_oque = {}
 			end
@@ -2474,11 +2522,11 @@
 				_current_total[4].dead = _current_total[4].dead + 1
 				_current_gtotal[4].dead = _current_gtotal[4].dead + 1
 				
-				--> main actor no container de misc que irá armazenar a death
+				--> main actor no container de misc que irï¿½ armazenar a death
 				local this_player, mine_owner = misc_cache[dst_name]
 				if (not this_player) then --> pode ser um desconhecido ou um pet
 					this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-					if (not mine_owner) then --> se não for um pet, adicionar no cache
+					if (not mine_owner) then --> se nï¿½o for um pet, adicionar no cache
 						misc_cache[dst_name] = this_player
 					end
 				end
@@ -2585,10 +2633,10 @@
 					--print(4)
 					return table1[5] < table2[5] --> joga pra cima quem tem menos vida
 				else
-					if (type(table1[1]) == "boolean" and table1 and type(table2[1]) == "boolean" and table2) then --> primeiro é damage e segundo é heal
+					if (type(table1[1]) == "boolean" and table1 and type(table2[1]) == "boolean" and table2) then --> primeiro ï¿½ damage e segundo ï¿½ heal
 						--print(5)
 						return true --> passa o damage pra frente
-					elseif (type(table2[1]) == "boolean" and table2 and type(table1[1]) == "boolean" and table1) then --> primeiro é heal e o segundo é damage
+					elseif (type(table2[1]) == "boolean" and table2 and type(table1[1]) == "boolean" and table1) then --> primeiro ï¿½ heal e o segundo ï¿½ damage
 						--print(6)
 						return false --> passa o heal pra frente
 					else
@@ -2874,7 +2922,7 @@
 				end
 				
 				_details:EnterCombat()
-				--> sinaliza que esse combat é pvp
+				--> sinaliza que esse combat ï¿½ pvp
 				_current_combat.pvp = true
 				_current_combat.is_pvp = {name = zoneName, zone = ZoneName, mapid = ZoneMapID}
 				_details.listener:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
