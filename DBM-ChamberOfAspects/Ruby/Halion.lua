@@ -87,6 +87,7 @@ local function updateHealthFrame(phase)
 end
 
 function mod:OnCombatStart(delay)--These may still need retuning too, log i had didn't have pull time though.
+	DBM:FireCustomEvent("DBM_EncounterStart", 887, "Halion")
 	table.wipe(phases)
 	warned_preP2 = false
 	warned_preP3 = false
@@ -98,6 +99,10 @@ function mod:OnCombatStart(delay)--These may still need retuning too, log i had 
 	timerFieryConsumptionCD:Start(15-delay)
 	timerFieryBreathCD:Start(10-delay)
 	updateHealthFrame(1)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 887, "Halion", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

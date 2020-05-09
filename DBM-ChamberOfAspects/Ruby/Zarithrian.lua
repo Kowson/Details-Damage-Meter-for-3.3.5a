@@ -24,8 +24,13 @@ local timerCleaveArmor			= mod:NewTargetTimer(30, 74367, nil, mod:IsTank() or mo
 local timerFearCD				= mod:NewCDTimer(33, 74384)--anywhere from 33-40 seconds in between fears.
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 893, "General Zarithrian")
 	timerFearCD:Start(14-delay)--need more pulls to verify consistency
 	timerAddsCD:Start(15.5-delay)--need more pulls to verify consistency
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 893, "General Zarithrian", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

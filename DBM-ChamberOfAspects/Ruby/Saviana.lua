@@ -39,6 +39,7 @@ local function warnConflagTargets()
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 891, "Saviana Ragefire")
 	timerConflagCD:Start(32-delay)--need more pulls to verify consistency
 	timerBreath:Start(12-delay)--need more pulls to verify consistency
 	table.wipe(beaconTargets)
@@ -48,7 +49,8 @@ function mod:OnCombatStart(delay)
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 891, "Saviana Ragefire", wipe)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end

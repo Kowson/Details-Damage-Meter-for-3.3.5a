@@ -40,6 +40,7 @@ local function showBrandWarning()
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 889, "Baltharus the Warborn")
 	warnedSplit1 = false
 	warnedSplit2 = false
 	warnedSplit3 = false
@@ -50,7 +51,8 @@ function mod:OnCombatStart(delay)
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 889, "Baltharus the Warborn", wipe)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end
