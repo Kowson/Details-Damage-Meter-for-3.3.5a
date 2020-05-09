@@ -39,9 +39,14 @@ local function buildGuidTable()
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 734, "Malygos")
 	enrageTimer:Start(-delay)
 	timerAchieve:Start(-delay)
 	table.wipe(guids)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 734, "Malygos", wipe)
 end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
