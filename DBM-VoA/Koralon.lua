@@ -29,11 +29,16 @@ local timerKoralonEnrage	= mod:NewTimer(300, "KoralonEnrage", 26662)
 mod:AddBoolOption("PlaySoundOnCinder")
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 776, "Koralon the Flame Watcher")
 	timerKoralonEnrage:Start(-delay)
 	timerNextMeteor:Start(-delay)
 	timerBreathCD:Start(12-delay)
 	warnMeteorSoon:Schedule(42-delay)
 	timerNextBurningFury:Start()
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 776, "Koralon the Flame Watcher", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

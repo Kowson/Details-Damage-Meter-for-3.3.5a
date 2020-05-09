@@ -51,11 +51,11 @@ local voa = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			1126, 1127, 1128, 1129,
-			[1126] = 1, -- Archavon
-			[1127] = 2, -- Emalon
-			[1128] = 3, -- Koralon
-			[1129] = 4, -- Toravon
+		772, 1127, 1128, 1129,
+			[772] = 1, -- Archavon
+			[774] = 2, -- Emalon
+			[776] = 3, -- Koralon
+			[885] = 4, -- Toravon
 	},
 	
 	encounter_ids2 = {
