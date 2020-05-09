@@ -23,8 +23,13 @@ local function announceStrike(target, damage)
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 694, "Patchwerk")
 	enrageTimer:Start(-delay)
 	timerAchieve:Start(-delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 694, "Patchwerk", wipe)
 end
 
 function mod:SPELL_DAMAGE(args)

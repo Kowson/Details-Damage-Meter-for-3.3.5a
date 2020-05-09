@@ -30,7 +30,12 @@ mod:SetBossHealthInfo(
 local markCounter = 0
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 692, "The Four Horsemen")
 	markCounter = 0
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 692, "The Four Horsemen", wipe)
 end
 
 local markSpam = 0

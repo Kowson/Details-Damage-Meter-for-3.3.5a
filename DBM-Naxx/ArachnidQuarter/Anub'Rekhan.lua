@@ -27,6 +27,7 @@ mod:AddBoolOption("ArachnophobiaTimer", true, "timer")
 
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 673, "Anub'Rekhan")
 	if mod:IsDifficulty("heroic25") then
 		timerLocustIn:Start(90 - delay)
 		warningLocustSoon:Schedule(80 - delay)
@@ -34,6 +35,10 @@ function mod:OnCombatStart(delay)
 		timerLocustIn:Start(91 - delay)
 		warningLocustSoon:Schedule(76 - delay)
 	end
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 673, "Anub'Rekhan", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

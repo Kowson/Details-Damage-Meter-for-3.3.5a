@@ -31,6 +31,7 @@ local doomCounter	= 0
 local sporeTimer	= 36
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 685, "Loatheb")
 	doomCounter = 0
 	if mod:IsDifficulty("heroic25") then
 		sporeTimer = 18
@@ -40,6 +41,10 @@ function mod:OnCombatStart(delay)
 	timerSpore:Start(sporeTimer - delay)
 	warnSporeSoon:Schedule(sporeTimer - 5 - delay)
 	timerDoom:Start(120 - delay, doomCounter + 1)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 685, "Loatheb", wipe)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)

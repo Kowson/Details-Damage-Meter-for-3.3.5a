@@ -34,6 +34,7 @@ mod:AddBoolOption("ShowRange", true)
 local warnedAdds = false
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 704, "Kel'Thuzad")
 	if self.Options.ShowRange then
 		self:ScheduleMethod(215-delay, "RangeToggle", true)
 	end
@@ -44,7 +45,8 @@ function mod:OnCombatStart(delay)
 	self:Schedule(225, DBM.RangeCheck.Show, DBM.RangeCheck, 10)
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 704, "Kel'Thuzad", wipe)
 	if self.Options.ShowRange then
 		self:RangeToggle(false)
 	end

@@ -23,6 +23,7 @@ local timerWebSpray		= mod:NewNextTimer(40.5, 29484)
 local timerSpider		= mod:NewTimer(30, "TimerSpider", 17332)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 679, "Maexxna")
 	warnWebSpraySoon:Schedule(35.5 - delay)
 	timerWebSpray:Start(40.5 - delay)
 	warnSpidersSoon:Schedule(25 - delay)
@@ -31,6 +32,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 679, "Maexxna", wipe)
 	if not wipe then
 		if DBM.Bars:GetBar(L.ArachnophobiaTimer) then
 			DBM.Bars:CancelBar(L.ArachnophobiaTimer) 

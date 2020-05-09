@@ -34,12 +34,16 @@ local noTargetTime = 0
 local isFlying = false
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 702, "Sapphiron")
 	noTargetTime = 0
 	isFlying = false
 	warnAirPhaseSoon:Schedule(38.5 - delay)
 	timerAirPhase:Start(48.5 - delay)
 end
 
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 702, "Sapphiron", wipe)
+end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args:IsSpellID(28522) and args:IsPlayer() and self.Options.WarningIceblock then

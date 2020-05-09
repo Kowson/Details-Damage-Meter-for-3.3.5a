@@ -20,9 +20,14 @@ local enrageTimer		= mod:NewBerserkTimer(420)
 local timerDecimate		= mod:NewCDTimer(104, 54426)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 698, "Gluth")
 	enrageTimer:Start(420 - delay)
 	timerDecimate:Start(110 - delay)
 	warnDecimateSoon:Schedule(100 - delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 698, "Gluth", wipe)
 end
 
 local decimateSpam = 0

@@ -46,11 +46,13 @@ local function removeIcon(target)
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 696, "Grobbulus")
 	table.wipe(mutateIcons)
 	enrageTimer:Start(-delay)
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 696, "Grobbulus", wipe)
     for i,j in ipairs(mutateIcons) do
        mod:SetIcon(j, 0)
     end

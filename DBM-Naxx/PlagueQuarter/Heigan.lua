@@ -16,7 +16,12 @@ local warnTeleportNow	= mod:NewAnnounce("WarningTeleportNow", 3, 46573)
 local timerTeleport		= mod:NewTimer(90, "TimerTeleport", 46573)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 683, "Heigan the Unclean")
 	mod:BackInRoom(90 - delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 683, "Heigan the Unclean", wipe)
 end
 
 function mod:DancePhase()

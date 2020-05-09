@@ -19,8 +19,13 @@ local timerTaunt		= mod:NewCDTimer(20, 29060)
 local timerShieldWall	= mod:NewCDTimer(20, 29061)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 687, "Instructor Razuvious")
 	timerShout:Start(16 - delay)
 	warnShoutSoon:Schedule(11 - delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 687, "Instructor Razuvious", wipe)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)

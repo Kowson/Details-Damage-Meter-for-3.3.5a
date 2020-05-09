@@ -24,9 +24,14 @@ local embraceSpam = 0
 local enraged = false
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 677, "Grand Widow Faerlina")
 	timerEnrage:Start(-delay)
 	warnEnrageSoon:Schedule(55 - delay)
 	enraged = false
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 677, "Grand Widow Faerlina", wipe)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)

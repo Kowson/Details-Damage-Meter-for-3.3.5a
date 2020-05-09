@@ -41,12 +41,17 @@ local phase2
 local down = 0
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 701, "Thaddius")
 	phase2 = false
 	currentCharge = nil
 	down = 0
 	self:ScheduleMethod(20.6 - delay, "TankThrow")
 	timerThrow:Start(-delay)
 	warnThrowSoon:Schedule(17.6 - delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 701, "Thaddius", wipe)
 end
 
 local lastShift = 0

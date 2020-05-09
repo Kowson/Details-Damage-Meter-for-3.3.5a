@@ -78,6 +78,7 @@ local function getWaveString(wave)
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 690, "Gothik the Harvester")
 	if mod:IsDifficulty("heroic25") then
 		waves = wavesHeroic
 	else
@@ -89,6 +90,10 @@ function mod:OnCombatStart(delay)
 	timerWave:Start(25, wave + 1)
 	warnWaveSoon:Schedule(22, wave + 1, getWaveString(wave + 1))
 	self:ScheduleMethod(25, "NextWave")
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 690, "Gothik the Harvester", wipe)
 end
 
 function mod:NextWave()

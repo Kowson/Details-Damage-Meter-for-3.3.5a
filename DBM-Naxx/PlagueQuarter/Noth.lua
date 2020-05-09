@@ -20,8 +20,13 @@ local timerTeleportBack	= mod:NewTimer(70, "TimerTeleportBack", 46573)
 local phase = 0
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 681, "Noth the Plaguebringer")
 	phase = 0
 	self:BackInRoom(delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 681, "Noth the Plaguebringer", wipe)
 end
 
 function mod:Balcony()
