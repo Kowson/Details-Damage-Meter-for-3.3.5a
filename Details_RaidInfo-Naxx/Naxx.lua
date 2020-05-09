@@ -47,7 +47,7 @@ local naxx = {
 	},
 
 	find_boss_encounter = function()
-		--> find horsemen or KT
+		--> find horsemen or KT or thaddius
 		if (_details.table_current and _details.table_current[1] and _details.table_current[1]._ActorTable) then
 			for _, damage_actor in ipairs (_details.table_current[1]._ActorTable) do
 				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
@@ -55,6 +55,8 @@ local naxx = {
 					return 15 --> kt 
 				elseif (serial ==16064) then -- thane horseman guy
 					return 9 -- horsemen 
+				elseif (serial == 15929 or serial == 15930) then -- stalagg / feugen
+					return 13 -- thaddius
 				end
 			end
 		end
@@ -541,11 +543,17 @@ local naxx = {
 			},
 
 			continuo = {
+				41926, -- Hateful Strike 10
+				59192, -- Hateful Strike 25
+				28131, -- Frenzy 
+				26662, -- Berserk 
+				32309, -- Slime Bolt (Enrage Ability)
 			},
 			
 			phases = { 
 				{
-					adds = {		
+					adds = {	
+						16028, -- Patckwerk	
 					},
 					spells = {
 
@@ -563,11 +571,18 @@ local naxx = {
 			},
 
 			continuo = {
+				28240, -- Posion Cloud 
+				28169, -- Mutating Injection
+				28157, -- Slime Spray 10
+				54364, -- Slime Spray 25
+				26662, -- Berserk
 			},
 			
 			phases = { 
 				{
-					adds = {		
+					adds = {	
+						16290, -- Fallout Slime
+						15931, -- Grobbulus	
 					},
 					spells = {
 
@@ -585,11 +600,20 @@ local naxx = {
 			},
 
 			continuo = {
+				54378, -- Mortal Wound
+				28371, -- Enrage 10
+				54427, -- Enrage 25
+				28374, -- Decimate
+				29306, -- Infected Wound
+				26662, -- Berserk
+				28404, -- Consume Zombie Chow
 			},
 			
 			phases = { 
 				{
 					adds = {		
+						16360, -- Zombie Chow
+						15932, -- Gluth
 					},
 					spells = {
 
@@ -603,6 +627,8 @@ local naxx = {
 			boss =	L["STRING_THADDIUS"],
 			portrait = [[Interface\AddOns\Details_RaidInfo-Naxx\images\thaddius]],
 			
+			combat_end = {1, 15928},
+
 			spell_mechanics = {
 			},
 
@@ -610,11 +636,33 @@ local naxx = {
 			},
 			
 			phases = { 
-				{
+				{ -- Phase 1: Stalagg & Feugen
 					adds = {		
+						15929, -- Stalagg
+						15930, -- Feugen
+						16218, -- Tesla Coil
 					},
 					spells = {
-
+						54529, -- Stalagg Power Surge 10
+						28134, -- Stalagg Power Surge 25
+						28338, -- Magnetic Pull
+						28099, -- Shock (Tesla Coil)
+						28135, -- Feugen Static Field 10
+						54528, -- Feugen Static Field 25
+					}
+				},
+				{ -- Phase 2: Thaddius
+					adds = {		
+						15928, -- Thaddius
+					},
+					spells = {
+						28089, -- Polarity Shift
+						28059, -- Positive Charge
+						28084, -- Negative Charge
+						28167, -- Chain Lightning 10
+						54531, -- Chain Lightning 25
+						28299, -- Ball Lightning 
+						27680, -- Berserk
 					}
 				},
 			}
@@ -630,11 +678,26 @@ local naxx = {
 			},
 
 			continuo = {
+				28531, -- Frost Aura 10
+				55799, -- Frost Aura 25
+				19983, -- Cleave
+				55697, -- Tail Sweep 10
+				55696, -- Tail Sweep 25
+				28542, -- Life Drain 10
+				55665, -- Life Drain 25
+				28560, -- Summon Blizzard
+				28547, -- Chill 10
+				55699, -- Chill 25
+				26662, -- Berserk
+				28522, -- Ice Bolt
+				28526, -- Ice Bolt (?)
+				28524, -- Frost Breath
 			},
 			
 			phases = { 
 				{
-					adds = {		
+					adds = {
+						15989, -- Sapphiron
 					},
 					spells = {
 
@@ -649,6 +712,7 @@ local naxx = {
 			boss =	L["STRING_KT"],
 			portrait = [[Interface\AddOns\Details_RaidInfo-Naxx\images\kelthuzad]],
 			
+			combat_end = {1, 15990},
 			spell_mechanics = {
 			},
 
@@ -656,11 +720,37 @@ local naxx = {
 			},
 			
 			phases = { 
-				{
+				{ -- Phase 1: Add Phase
 					adds = {		
+						16427, -- Soldier of the Frozen Wastes
+						16428, -- Unstoppable Abomination
+						16429, -- Soul Weaver
 					},
 					spells = {
-
+						28457, -- Dark Blast 10
+						55714, -- Dark Blast 25
+						28467, -- Mortal Wound
+						28459, -- Wail of Souls 10
+						55765, -- Wail of Souls 25
+					}
+				},
+				{ -- Phase 2: KT
+					adds = {		
+						15990, -- Kel'Thuzad
+						16441, -- Guardian of Icecrown
+						16129, -- Shadow Fissure
+					},
+					spells = {
+						28470, -- Blood Tap
+						28478, -- Frostbolt Single 10
+						55802, -- Frostbolt Single 25
+						28479, -- Frostbolt Volley 10
+						55807, -- Frostbolt Volley 25
+						27810, -- Shadow Fissure
+						27812, -- Void Blast
+						27819, -- Detonate Mana
+						27808, -- Frost Blast
+						28408, -- Chains of Kel'Thuzad 25
 					}
 				},
 			}
