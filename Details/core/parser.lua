@@ -39,7 +39,7 @@
 	local _table_wipe = table.wipe --lua local
 
 	local _GetSpellInfo = _details.getspellinfo --details api
-	--local shield = _details.shields --details local
+	--local shields = _details.shields --details local
 	local parser = _details.parser --details local
 	local absorb_spell_list = _details.AbsorbSpells --details local
 	local defensive_cooldown_spell_list = _details.DefensiveCooldownSpells --details local
@@ -132,7 +132,7 @@
 	[28609] = 30,
 	[32796] = 30,
 	[43012] = 30, -- Rank 7
-	[1463] = 60, --  Mana shield(Mage) Rank 1
+	[1463] = 60, --  Mana shields(Mage) Rank 1
 	[8494] = 60,
 	[8495] = 60,
 	[10191] = 60,
@@ -806,7 +806,7 @@
 		-- effective healing
 		local heal_efetiva = absorbed
 		if (is_shield) then 
-			--> o shield ja passa o number exato da heal e o overheal
+			--> o shields ja passa o number exato da heal e o overheal
 			heal_efetiva = amount
 		else
 			--effective healing = absorbed + amount - overhealing
@@ -990,7 +990,7 @@
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------
-	--> BUFFS & DEBUFFS 	serach key: ~buff ~aura ~shield								|
+	--> BUFFS & DEBUFFS 	serach key: ~buff ~aura ~shields								|
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 	function parser:buff(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type, amount)
@@ -1008,7 +1008,7 @@
 		
 	--> not yet well know about unnamed buff casters
 		if (not dst_name) then
-			dst_name = "[*] Unknown shield target"
+			dst_name = "[*] Unknown shields target"
 		elseif (not src_name) then 
 			src_name = "[*] " .. spellname
 		end 
@@ -1026,26 +1026,25 @@
 	--[[not tail call, need to fix this]]	parser:add_buff_uptime(token, time, dst_serial, dst_name, dst_flags, dst_serial, dst_name, dst_flags, spellid, spellname, "BUFF_UPTIME_IN")
 					end
 				end
+			-----------------------------------------------------------------------------------------------
+			--> healing done absorbs
+			if (absorb_spell_list [spellid] and _recording_healing and amount) then
+				if (not shields [dst_name]) then 
+					shields [dst_name] = {}
+					shields [dst_name] [spellid] = {}
+					shields [dst_name] [spellid] [src_name] = amount
+				elseif (not shields [dst_name] [spellid]) then 
+					shields [dst_name] [spellid] = {}
+					shields [dst_name] [spellid] [src_name] = amount
+				else
+					shields [dst_name] [spellid] [src_name] = amount
+				end
+			end
 			------------------------------------------------------------------------------------------------
 			--> defensive cooldowns
 				if (defensive_cooldown_spell_list[spellid]) then
 					--> usou cooldown
 					return parser:add_defensive_cooldown(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname)
-
-			------------------------------------------------------------------------------------------------
-			--> healing done absorbs
-				if (absorb_spell_list [spellid] and _recording_healing and amount) then
-					if (not shield [dst_name]) then 
-						shield [dst_name] = {}
-						shield [dst_name] [spellid] = {}
-						shield [dst_name] [spellid] [src_name] = amount
-					elseif (not shield [dst_name] [spellid]) then 
-						shield [dst_name] [spellid] = {}
-						shield [dst_name] [spellid] [src_name] = amount
-					else
-						shield [dst_name] [spellid] [src_name] = amount
-					end
-			end
 			------------------------------------------------------------------------------------------------
 			--> recording buffs
 				elseif (_recording_self_buffs) then
@@ -1058,8 +1057,7 @@
 							return false
 						end
 					end
-
-			end
+				end
 
 	------------------------------------------------------------------------------------------------
 	--> recording debuffs applied by player
@@ -1178,31 +1176,32 @@
 			--> healing done(shields) -- copied from bfa details, hope it works
 			if (absorb_spell_list [spellid] and _recording_healing and amount) then
 					
-				if (shield [dst_name] and shield [dst_name][spellid] and shield [dst_name][spellid][src_name]) then
+				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
 
 					if (ignored_overheal [spellid]) then
-						shield [dst_name][spellid][src_name] = amount -- refresh j� vem o valor atualizado
+						shields [dst_name][spellid][src_name] = amount -- refresh j� vem o valor atualizado
 						return
 					end
 					
-					--shield antigo � dropado, novo � posto
-					local overheal = shield [dst_name][spellid][src_name]
-					shield [dst_name][spellid][src_name] = amount
+					--shields antigo � dropado, novo � posto
+					local overheal = shields [dst_name][spellid][src_name]
+					shields [dst_name][spellid][src_name] = amount
 					
 					if (overheal > 0) then
 						return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, dst_flags2, spellid, spellname, nil, 0, _math_ceil (overheal), 0, 0, nil, true)
 					end
 				
-					--local absorb = shield [dst_name][spellid][src_name] - amount
+					--local absorb = shields [dst_name][spellid][src_name] - amount
 					--local overheal = amount - absorb
-					--shield [dst_name][spellid][src_name] = amount
+					--shields [dst_name][spellid][src_name] = amount
 					
 					--if (absorb > 0) then
 						--return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, nil, _math_ceil (absorb), _math_ceil (overheal), 0, 0, nil, true)
 					--end
 				else
-					-- shield n�o encontrado :(
+					-- shields n�o encontrado :(
 				end
+			end
 			------------------------------------------------------------------------------------------------
 			--> defensive cooldowns
 				if (defensive_cooldown_spell_list[spellid]) then
@@ -1320,12 +1319,12 @@
 			------------------------------------------------------------------------------------------------
 			--> healing done (shields)
 			if (absorb_spell_list [spellid] and _recording_healing) then
-				if (shield [dst_name] and shield [dst_name][spellid] and shield [dst_name][spellid][src_name]) then
+				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
 					if (amount) then
-						-- o amount � o que sobrou do shield
+						-- o amount � o que sobrou do shields
 						
-						local overheal = shield [dst_name][spellid][src_name]
-						shield [dst_name][spellid][src_name] = 0
+						local overheal = shields [dst_name][spellid][src_name]
+						shields [dst_name][spellid][src_name] = 0
 
 						--> can't use monk guard since its overheal is computed inside the unbuff
 						if (overheal and overheal > 0 and spellid ~= SPELLID_MONK_GUARD) then
@@ -1335,9 +1334,9 @@
 							return
 						end
 					end
-					shield [dst_name][spellid][src_name] = 0
+					shields [dst_name][spellid][src_name] = 0
 				end
-			--end
+			end
 			------------------------------------------------------------------------------------------------
 			--> recording buffs
 				if (_recording_self_buffs) then
