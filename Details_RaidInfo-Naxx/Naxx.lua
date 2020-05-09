@@ -305,7 +305,7 @@ local naxx = {
 						}
 				},
 
-				{ -- Phase 2: Ground Phase
+				{ -- Phase 2: Add Phase
 					adds = {			
 						16983, -- Plagued Champion
 						16981, -- Plagued Guardian
@@ -472,7 +472,7 @@ local naxx = {
 						27993, -- Stomp
 					}
 				},
-				{ -- Phase 1: Gothik
+				{ -- Phase 2: Gothik
 					adds = {		
 						16060, -- Gothik
 					},
