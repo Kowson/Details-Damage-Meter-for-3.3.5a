@@ -53,7 +53,7 @@ local killTime      = 0
 local iconId        = 6
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 870, "Freya")
+	DBM:FireCustomEvent("DBM_EncounterStart", 753, "Freya")
     enrage:Start()
     table.wipe(adds)
     timerEonarsGiftCD:Start(30)
@@ -61,7 +61,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 870, "Freya", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 753, "Freya", wipe)
     DBM.BossHealth:Hide()
     if not wipe then
         if DBM.Bars:GetBar(L.TrashRespawnTimer) then

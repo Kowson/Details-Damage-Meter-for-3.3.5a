@@ -38,7 +38,7 @@ local castFlames
 local combattime = 0
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 866, "Razorscale")
+	DBM:FireCustomEvent("DBM_EncounterStart", 746, "Razorscale")
 	enrageTimer:Start(-delay)
 	combattime = GetTime()
 	if mod:IsDifficulty("heroic10") then
@@ -57,7 +57,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 866, "Razorscale", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 746, "Razorscale", wipe)
 end
 
 function mod:SPELL_DAMAGE(args)

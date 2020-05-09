@@ -28,7 +28,7 @@ local activateConstructCooldown	= mod:NewCDTimer(40, 62488)
 mod:AddBoolOption("SlagPotIcon")
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 849, "Ignis the Furnace Master")
+	DBM:FireCustomEvent("DBM_EncounterStart", 745, "Ignis the Furnace Master")
 	timerAchieve:Start()
 	timerScorchCooldown:Start(12-delay)
 	if(mod:IsDifficulty("heroic10")) then
@@ -39,7 +39,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 849, "Ignis the Furnace Master", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 745, "Ignis the Furnace Master", wipe)
 end
 
 function uniqueTestFunc()

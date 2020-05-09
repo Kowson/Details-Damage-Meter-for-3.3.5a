@@ -48,14 +48,14 @@ mod:AddBoolOption("SetIconOnEyebeamTarget", true)
 mod:AddBoolOption("YellOnBeam", true, "announce")
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 864, "Kologarn")
+	DBM:FireCustomEvent("DBM_EncounterStart", 749, "Kologarn")
 	timerNextOverheadSmash:Start(8)
 	timerNextOverheadSmash:Schedule(8)
 	self:ScheduleMethod(23, "OverheadSmash")
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 864, "Kologarn", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 749, "Kologarn", wipe)
 end
 
 function mod:OverheadSmash()

@@ -37,11 +37,11 @@ local function buildGuidTable()
 end
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 852, "Flame Leviathan")
+	DBM:FireCustomEvent("DBM_EncounterStart", 744, "Flame Leviathan")
 	buildGuidTable()
 end
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 852, "Flame Leviathan", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 744, "Flame Leviathan", wipe)
 end
 
 function mod:SPELL_SUMMON(args)

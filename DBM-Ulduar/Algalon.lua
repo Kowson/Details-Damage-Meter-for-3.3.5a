@@ -52,11 +52,11 @@ local warned_preP2 = false
 local warned_star = false
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 869, "Algalon the Observer")
+	DBM:FireCustomEvent("DBM_EncounterStart", 757, "Algalon the Observer")
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 869, "Algalon the Observer", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 757, "Algalon the Observer", wipe)
 end
 
 function mod:startTimers()
