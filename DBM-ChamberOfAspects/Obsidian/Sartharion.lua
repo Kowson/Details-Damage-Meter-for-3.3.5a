@@ -125,6 +125,7 @@ function mod:CheckDrakes(delay)
 end
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 742, "Sartharion")
 	self:ScheduleMethod(5, "CheckDrakes", delay)
 	timerWall:Start(-delay)
 
@@ -142,6 +143,7 @@ local function sortFails2(e1, e2)
 end
 
 function mod:OnCombatEnd(wipe)	
+	DBM:FireCustomEvent("DBM_EncounterEnd", 742, "Sartharion", wipe)
 	if not self.Options.AnnounceFails then return end
 	if DBM:GetRaidRank() < 1 or not self.Options.Announce then return end
 
