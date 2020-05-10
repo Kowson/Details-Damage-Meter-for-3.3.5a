@@ -17,7 +17,7 @@ local naxx = {
 	
 	icons = "Interface\\AddOns\\Details_RaidInfo-Naxx\\images\\boss_faces",
 	
-	icon = "Interface\\LFGFrame\\UI-LFG-BACKGROUND-Naxxramas",
+	icon = "Interface\\AddOns\\Details_RaidInfo-Naxx\\images\\icon256x128",
 	
 	is_raid = true,
 
