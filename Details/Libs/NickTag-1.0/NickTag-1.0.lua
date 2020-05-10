@@ -115,107 +115,21 @@ end
 	
 	NickTag.avatar_pool = {
 		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default2"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default3"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default4"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default5"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default6"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default7"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default8"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default9"},
-		{[[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]], "Default10"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Archbishop Benedictus]], "Archbishop Benedictus"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Argent Confessor Paletress]], "Argent Confessor Paletress"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Armsmaster Harlan]], "Armsmaster Harlan"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Asira Dawnslayer]], "Asira Dawnslayer"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Baelog]], "Baelog"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Baron Ashbury]], "Baron Ashbury"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Baron Silverlaine]], "Baron Silverlaine"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Blood Guard Porung]], "Blood Guard Porung"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Bronjahm]], "Bronjahm"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Brother Korloff]], "Brother Korloff"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Captain Skarloc]], "Captain Skarloc"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Chief Ukorz Sandscalp]], "Chief Ukorz Sandscalp"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Commander Kolurg]], "Commander Kolurg"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Commander Malor]], "Commander Malor"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Commander Sarannis]], "Commander Sarannis"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Commander Springvale]], "Commander Springvale"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Commander Stoutbeard]], "Commander Stoutbeard"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Corla, Herald of Twilight]], "Corla, Herald of Twilight"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Cyanigosa]], "Cyanigosa"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Darkmaster Gandling]], "Darkmaster Gandling"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Doctor Theolen Krastinov]], "Doctor Theolen Krastinov"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-DoomRel]], "DoomRel"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Eadric the Pure]], "Eadric the Pure"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Emperor Thaurissan]], "Emperor Thaurissan"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Empyreal Queens]], "Lu'lin"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Exarch Maladaar]], "Exarch Maladaar"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Fineous Darkvire]], "Fineous Darkvire"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Galdarah]], "Galdarah"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Garajal the Spiritbinder]], "Garajal the Spiritbinder"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Garrosh Hellscream]], "Garrosh Hellscream"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-General Nazgrim]], "General Nazgrim"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Grand Champions-Alliance]], "Grand Champions-Alliance"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Grand Champions-Horde]], "Grand Champions-Horde"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Grand Magus Telestra]], "Grand Magus Telestra"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-HateRel]], "HateRel"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Hazzarah]], "Hazzarah"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Hearthsinger Forresten]], "Hearthsinger Forresten"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Helix Gearbreaker]], "Helix Gearbreaker"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-High Botanist Freywinn]], "High Botanist Freywinn"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-High Inquisitor Whitemane]], "High Inquisitor Whitemane"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-High Interrogator Gerstahn]], "High Interrogator Gerstahn"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-High Justice Grimstone]], "High Justice Grimstone"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Houndmaster Braun]], "Houndmaster Braun"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Houndmaster Loksey]], "Houndmaster Loksey"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Hydromancer Velratha]], "Hydromancer Velratha"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Illyanna Ravenoak]], "Illyanna Ravenoak"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Ingvar the Plunderer]], "Ingvar the Plunderer"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Instructor Galford]], "Instructor Galford"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Instructor Malicia]], "Instructor Malicia"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Interrogator Vishas]], "Interrogator Vishas"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Isiset]], "Isiset"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-JainaProudmoore]], "Jaina Proudmoore"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Jandice Barov]], "Jandice Barov"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Kaelthas Sunstrider]], "Kaelthas Sunstrider"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Kelidan the Breaker]], "Kelidan the Breaker"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Krick]], "Krick"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lady Anacondra]], "Lady Anacondra"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lady Illucia Barov]], "Lady Illucia Barov"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lethtendris]], "Lethtendris"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Loken]], "Loken"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lord Alexei Barov]], "Lord Alexei Barov"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lord Aurius Rivendare]], "Lord Aurius Rivendare"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lord Cobrahn]], "Lord Cobrahn"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lord Pythas]], "Lord Pythas"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lord Serpentis]], "Lord Serpentis"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Lorgus Jett]], "Lorgus Jett"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Mage Lord Urom]], "Mage Lord Urom"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Magister Kalendris]], "Magister Kalendris"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Magistrate Barthilas]], "Magistrate Barthilas"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Maiden of Grief]], "Maiden of Grief"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Maleki the Pallid]], "Maleki the Pallid"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Nethermancer Sepethrea]], "Nethermancer Sepethrea"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Olaf]], "Olaf"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Pathaleon the Calculator]], "Pathaleon the Calculator"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Prince Tortheldrin]], "Prince Tortheldrin"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Princess Moira Bronzebeard]], "Princess Moira Bronzebeard"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-QueenAzshara]], "Queen Azshara"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Randolph Moloch]], "Randolph Moloch"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Renataki]], "Renataki"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Ribbly Screwspigot]], "Ribbly Screwspigot"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Scarlet Commander Mograine]], "Scarlet Commander Mograine"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Selin Fireheart]], "Selin Fireheart"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Siegecrafter Blackfuse]], "Siegecrafter Blackfuse"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Skarvald the Constructor]], "Skarvald the Constructor"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Tribunal of the Ages]], "Tribunal of the Ages"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-TyrandeWhisperwind]], "Tyrande Whisperwind"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Twilight Lord Kelris]], "Twilight Lord Kelris"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Vanessa VanCleef]], "Vanessa VanCleef"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Vazruden]], "Vazruden"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Warchief Rend Blackhand]], "Warchief Rend Blackhand"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Willey Hopebreaker]], "Willey Hopebreaker"},
-	--	{[[Interface\EncounterJournal\UI-EJ-BOSS-Witch Doctor Zumrah]], "Witch Doctor Zumrah"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\anubrekhan]], "Anub'Rekhan"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\widow]], "Grand Widow Faerlina"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\maexxna]], "Maexxna"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\instructor]], "Instructor Razuvious"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\gothik]], "Gothik the Harvester"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\horsemen]], "Baron Rivendare"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\noth]], "Noth the Plaguebringer"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\heigan]], "Heigan the Unclean"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\loatheb]], "Loatheb"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\patchwerk]], "Patchwerk"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\grobbulus]], "Grobbulus"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\gluth]], "Gluth"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\thaddius]], "Thaddius"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\sapphiron]], "Sapphiron"},
+		{[[Interface\AddOns\Details_RaidInfo-Naxx\images\kelthuzad]], "Kel'Thuzad"},
 	}
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 --> send and receive functions
@@ -608,9 +522,9 @@ end
 	--> we need to keep game smooth checking and formating nicknames.
 	--> SetNickname and names comming from other player need to be check.
 	function NickTag:CheckName(name)
-	
+		-- COMMENTED THIS ALL OUT BECAUSE LONG NAMES = FUN NAMES
 		--> as nicktag only work internally in the guild, we think that is not necessary a work filter to avoid people using bad language.
-		
+		--[[
 		name = trim(name)
 		
 		--> limit nickname to 12 characters, same as wow.
@@ -618,15 +532,15 @@ end
 		if (len > 12) then
 			return false, LibStub("AceLocale-3.0"):GetLocale("NickTag-1.0")["STRING_ERROR_1"] --> error 1 = nickname is too long, max of 12 characters.
 		end
-		
+		]]--
 		--> check if contain any non allowed characters, by now only accpet letters, numbers and spaces.
 		--> by default wow do not accetp spaces, but here will allow.
 		--> testd over lua 5.2 and this capture was okey with accents, not sure why inside wow this doesn't work.
-		local notallow = string.find(name, "[^a-zA-Záéíóúãõ%s]")
+		local notallow = string.find(name, "[^a-zA-Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½%s]")
 		if (notallow) then
 			return false, LibStub("AceLocale-3.0"):GetLocale("NickTag-1.0")["STRING_ERROR_2"] --> error 2 = nickname only support letters, numbers and spaces.
 		end
-		
+		--[[
 		--> check if there is sequencial repeated characters, like "Jasooon" were repeats 3 times the "o" character.
 		--> got this from http://stackoverflow.com/questions/15608299/lua-pattern-matching-repeating-character
 		have_repeated = false
@@ -638,7 +552,7 @@ end
 		if (have_repeated) then
 			return false, LibStub("AceLocale-3.0"):GetLocale("NickTag-1.0")["STRING_ERROR_3"] --> error 3 = cant use the same letter three times consecutively, 2 spaces consecutively or 3 or more spaces.
 		end
-		
+		]]--
 		return true
 	end
 
@@ -654,7 +568,7 @@ end
 		end
 		
 		--> here we format the text to match titles, e.g converts name like "JASON NICKSHOW" into "Jason Nickshow". 
-		name = name:gsub("(%a)([%w_']*)", titlecase)
+		--name = name:gsub("(%a)([%w_']*)", titlecase)
 		
 		--> get player serial, note that serials are unique between battlegroups and we are using serial instead of full GUID just for reduce memory usage, 
 		--> e.g guids are strings with 18 characters, serials are 8 digits number(or 9).
@@ -954,18 +868,18 @@ do
 	
 	avatar_pick_frame:SetPoint("center", UIParent, "center", 200, 0)
 	---
-		local avatar_texture = avatar_pick_frame:CreateTexture("AvatarPickFrameAvatarPreview", "overlay")
+		local avatar_texture = avatar_pick_frame:CreateTexture("AvatarPickFrameAvatarPreview", "OVERLAY")
 		avatar_texture:SetPoint("topleft", avatar_pick_frame, "topleft", 167, -10)
 		avatar_texture:SetTexture([[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]])
 		--
-		local background_texture = avatar_pick_frame:CreateTexture("AvatarPickFrameBackgroundPreview", "artwork")
+		local background_texture = avatar_pick_frame:CreateTexture("AvatarPickFrameBackgroundPreview", "ARTWORK")
 		background_texture:SetPoint("topleft", avatar_pick_frame, "topleft", 167, 2)
 		background_texture:SetWidth(290)
 		background_texture:SetHeight(75)
 		background_texture:SetTexture(NickTag.background_pool[1][1])
 		background_texture:SetTexCoord(unpack(NickTag.background_pool[1][3]))
 		--
-		local name = avatar_pick_frame:CreateFontString("AvatarPickFrameName", "overlay", "GameFontNormal")
+		local name = avatar_pick_frame:CreateFontString("AvatarPickFrameName", "OVERLAY", "GameFontNormal")
 		name:SetPoint("left", avatar_texture, "right", -11, -17)
 		name:SetText(UnitName("player"))
 	---
@@ -1160,6 +1074,9 @@ do
 	avatar_pick_frame:SetScript("OnShow", function()
 		--get player avatar
 		local avatar = NickTag:GetNicknameTable(UnitGUID("player"))
+		_G.AvatarPickFrameName:SetDrawLayer("OVERLAY")
+		_G.AvatarPickFrameAvatarPreview:SetDrawLayer("OVERLAY")
+		_G.AvatarPickFrameBackgroundPreview:SetDrawLayer("ARTWORK")
 		if (avatar) then
 			_G.AvatarPickFrameName:SetText( avatar[1] or UnitName("player"))
 			
