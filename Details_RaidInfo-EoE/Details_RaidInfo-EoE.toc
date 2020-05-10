@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: Details: Eye of Eternity
+## Notes: Plugin for Details
+## RequiredDeps: Details
+## X-Curse-Packaged-Version: r236
+## X-Curse-Project-Name: Details!
+## X-Curse-Project-ID: details
+## X-Curse-Repository-ID: wow/details/mainline
+
+enUS.lua
+eoe.lua
