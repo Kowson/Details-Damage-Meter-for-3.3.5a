@@ -73,7 +73,7 @@ local obsidianSanctum = {
 			boss =	L["BOSS_SARTHARION"],
 			portrait = [[Interface\AddOns\Details_RaidInfo-ChamberOfAspects\images\sartharion]],
 
-			combat_end = {1, 28860}
+			combat_end = {1, 28860},
 
 			spell_mechanics =	{
 					},
@@ -137,7 +137,7 @@ local obsidianSanctum = {
 			boss =	L["BOSS_SHADRON"],
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
-			combat_end = {1, 30451}
+			combat_end = {1, 30451},
 
 			spell_mechanics =	{
 					},
@@ -170,7 +170,7 @@ local obsidianSanctum = {
 			boss =	L["BOSS_TENEBRON"],
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
-			combat_end = {1, 30452}
+			combat_end = {1, 30452},
 
 			spell_mechanics =	{
 					},
@@ -204,7 +204,7 @@ local obsidianSanctum = {
 			boss =	L["BOSS_VESPERON"],
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
-			combat_end = {1, 30449}
+			combat_end = {1, 30449},
 
 			spell_mechanics =	{
 					},
