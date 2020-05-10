@@ -316,6 +316,16 @@
 			_table_wipe(_details.cache_healing_group)
 			_details:UpdateParserGears()
 			
+			if (not _details:CaptureGet("damaage")) then _details:CaptureSet(true, "damage", true) end
+			if (not _details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", true) end
+			if (not _details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", true) end
+			if (not _details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", true)
+			if (not _details:CaptureGet("spellcast")) then _details:CaptureSet(true, "spellcast", true) end
+				
+			if (_details.debug) then
+				_details:Msg("(debug) ensured parser was unfrozen")
+			end
+			
 			_details.host_of = nil
 			_details.host_by = nil
 			
@@ -529,7 +539,7 @@
 						--> schedule captures off
 						
 						_details:CaptureSet(false, "damage", false, 15)
-						_details:CaptureSet(false, "energy", false, 15)
+						_details:CaptureSet(false, "heal", false, 15)
 						_details:CaptureSet(false, "aura", false, 15)
 						_details:CaptureSet(false, "energy", false, 15)
 						_details:CaptureSet(false, "spellcast", false, 15)
