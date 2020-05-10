@@ -2886,7 +2886,8 @@
 			_details:SendEvent("ZONE_TYPE_CHANGED", nil, zoneType)
 			_details.last_zone_type = zoneType
 		end
-		local zoneMapID
+		local zoneMapID = GetCurrentMapAreaID()
+		--[[
 		if(zoneType == "raid") then
 			if (zoneName == "Ulduar") then zoneMapID = 530
 			elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -2901,6 +2902,7 @@
 			end
 		else zoneMapID = 4
 		end
+		]]--
 		_details.zone_type = zoneType
 		_details.zone_id = zoneMapID
 		_details.zone_name = zoneName
@@ -2981,7 +2983,8 @@
 		_table_wipe(_details.encounter_table)
 		
 		local zoneName, zoneType, _, _, _, _ = _GetInstanceInfo()
-		local zoneMapID
+		local zoneMapID = GetCurrentMapAreaID()
+		--[[
 		if(zoneType == "raid") then
 			if (zoneName == "Ulduar") then zoneMapID = 530
 			elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -2996,6 +2999,7 @@
 			end
 		else zoneMapID = 4
 		end
+		]]--
 		--print(encounterID, encounterName, difficultyID, raidSize)
 		
 		_details.encounter_table.phase = 1
