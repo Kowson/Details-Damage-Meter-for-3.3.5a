@@ -17,7 +17,7 @@ local obsidianSanctum = {
 	
 	icons = "Interface\\AddOns\\Details_RaidInfo-ChamberOfAspects\\images\\boss_faces_os",
 	
-	icon = "Interface\\AddOns\\Details_RaidInfo-VoA\\images\\icon256x128_os",
+	icon = "Interface\\AddOns\\Details_RaidInfo-ChamberOfAspects\\images\\icon256x128_os",
 	
 	is_raid = true,
 
