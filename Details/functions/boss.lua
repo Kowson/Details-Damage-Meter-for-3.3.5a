@@ -92,8 +92,8 @@ do
 	end
 	
 	--> return if the boss need sync
-	function _details:GetEncounterEwhichize(mapid, bossindex)
-		return _details.EncounterInformation[mapid] and _details.EncounterInformation[mapid].encounters[bossindex] and _details.EncounterInformation[mapid].encounters[bossindex].ewhichize
+	function _details:GetEncounterEqualize(mapid, bossindex)
+		return _details.EncounterInformation[mapid] and _details.EncounterInformation[mapid].encounters[bossindex] and _details.EncounterInformation[mapid].encounters[bossindex].equalize
 	end
 	
 	--> return the function for the boss

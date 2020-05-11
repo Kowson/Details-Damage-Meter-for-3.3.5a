@@ -232,12 +232,12 @@
 		end
 	end
 	
-	function _details.network.Cloud_Ewhichize(player, realm, core_version, data)
+	function _details.network.Cloud_Equalize(player, realm, core_version, data)
 		if (not _details.in_combat) then
 			if (core_version ~= _details.realversion) then
 				return
 			end
-			_details:MakeEwhichizeOnActor(player, realm, data)
+			_details:MakeEqualizeOnActor(player, realm, data)
 		end
 	end
 	
@@ -250,7 +250,7 @@
 		[CONST_CLOUD_FOUND] = _details.network.Cloud_Found,
 		[CONST_CLOUD_DATARQ] = _details.network.Cloud_DataRequest,
 		[CONST_CLOUD_DATARC] = _details.network.Cloud_DataReceived,
-		[CONST_CLOUD_EQUALIZE] = _details.network.Cloud_Ewhichize,
+		[CONST_CLOUD_EQUALIZE] = _details.network.Cloud_Equalize,
 	}
 	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -445,7 +445,7 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> sharer
 
-	--> entrar no canal após logar no servidor
+	--> entrar no canal apï¿½s logar no servidor
 	function _details:EnterChatChannel()
 		if (not _details.realm_sync) then
 			return

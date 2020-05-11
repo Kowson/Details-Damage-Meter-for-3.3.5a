@@ -488,8 +488,8 @@
 				end
 				
 				if (_details.debug) then
-					_details:Msg("(debug) forcing ewhichize actors behavior.")
-					_details:EwhichizeActorsSchedule(_details.host_of)
+					_details:Msg("(debug) forcing Equalize actors behavior.")
+					_details:EqualizeActorsSchedule(_details.host_of)
 				end
 				
 				--> verifica memory
@@ -550,14 +550,14 @@
 					end
 					
 					--> schedule sync
-					_details:EwhichizeActorsSchedule(_details.host_of)
-					if (_details:GetEncounterEwhichize(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
+					_details:EqualizeActorsSchedule(_details.host_of)
+					if (_details:GetEncounterEqualize(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
 						_details:ScheduleTimer("DelayedSyncAlert", 3)
 					end
 					
 				else
 					if (_details.debug) then
-						_details:EwhichizeActorsSchedule(_details.host_of)
+						_details:EqualizeActorsSchedule(_details.host_of)
 					end
 				end
 			end
@@ -712,7 +712,7 @@
 			end
 		end
 		
-		function _details:MakeEwhichizeOnActor(player, realm, receivedActor)
+		function _details:MakeEqualizeOnActor(player, realm, receivedActor)
 		
 			local combat = _details:GetCombat("current")
 			local damage, heal, energy, misc = _details:GetAllActors("current", player)
@@ -745,11 +745,11 @@
 						misc = combat[4]:CatchCombatant(guid, actorName, 0x514, true)
 						
 						if (_details.debug) then
-							_details:Msg("(debug) ewhichize received actor:", actorName, damage, heal)
+							_details:Msg("(debug) Equalize received actor:", actorName, damage, heal)
 						end
 					else
 						if (_details.debug) then
-							_details:Msg("(debug) ewhichize couldn't get guid for player ",player)
+							_details:Msg("(debug) Equalize couldn't get guid for player ",player)
 						end
 					end
 				end
@@ -812,7 +812,7 @@
 			end
 		end
 		
-		function _details:EwhichizePets()
+		function _details:EqualizePets()
 			--> check for pets without owner
 			for _, actor in _ipairs(_details.table_current[1]._ActorTable) do 
 				--> have flag and the flag tell us he is a pet
@@ -825,7 +825,7 @@
 			end
 		end
 		
-		function _details:EwhichizeActorsSchedule(host_of)
+		function _details:EqualizeActorsSchedule(host_of)
 		
 			--> store pets sent through 'needpetowner'
 			_details.sent_pets = _details.sent_pets or {n = time()}
@@ -835,15 +835,15 @@
 			end
 			
 			--> pet equilize disabled on details 1.4.0
-			--_details:ScheduleTimer("EwhichizePets", 1+math.random())
+			--_details:ScheduleTimer("EqualizePets", 1+math.random())
 
 			--> do not equilize if there is any disabled capture
 			--if (_details:CaptureIsAllEnabled()) then
-				_details:ScheduleTimer("EwhichizeActors", 2+math.random()+math.random() , host_of)
+				_details:ScheduleTimer("EqualizeActors", 2+math.random()+math.random() , host_of)
 			--end
 		end
 		
-		function _details:EwhichizeActors(host_of)
+		function _details:EqualizeActors(host_of)
 		
 			if (_details.debug) then
 				_details:Msg("(debug) sending equilize actor data")
@@ -886,7 +886,7 @@
 			--> send os dados do proprio host pra ele antes
 			if (host_of) then
 				_details:SendRaidDataAs(_details.network.ids.CLOUD_EQUALIZE, host_of, nil, data)
-				_details:EwhichizeActors()
+				_details:EqualizeActors()
 			else
 				_details:SendRaidData(_details.network.ids.CLOUD_EQUALIZE, data)
 			end
