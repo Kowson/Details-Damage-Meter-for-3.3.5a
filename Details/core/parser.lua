@@ -1543,7 +1543,7 @@
 		end
 	------------------------------------------------------------------------------------------------
 	--> Check for pre-pull shields
-	if (in_out and absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
+	if (in_out == "BUFF_UPTIME_IN" and absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
 		local absorb_source = { 
 			absorbed = 0,
 			serial = src_serial,
