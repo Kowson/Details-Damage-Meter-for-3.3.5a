@@ -246,7 +246,7 @@ end
 			SetGuildRosterShowOffline(false)
 		end
 		
-		local _, numOnlineMembers = GetNumGuildMembers()
+		local numOnlineMembers = GetNumGuildMembers()
 
 		if (NickTag.debug) then
 			NickTag:Msg("IsOnline(): " .. numOnlineMembers .. " online members.")
