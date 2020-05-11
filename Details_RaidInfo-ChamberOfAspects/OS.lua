@@ -158,7 +158,7 @@ local obsidianSanctum = {
 			spell_mechanics =	{
 				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
 				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
-				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[57581] = { 0x8 }, -- Void Blast (shadow fissure) 10
 				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
@@ -196,7 +196,7 @@ local obsidianSanctum = {
 			spell_mechanics =	{
 				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
 				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
-				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[57581] = { 0x8 }, -- Void Blast (shadow fissure) 10
 				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
@@ -235,7 +235,7 @@ local obsidianSanctum = {
 			spell_mechanics =	{
 				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
 				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
-				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[57581] = { 0x8 }, -- Void Blast (shadow fissure) 10
 				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
