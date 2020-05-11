@@ -74,8 +74,23 @@ local obsidianSanctum = {
 			portrait = [[Interface\AddOns\Details_RaidInfo-ChamberOfAspects\images\sartharion]],
 
 			combat_end = {1, 28860},
+			equalize = true,
 
 			spell_mechanics =	{
+				[56909] = { 0x8000, 0x1 }, -- Cleave
+				[56908] = { 0x8000, 0x1 }, -- Flame Breath 10
+				[58956] = { 0x8000, 0x1 }, -- Flame Breath 25
+				[56910] = { 0x8000 }, -- Tail Lash 10
+				[58957] = { 0x8000 }, -- Tail Lash 25
+				[57557] = { 0x8 }, -- Pyrobuffet
+				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
+				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
+				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
+				[57491] = { 0x40, 0x80 }, -- Flame Wall
+				[60430] = { 0x1 }, -- Molten Fury
+				[61632] = { 0x2 }, -- Berserk
+				[60708] = { 0x1000 }, -- Fade Armor
 					},
 
 			continuo = {
@@ -138,8 +153,13 @@ local obsidianSanctum = {
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
 			combat_end = {1, 30451},
+			equalize = true,
 
 			spell_mechanics =	{
+				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
+				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
+				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
 			continuo = {
@@ -171,8 +191,13 @@ local obsidianSanctum = {
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
 			combat_end = {1, 30452},
+			equalize = true,
 
 			spell_mechanics =	{
+				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
+				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
+				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
 			continuo = {
@@ -205,8 +230,13 @@ local obsidianSanctum = {
 			portrait = [[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]],
 
 			combat_end = {1, 30449},
+			equalize = true,
 
 			spell_mechanics =	{
+				[57570] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 10
+				[59126] = { 0x8000, 0x1 }, -- Shadow Breath (Drakes) 25
+				[57581] = { 0x8 }. -- Void Blast (shadow fissure) 10
+				[59128] = { 0x8 }, -- Void Blast (shadow fissure) 25
 					},
 
 			continuo = {
