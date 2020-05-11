@@ -1541,7 +1541,29 @@
 				func(nil, token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, in_out)
 			end
 		end
-		
+	------------------------------------------------------------------------------------------------
+	--> Check for pre-pull shields
+	if (in_out and absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
+		local absorb_source = { 
+			absorbed = 0,
+			serial = src_serial,
+			name = src_name,
+			flags = src_flags,
+			spellid = spellid,
+			spellname = spellname,
+			time_applied = time
+		}
+		if (not shields [dst_name]) then
+			shields [dst_name] = {}
+			shields [dst_name] [spellid] = {}
+			shields [dst_name] [spellid] [src_name] = absorb_source
+		elseif (not shields [dst_name] [spellid]) then 
+			shields [dst_name] [spellid] = {}
+			shields [dst_name] [spellid] [src_name] = absorb_source
+		else
+			shields [dst_name] [spellid] [src_name] = absorb_source
+		end
+	end
 	------------------------------------------------------------------------------------------------
 	--> add amount
 		
