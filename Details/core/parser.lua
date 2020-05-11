@@ -39,7 +39,7 @@
 	local _table_wipe = table.wipe --lua local
 
 	local _GetSpellInfo = _details.getspellinfo --details api
-	--local shields = _details.shields --details local
+	local shields = _details.shields --details local
 	local parser = _details.parser --details local
 	local absorb_spell_list = _details.AbsorbSpells --details local
 	local defensive_cooldown_spell_list = _details.DefensiveCooldownSpells --details local
@@ -104,7 +104,6 @@
 	local ENVIRONMENTAL_SLIME_NAME = Loc["STRING_ENVIRONMENTAL_SLIME"]
 	
 	-- DODANE
-	local shields = _details.shields
 	local shieldFlags = {}
 	local AbsorbSpellDuration = 
 	{
@@ -293,32 +292,28 @@
 -----------------------------------------------------------------------------------------------------------------------------------------
 	-- DODANE
 	local function consider_absorb(absorbed, dstName, srcName, timestamp, dstFlags)
-		local mintime = nil
-		local found_shield_src
-		local found_shield_id
-		--print("consider_absorb("..absorbed..", "..dstName..", "..timestamp.."):")
-		for shield_id, spells in pairs(shields[dstName]) do
-			for shield_src, ts in pairs(spells) do
-				--print("Shield: ", shield_id, shield_src, ts)
-				if ts - timestamp > 0 then 
-					if (mintime == nil or ts - timestamp < mintime) then
-					mintime = ts - timestamp
-					found_shield_src = shield_src
-					found_shield_id = shield_id
-					end
-				else
-					--shields[dstName][shield_id][shield_src] = nil
+		local longestShield = nil
+		local shield_source = nil
+		if (not shields[dstName]) then
+			return 
+		end
+		--print("[Details] Considering Shield for [" .. dstName .. "]") 
+
+		for spell_id, source in pairs(shields[dstName]) do
+			for source_name, source_table in pairs(source) do 
+				local shield_duration = timestamp - source_table.time_applied
+				--print("[Details] shield_duration [" .. source_table.name .. "] = [" .. shield_duration .. "]") 
+				if (longestShield == nil or shield_duration > longestShield) then
+					longestShield = shield_duration
+					shield_source = source_table
 				end
 			end
 		end
-		if found_shield_src then
-			--print("Shield owner: "..found_shield_src.." shieldId: "..found_shield_id)
-			local found_shield_srcFlags = shieldFlags and shieldFlags[dstName] and shieldFlags[dstName][found_shield_id] and shieldFlags[dstName][found_shield_id][found_shield_src]
-			local found_shield_name = GetSpellInfo(found_shield_id)
-			parser:heal("SPELL_HEAL", timestamp, UnitGUID(found_shield_src), found_shield_src, found_shield_srcFlags, UnitGUID(dstName), dstName, dstFlags, found_shield_id, found_shield_name, nil, absorbed, 0, 0, 0, nil)
-			--log_absorb(Skada.current, found_shield_src, dstName, absorbed)
-			--log_absorb(Skada.total, found_shield_src, dstName, absorbed)
-		
+
+		if (shield_source) then
+			shield_source.absorbed = shield_source.absorbed + absorbed -- track absorbed for maybe using later to determine overhealing?
+			--print("[Details] absorbing [" .. absorbed .. "]") 
+			parser:heal("SPELL_HEAL", timestamp, shield_source.serial, shield_source.name, shield_source.flags, UnitGUID(dstName), dstName, dstFlags, shield_source.spellid, shield_source.spellname, nil, absorbed, 0, 0, 0)
 		end
 	end
 
@@ -334,10 +329,6 @@
 	end
 
 	function parser:spell_dmg(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype, amount, overkill, school, resisted, blocked, absorbed, critical, glacing, crushing)
-		if absorbed and absorbed > 0 and dst_name and shields[dst_name] and src_name then
-			--Skada:Print(dstName.." absorbed "..absorbed.." from "..srcName)
-			consider_absorb(absorbed, dst_name, src_name, time, dst_flags)
-		end
 	------------------------------------------------------------------------------------------------
 	--> early checks and fixes
 	
@@ -451,7 +442,6 @@
 
 		if (this_player.group) then 
 			_current_gtotal[1] = _current_gtotal[1]+amount
-			
 		elseif (player_dst.group) then
 		
 			--> record death log
@@ -524,16 +514,17 @@
 				end
 			end
 		end
-		
+	
+		if (absorbed) then
+			consider_absorb(absorbed, dst_name, src_name, time, dst_flags)
+		end
 	------------------------------------------------------------------------------------------------
 	--> damage taken 
-
 		--> target
 		player_dst.damage_taken = player_dst.damage_taken + amount --> adiciona o damage tomado
 		if (not player_dst.damage_from[src_name]) then --> adiciona a pool de damage tomado de quem
 			player_dst.damage_from[src_name] = true
 		end
-		
 	------------------------------------------------------------------------------------------------
 	--> time start 
 
@@ -677,10 +668,6 @@
 	end
 
 	function parser:missed(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype, missType, amountMissed)
-		if missType == "ABSORB" and amountMissed > 0 and dst_name and shields[dst_name] and src_name then
-		--Skada:Print(dstName.." absorbed "..absorbed.." from "..srcName.."(MISS)")
-		consider_absorb(amountMissed, dst_name, src_name, time, dst_flags)
-		end
 	------------------------------------------------------------------------------------------------
 	--> early checks and fixes
 
@@ -740,7 +727,9 @@
 		
 	------------------------------------------------------------------------------------------------
 	--> amount add
-		
+	if (missType == "ABSORB" and amountMissed > 0) then
+		consider_absorb(amountMissed, dst_name, src_name, time, dst_flags)
+	end
 		--> actor spells table
 		local spell = this_player.spell_tables._ActorTable[spellid]
 		if (not spell) then
@@ -775,7 +764,6 @@
 -----------------------------------------------------------------------------------------------------------------------------------------
 	--> HEALING 	serach key: ~heal											|
 -----------------------------------------------------------------------------------------------------------------------------------------
-
 	function parser:heal(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype, amount, overhealing, absorbed, critical, is_shield)
 
 	------------------------------------------------------------------------------------------------
@@ -993,19 +981,7 @@
 	--> BUFFS & DEBUFFS 	serach key: ~buff ~aura ~shields								|
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-	function parser:buff(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type, amount)
-		if AbsorbSpellDuration[spellid] then
-			--print("parser:buff("..time..", "..src_name..", "..dst_name..", "..spellname)
-			shields[dst_name] = shields[dst_name] or {}
-			shieldFlags[dst_name] = shieldFlags[dst_name] or {}
-			shields[dst_name][spellid] = shields[dst_name][spellid] or {}
-			shieldFlags[dst_name][spellid] = shieldFlags[dst_name][spellid] or {}
-			--print("ts = "..time + AbsorbSpellDuration[spellid])
-			shields[dst_name][spellid][src_name] = time + AbsorbSpellDuration[spellid]
-			--print("shields["..dst_name.."]["..spellid.."]["..src_name.."] = "..shields[dst_name][spellid][src_name])
-			shieldFlags[dst_name][spellid][src_name] = src_flags
-		end
-		
+	function parser:buff(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type)
 	--> not yet well know about unnamed buff casters
 		if (not dst_name) then
 			dst_name = "[*] Unknown shields target"
@@ -1028,16 +1004,25 @@
 				end
 			-----------------------------------------------------------------------------------------------
 			--> healing done absorbs
-			if (absorb_spell_list [spellid] and _recording_healing and amount) then
+			if (absorb_spell_list [spellid] and _recording_healing) then
+				local absorb_source = { 
+					absorbed = 0,
+					serial = src_serial,
+					name = src_name,
+					flags = src_flags,
+					spellid = spellid,
+					spellname = spellname,
+					time_applied = time
+				}
 				if (not shields [dst_name]) then 
 					shields [dst_name] = {}
 					shields [dst_name] [spellid] = {}
-					shields [dst_name] [spellid] [src_name] = amount
+					shields [dst_name] [spellid] [src_name] = absorb_source
 				elseif (not shields [dst_name] [spellid]) then 
 					shields [dst_name] [spellid] = {}
-					shields [dst_name] [spellid] [src_name] = amount
+					shields [dst_name] [spellid] [src_name] = absorb_source
 				else
-					shields [dst_name] [spellid] [src_name] = amount
+					shields [dst_name] [spellid] [src_name] = absorb_source
 				end
 			end
 			------------------------------------------------------------------------------------------------
@@ -1148,16 +1133,7 @@
 		end
 	end
 
-	function parser:buff_refresh(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type, amount)
-		if AbsorbSpellDuration[spellid] then	
-			shields[dst_name] = shields[dst_name] or {}
-			shieldFlags[dst_name] = shields[dst_name] or {}
-			shields[dst_name][spellid] = shields[dst_name][spellid] or {}
-			shieldFlags[dst_name][spellid] = shieldFlags[dst_name][spellid] or {}
-			shields[dst_name][spellid][src_name] = time + AbsorbSpellDuration[spellid]
-			--print("shields["..dst_name.."]["..spellid.."]["..src_name.."] = "..shields[dst_name][spellid][src_name])
-			shieldFlags[dst_name][spellid][src_name] = src_flags
-		end
+	function parser:buff_refresh(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type)
 	------------------------------------------------------------------------------------------------
 	--> handle shields
 
@@ -1173,33 +1149,25 @@
 				end
 		
 			------------------------------------------------------------------------------------------------
-			--> healing done(shields) -- copied from bfa details, hope it works
-			if (absorb_spell_list [spellid] and _recording_healing and amount) then
-					
-				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
-
-					if (ignored_overheal [spellid]) then
-						shields [dst_name][spellid][src_name] = amount -- refresh j� vem o valor atualizado
-						return
-					end
-					
-					--shields antigo � dropado, novo � posto
-					local overheal = shields [dst_name][spellid][src_name]
-					shields [dst_name][spellid][src_name] = amount
-					
-					if (overheal > 0) then
-						return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, dst_flags2, spellid, spellname, nil, 0, _math_ceil (overheal), 0, 0, nil, true)
-					end
-				
-					--local absorb = shields [dst_name][spellid][src_name] - amount
-					--local overheal = amount - absorb
-					--shields [dst_name][spellid][src_name] = amount
-					
-					--if (absorb > 0) then
-						--return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, nil, _math_ceil (absorb), _math_ceil (overheal), 0, 0, nil, true)
-					--end
+			if (absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
+				local absorb_source = { 
+					absorbed = 0,
+					serial = src_serial,
+					name = src_name,
+					flags = src_flags,
+					spellid = spellid,
+					spellname = spellname,
+					time_applied = time
+				}
+				if (not shields [dst_name]) then -- this is probably from an out of combat re-application
+					shields [dst_name] = {}
+					shields [dst_name] [spellid] = {}
+					shields [dst_name] [spellid] [src_name] = absorb_source
+				elseif (not shields [dst_name] [spellid]) then 
+					shields [dst_name] [spellid] = {}
+					shields [dst_name] [spellid] [src_name] = absorb_source
 				else
-					-- shields n�o encontrado :(
+					shields [dst_name] [spellid] [src_name] = absorb_source
 				end
 			end
 			------------------------------------------------------------------------------------------------
@@ -1295,13 +1263,7 @@
 		end
 	end
 
-	function parser:unbuff(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type, amount)
-		if AbsorbSpellDuration[spellid] then
-			if shields[dst_name] and shields[dst_name][spellid] and shields[dst_name][spellid][dst_name] then
-				-- As advised in RecountGuessedAbsorbs, do not remove shields straight away as an absorb can come after the aura removed event.
-				shields[dst_name][spellid][src_name] = time + 0.1
-			end
-		end
+	function parser:unbuff(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spellschool, type)
 	------------------------------------------------------------------------------------------------
 	--> handle shields
 
@@ -1320,21 +1282,8 @@
 			--> healing done (shields)
 			if (absorb_spell_list [spellid] and _recording_healing) then
 				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
-					if (amount) then
-						-- o amount � o que sobrou do shields
-						
-						local overheal = shields [dst_name][spellid][src_name]
-						shields [dst_name][spellid][src_name] = 0
-
-						--> can't use monk guard since its overheal is computed inside the unbuff
-						if (overheal and overheal > 0 and spellid ~= SPELLID_MONK_GUARD) then
-							--> removing the nil at the end before true for is_shield, I have no documentation change about it, not sure the reason why it was addded
-							return parser:heal (token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, dst_flags2, spellid, spellname, nil, 0, _math_ceil (overheal), 0, 0, true) --0, 0, nil, true
-						else
-							return
-						end
-					end
-					shields [dst_name][spellid][src_name] = 0
+					-- we cant track overhealing on shields in wotlk 
+					shields [dst_name][spellid][src_name] = nil
 				end
 			end
 			------------------------------------------------------------------------------------------------
