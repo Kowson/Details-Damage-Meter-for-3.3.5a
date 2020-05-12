@@ -1,4 +1,4 @@
-local Loc = LibStub("AceLocale-3.0"):NewLocale("Details_RaidInfo-ToC", "enUS", true) 
+local Loc = LibStub("AceLocale-3.0"):NewLocale("Details_RaidInfo-Naxx", "enUS", true) 
 
 if (not Loc) then
 	return 
