@@ -316,16 +316,6 @@
 			_table_wipe(_details.cache_healing_group)
 			_details:UpdateParserGears()
 			
-			if (not _details:CaptureGet("damage")) then _details:CaptureSet(true, "damage", true) end
-			if (not _details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", true) end
-			if (not _details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", true) end
-			if (not _details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", true) end
-			if (not _details:CaptureGet("spellcast")) then _details:CaptureSet(true, "spellcast", true) end
-				
-			if (_details.debug) then
-				_details:Msg("(debug) ensured parser was unfrozen")
-			end
-			
 			_details.host_of = nil
 			_details.host_by = nil
 			
@@ -535,20 +525,6 @@
 						end
 					end
 					
-					if (_details.table_current.instance_type == "raid") then
-						--> schedule captures off
-						
-						_details:CaptureSet(false, "damage", false, 15)
-						_details:CaptureSet(false, "heal", false, 15)
-						_details:CaptureSet(false, "aura", false, 15)
-						_details:CaptureSet(false, "energy", false, 15)
-						_details:CaptureSet(false, "spellcast", false, 15)
-						
-						if (_details.debug) then
-							_details:Msg("(debug) freezing parser for 15 seconds.")
-						end
-					end
-					
 					--> schedule sync
 					_details:EqualizeActorsSchedule(_details.host_of)
 					if (_details:GetEncounterEqualize(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
@@ -634,7 +610,7 @@
 			
 			_details.pre_pot_used = nil
 			_table_wipe(_details.encounter_table)
-			
+
 			_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, _details.table_current)
 		end
 
