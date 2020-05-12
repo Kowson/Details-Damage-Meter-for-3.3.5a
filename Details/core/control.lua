@@ -316,7 +316,7 @@
 			_table_wipe(_details.cache_healing_group)
 			_details:UpdateParserGears()
 			
-			if (not _details:CaptureGet("damaage")) then _details:CaptureSet(true, "damage", true) end
+			if (not _details:CaptureGet("damage")) then _details:CaptureSet(true, "damage", true) end
 			if (not _details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", true) end
 			if (not _details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", true) end
 			if (not _details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", true) end
