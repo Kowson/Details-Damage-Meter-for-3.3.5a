@@ -316,11 +316,15 @@
 			_table_wipe(_details.cache_healing_group)
 			_details:UpdateParserGears()
 			
-			if (not _details:CaptureGet("damage")) then _details:CaptureSet(true, "damage", true) end
-			if (not _details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", true) end
-			if (not _details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", true) end
-			if (not _details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", true) end
-			if (not _details:CaptureGet("spellcast")) then _details:CaptureSet(true, "spellcast", true) end
+			-- CaptureGet checks if capturing a type is enabled overall, regardless of any temporary disables
+			-- IsCapturing checks if details is CURRENTLY capturing the type or not
+			-- this ensures capture will be enabled when combat starts, and respects the user's settings
+			_details:CancelAllCaptureSchedules() -- cancel scheduled enables since it will either never fire or lag the user for no reason, not sure which
+			if (not _details:IsCapturing("damage") and _details:CaptureGet("damage")) then _details:CaptureSet(true, "damage", false) end
+			if (not _details:IsCapturing("heal") and _details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", false) end
+			if (not _details:IsCapturing("aura") and _details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", false) end
+			if (not _details:IsCapturing("energy") and _details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", false) end
+			if (not _details:IsCapturing("spellcast") and _details:CaptureGet("spellcast")) then _details:CaptureSet(true, "spellcast", false) end
 				
 			if (_details.debug) then
 				_details:Msg("(debug) ensured parser was unfrozen")
@@ -537,7 +541,7 @@
 					
 					if (_details.table_current.instance_type == "raid") then
 						--> schedule captures off
-						
+						_details:CancelAllCaptureSchedules() -- cancel any scheduled capture sets 
 						_details:CaptureSet(false, "damage", false, 15)
 						_details:CaptureSet(false, "heal", false, 15)
 						_details:CaptureSet(false, "aura", false, 15)

@@ -2676,6 +2676,7 @@
 	--serach key: ~capture
 
 	_details.capture_types = {"damage", "heal", "energy", "miscdata", "aura", "spellcast"}
+	_details.capture_schedules = {}
 
 	function _details:CaptureIsAllEnabled()
 		for _, _thisType in _ipairs(_details.capture_types) do 
@@ -2692,6 +2693,10 @@
 		end
 		return false
 	end
+
+	function _details:IsCapturing(capture)
+		return _details.capture_current[capture]
+	end
 	
 	function _details:CaptureRefresh()
 		for _, _thisType in _ipairs(_details.capture_types) do 
@@ -2707,26 +2712,49 @@
 		return _details.capture_real[capture_type]
 	end
 
-	function _details:CaptureSet(on_off, capture_type, real, time)
+	function _details:CaptureSet (on_off, capture_type, real, time)
 
+		if (on_off == nil) then
+			on_off = _details.capture_real [capture_type]
+		end
+	
 		if (real) then
 			--> hard switch
-			_details.capture_real[capture_type] = on_off
-			_details.capture_current[capture_type] = on_off
+			_details.capture_real [capture_type] = on_off
+			_details.capture_current [capture_type] = on_off
 		else
 			--> soft switch
-			_details.capture_current[capture_type] = on_off
+			_details.capture_current [capture_type] = on_off
 			if (time) then
-				_details:ScheduleTimer("CaptureTimeout", time, capture_type)
+				local schedule_id = math.random (1, 10000000)
+				local new_schedule = _details:ScheduleTimer ("CaptureTimeout", time, {capture_type, schedule_id})
+				tinsert (_details.capture_schedules, {new_schedule, schedule_id})
 			end
 		end
 		
 		_details:CaptureRefresh()
 	end
 
-	function _details:CaptureTimeout(capture_type)
-		_details.capture_current[capture_type] = _details.capture_real[capture_type]
+	function _details:CancelAllCaptureSchedules()
+		for i = 1, #_details.capture_schedules do
+			local schedule_table, schedule_id = unpack (_details.capture_schedules[i])
+			_details:CancelTimer (schedule_table)
+		end
+		_table_wipe (_details.capture_schedules)
+	end
+
+	function _details:CaptureTimeout (table)
+		local capture_type, schedule_id = unpack (table)
+		_details.capture_current [capture_type] = _details.capture_real [capture_type]
 		_details:CaptureRefresh()
+		
+		for index, table in ipairs (_details.capture_schedules) do
+			local id = table [2]
+			if (schedule_id == id) then
+				tremove (_details.capture_schedules, index)
+				break
+			end
+		end
 	end
 
 	function _details:CaptureDisable(capture_type)
