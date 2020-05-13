@@ -3072,6 +3072,16 @@
 			_details:ScheduleTimer("ReadBossFrames", 30)
 		end
 		
+		if (_details:CaptureGet("damage")) then _details:CaptureSet(true, "damage", true) end	
+		if (_details:CaptureGet("heal")) then _details:CaptureSet(true, "heal", true) end	
+		if (_details:CaptureGet("aura")) then _details:CaptureSet(true, "aura", true) end	
+		if (_details:CaptureGet("energy")) then _details:CaptureSet(true, "energy", true) end	
+		if (_details:CaptureGet("spellcast")) then _details:CaptureSet(true, "spellcast", true) end	
+
+		if (_details.debug) then	
+			_details:Msg("(debug) ensured parser was unfrozen")	
+		end
+
 		if (not _details:CaptureGet("damage")) then
 			_details:EnterCombat()
 		end
