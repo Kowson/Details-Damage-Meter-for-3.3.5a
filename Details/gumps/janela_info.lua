@@ -47,7 +47,7 @@ function _details:OpenWindowInfo(player, from_att_change)
 
 	--> _details.info_player armazena o player que this sendo mostrado na window de details
 	if (info.player and info.player == player and self and info.attribute and self.attribute == info.attribute and self.sub_attribute == info.sub_attribute) then
-		_details:CloseWindowInfo() --> se clicou na mesma bar então close a window de details
+		_details:CloseWindowInfo() --> se clicou na mesma bar entï¿½o close a window de details
 		return
 	elseif (not player) then
 		_details:CloseWindowInfo()
@@ -67,13 +67,13 @@ function _details:OpenWindowInfo(player, from_att_change)
 		end
 	end
 	
-	--> vamos passar os parâmetros para dentro da table da window...
+	--> vamos passar os parï¿½metros para dentro da table da window...
 
 	info.active = true --> sinaliza o addon que a window this aberta
 	info.attribute = self.attribute --> instance.attribute -> grava o attribute(damage, heal, etc)
 	info.sub_attribute = self.sub_attribute --> instance.sub_attribute -> grava o sub attribute(damage done, dps, damage taken, etc)
 	info.player = player --> de which player(objeto class_damage)
-	info.instance = self --> salva a referência da instância que pediu o info
+	info.instance = self --> salva a referï¿½ncia da instï¿½ncia que pediu o info
 	
 	info.target_text = Loc["STRING_TARGETS"] .. ":"
 	info.target_member = "total"
@@ -303,9 +303,9 @@ function gump:SwitchBackgroundInfo()
 	end
 end
 
---> self é whichquer coisa que chamar this função
+--> self ï¿½ whichquer coisa que chamar this funï¿½ï¿½o
 ------------------------------------------------------------------------------------------------------------------------------
--- é chamado pelo click no X e pelo reset do history
+-- ï¿½ chamado pelo click no X e pelo reset do history
 function _details:CloseWindowInfo(fromEscape)
 	if (info.active) then --> se a window tiver aberta
 		--window_info:Hide()
@@ -362,7 +362,7 @@ function gump:HidaAllDetailInfo()
 end
 
 
---> seta os scripts da window de informações
+--> seta os scripts da window de informaï¿½ï¿½es
 local mouse_down_func = function(self, button)
 	if (button == "LeftButton") then
 		info:StartMoving()
@@ -395,7 +395,7 @@ local function seta_scripts(this_gump)
 	this_gump.container_targets.gump:SetScript("OnMouseDown", mouse_down_func)
 	this_gump.container_targets.gump:SetScript("OnMouseUp", mouse_up_func)
 
-	--> botão close
+	--> botï¿½o close
 	this_gump.close:SetScript("OnClick", function(self) 
 		_details:CloseWindowInfo()
 	end)
@@ -415,7 +415,7 @@ function gump:HidaDetailInfo(index)
 	info.bg:Hide()
 end
 
---> cria a bar de details a right da window de informações
+--> cria a bar de details a right da window de informaï¿½ï¿½es
 ------------------------------------------------------------------------------------------------------------------------------
 
 local detail_infobg_onenter = function(self)
@@ -481,7 +481,7 @@ function gump:CreateDetailInfo(index)
 	_details.window_info.groups_details[index] = info
 end
 
---> determina which a pocisão que a bar de details vai ocupar
+--> determina which a pocisï¿½o que a bar de details vai ocupar
 ------------------------------------------------------------------------------------------------------------------------------
 function gump:SetaDetailInfoAltura(index)
 	local info = _details.window_info.groups_details[index]
@@ -504,7 +504,7 @@ function gump:SetaDetailInfoAltura(index)
 	info.damage_dps:SetPoint("TOPLEFT", window, "TOPLEFT", x2, altura +(-30))
 end
 
---> seta o conteúdo da bar de details
+--> seta o conteï¿½do da bar de details
 ------------------------------------------------------------------------------------------------------------------------------
 function gump:SetaDetailInfoText(index, p, arg1, arg2, arg3, arg4, arg5, arg6)
 	local info = _details.window_info.groups_details[index]
@@ -563,7 +563,7 @@ function gump:SetaDetailInfoText(index, p, arg1, arg2, arg3, arg4, arg5, arg6)
 	
 end
 
---> cria as 5 caixas de details infos que serão used
+--> cria as 5 caixas de details infos que serï¿½o used
 ------------------------------------------------------------------------------------------------------------------------------
 local function cria_bars_details()
 	_details.window_info.groups_details = {}
@@ -761,7 +761,7 @@ function gump:CreateWindowInfo()
 	--> joga a window para a global
 	_details.window_info = this_gump
 	
-	--> começa a preparer as textures <--
+	--> comeï¿½a a preparer as textures <--
 	
 	--> icon da class no canto left superior
 	this_gump.class_icon = this_gump:CreateTexture(nil, "BACKGROUND")
@@ -824,7 +824,7 @@ function gump:CreateWindowInfo()
 	this_gump.bg4:SetTexture("Interface\\AddOns\\Details\\images\\info_bg_part4") 
 	this_gump.bg4:Hide()
 
-	--> botão de close
+	--> botï¿½o de close
 	this_gump.close = _CreateFrame("Button", nil, this_gump, "UIPanelCloseButton")
 	this_gump.close:SetWidth(32)
 	this_gump.close:SetHeight(32)
@@ -891,20 +891,20 @@ function gump:CreateWindowInfo()
 	this_gump.bars3 = {} 
 
 
-	--> botão de report da caixa da left, onde fica as bars principais
+	--> botï¿½o de report da caixa da left, onde fica as bars principais
 	this_gump.report_left = gump:NewDetailsButton(this_gump, this_gump, nil, _details.Report, this_gump, 1, 16, 16,
 	"Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", nil, "DetailsWindowInfoReport2")
 	--this_gump.report_left:SetPoint("BOTTOMLEFT", this_gump.container_bars, "TOPLEFT",  281, 3)
 	this_gump.report_left:SetPoint("BOTTOMLEFT", this_gump.container_bars, "TOPLEFT",  33, 3)
 	this_gump.report_left:SetFrameLevel(this_gump:GetFrameLevel()+2)
 
-	--> botão de report da caixa dos targets
+	--> botï¿½o de report da caixa dos targets
 	this_gump.report_targets = gump:NewDetailsButton(this_gump, this_gump, nil, _details.Report, this_gump, 3, 16, 16,
 	"Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", nil, "DetailsWindowInfoReport3")
 	this_gump.report_targets:SetPoint("BOTTOMRIGHT", this_gump.container_targets, "TOPRIGHT",  -2, -1)
 	this_gump.report_targets:SetFrameLevel(3) --> solved inactive problem
 
-	--> ícone da spell selecionada para mais details
+	--> ï¿½cone da spell selecionada para mais details
 	this_gump.bg_icon_bg = this_gump:CreateTexture(nil, "ARTWORK")
 	this_gump.bg_icon_bg:SetPoint("TOPRIGHT", this_gump, "TOPRIGHT",  -15, -12)
 	this_gump.bg_icon_bg:SetTexture("Interface\\AddOns\\Details\\images\\icon_bg_fundo")
@@ -943,7 +943,7 @@ function gump:CreateWindowInfo()
 	this_gump.apoio_icon_direito:SetWidth(64)
 	this_gump.apoio_icon_direito:SetHeight(13)
 
-	--> botão de report da caixa da right, onde estão os 5 quadrados
+	--> botï¿½o de report da caixa da right, onde estï¿½o os 5 quadrados
 	this_gump.report_right = gump:NewDetailsButton(this_gump, this_gump, nil, _details.Report, this_gump, 2, 16, 16,
 	"Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", "Interface\\COMMON\\VOICECHAT-ON", nil, "DetailsWindowInfoReport4")
 	this_gump.report_right:SetPoint("TOPRIGHT", this_gump, "TOPRIGHT",  -8, -57)	
@@ -3058,19 +3058,35 @@ function _details.window_info:prepare_report(button)
 	
 	local report_lines
 	
-	if (button == 1) then --> botão da left
-		report_lines = {"Details! " .. Loc["STRING_ACTORFRAME_SPELLSOF"] .. " " .. player.name .. "(" .. _details.sub_attributes[attribute].list[sub_attribute] .. ")"}
-		for index, bar in _ipairs(info.bars1) do 
+	if (button == 1) then --> botï¿½o da esquerda
+		
+
+		if (attribute == 1 and sub_attribute == 4) then --> friendly fire
+			report_lines = {"Details!: " .. player.name .. " " .. Loc ["STRING_ATTRIBUTE_DAMAGE_FRIENDLYFIRE"] .. ":"}
+			
+		elseif (attribute == 1 and sub_attribute == 3) then --> damage taken
+			report_lines = {"Details!: " .. player.name .. " " .. Loc ["STRING_ATTRIBUTE_DAMAGE_TAKEN"] .. ":"}
+			
+		else
+		--	report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_SPELLSOF"] .. " " .. player.name .. " (" .. _details.sub_attributes [attribute].list [sub_attribute] .. ")"}
+			report_lines = {"Details!: " .. player.name .. " - " .. _details.sub_attributes [attribute].list [sub_attribute] .. ""}
+			
+		end
+		
+		for index, bar in _ipairs (info.bars1) do 
 			if (bar:IsShown()) then
 				local spellid = bar.show
-				if (spellid > 10) then
-					local link = GetSpellLink(spellid)
-					report_lines[#report_lines+1] = index .. ". " .. link .. ": " .. bar.text_right:GetText()
+				if (attribute == 1 and sub_attribute == 4) then --> friendly fire
+					report_lines [#report_lines+1] = bar.text_left:GetText() .. ": " .. bar.text_right:GetText()
+					
+				elseif (type (spellid) == "number" and spellid > 10) then
+					local link = GetSpellLink (spellid)
+					report_lines [#report_lines+1] = index .. ". " .. link .. ": " .. bar.text_right:GetText()
 				else
-					local spellname = bar.text_left:GetText():gsub((".*%."), "")
-					spellname = spellname:gsub("|c%x%x%x%x%x%x%x%x", "")
-					spellname = spellname:gsub("|r", "")
-					report_lines[#report_lines+1] = index .. ". " .. spellname .. ": " .. bar.text_right:GetText()
+					local spellname = bar.text_left:GetText():gsub ((".*%."), "")
+					spellname = spellname:gsub ("|c%x%x%x%x%x%x%x%x", "")
+					spellname = spellname:gsub ("|r", "")
+					report_lines [#report_lines+1] = index .. ". " .. spellname .. ": " .. bar.text_right:GetText()
 				end
 			end
 			if (index == amt) then
@@ -3078,36 +3094,36 @@ function _details.window_info:prepare_report(button)
 			end
 		end
 		
-	elseif (button == 3) then --> botão dos targets
+	elseif (button == 3) then --> botï¿½o dos alvos
 	
 		if (attribute == 1 and sub_attribute == 3) then
-			print(Loc["STRING_ACTORFRAME_NOTHING"])
+			print (Loc ["STRING_ACTORFRAME_NOTHING"])
 			return
 		end
 	
-		report_lines = {"Details! " .. Loc["STRING_ACTORFRAME_REPORTTARGETS"] .. " " .. _details.sub_attributes[1].list[1] .. " " .. Loc["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name}
+		report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_REPORTTARGETS"] .. " " .. _details.sub_attributes [1].list [1] .. " " .. Loc ["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name}
 
-		for index, bar in _ipairs(info.bars2) do
+		for index, bar in _ipairs (info.bar2) do
 			if (bar:IsShown()) then
-				report_lines[#report_lines+1] = bar.text_left:GetText().." -> ".. bar.text_right:GetText()
+				report_lines [#report_lines+1] = bar.text_left:GetText().." -> ".. bar.text_right:GetText()
 			end
 			if (index == amt) then
 				break
 			end
 		end
 		
-	elseif (button == 2) then --> botão da right
+	elseif (button == 2) then --> botï¿½o da direita
 	
-			--> diferentes types de amostragem na caixa da right
+			--> diferentes tipos de amostragem na caixa da direita
 		     --damage                       --damage done                 --dps                                 --heal
-		if ((attribute == 1 and(sub_attribute == 1 or sub_attribute == 2)) or(attribute == 2)) then
+		if ((attribute == 1 and (sub_attribute == 1 or sub_attribute == 2)) or (attribute == 2)) then
 			if (not player.details) then
-				print(Loc["STRING_ACTORFRAME_NOTHING"])
+				print (Loc ["STRING_ACTORFRAME_NOTHING"])
 				return
 			end
-			local name = _GetSpellInfo(player.details)
-			report_lines = {"Details! " .. Loc["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes[attribute].list[sub_attribute] .. " " .. Loc["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name, 
-			Loc["STRING_ACTORFRAME_SPELLDETAILS"] .. ": " .. name}
+			local name = _GetSpellInfo (player.details)
+			report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes [attribute].list [sub_attribute] .. " " .. Loc ["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name, 
+			Loc ["STRING_ACTORFRAME_SPELLDETAILS"] .. ": " .. name}
 			
 			for i = 1, 5 do
 			
@@ -3146,7 +3162,7 @@ function _details.window_info:prepare_report(button)
 						linha = linha..damage_percent.." "
 					end
 					
-					report_lines[#report_lines+1] = linha
+					report_lines [#report_lines+1] = linha
 					
 				end
 				
@@ -3156,20 +3172,20 @@ function _details.window_info:prepare_report(button)
 				
 			end
 			
-			--damage                       --damage tanken(mostra as spells que o dst usou)
-		elseif ((attribute == 1 and sub_attribute == 3) or attribute == 3) then
-		
-			report_lines = {"Details! " .. Loc["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes[1].list[1] .. " " .. Loc["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.details.. " " .. Loc["STRING_ACTORFRAME_REPORTAT"] .. " " .. player.name}
-
-			for index, bar in _ipairs(info.bars3) do 
-			
-				if (bar:IsShown()) then
-					report_lines[#report_lines+1] = bar.text_left:GetText().." -> ".. bar.text_right:GetText()
+			--damage                       --damage tanken (mostra as magias que o alvo usou)
+		elseif ( (attribute == 1 and sub_attribute == 3) or attribute == 3) then
+			if (player.details) then
+				report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes [1].list [1] .. " " .. Loc ["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.details.. " " .. Loc ["STRING_ACTORFRAME_REPORTAT"] .. " " .. player.name}
+				for index, bar in _ipairs (info.bar3) do 
+					if (bar:IsShown()) then
+						report_lines [#report_lines+1] = bar.text_left:GetText().." ....... ".. bar.text_right:GetText()
+					end
+					if (index == amt) then
+						break
+					end
 				end
-				if (index == amt) then
-					break
-				end
-				
+			else
+				report_lines = {}
 			end
 		end
 		
@@ -3178,17 +3194,21 @@ function _details.window_info:prepare_report(button)
 		button =  button - 10
 		
 		local name
-		if (_type(spellid) == "string") then
+		if (_type (spellid) == "string") then
 			--> is a pet
 		else
-			name = _GetSpellInfo(player.details)
+			name = _GetSpellInfo (player.details)
+			local spelllink = GetSpellLink (player.details)
+			if (spelllink) then
+				name = spelllink
+			end
 		end
 		
 		if (not name) then
 			name = ""
 		end
-		report_lines = {"Details! " .. Loc["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes[attribute].list[sub_attribute].. " " .. Loc["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name, 
-		Loc["STRING_ACTORFRAME_SPELLDETAILS"] .. ": " .. name} 
+		report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_REPORTTO"] .. " " .. _details.sub_attributes [attribute].list [sub_attribute].. " " .. Loc ["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name, 
+		Loc ["STRING_ACTORFRAME_SPELLDETAILS"] .. ": " .. name} 
 		
 		local caixa = info.groups_details[button]
 		
@@ -3222,17 +3242,20 @@ function _details.window_info:prepare_report(button)
 			linha = linha..damage_percent.." "
 		end
 
+		--> remove a cor da school
+		linha = linha:gsub ("|c%x?%x?%x?%x?%x?%x?%x?%x?", "")
+		linha = linha:gsub ("|r", "")
 		
-		report_lines[#report_lines+1] = linha
+		report_lines [#report_lines+1] = linha
 		
 	end
 	
-	--local report_lines = {"Details! Relatorio para ".._details.sub_attributes[self.attribute].list[self.sub_attribute]}
+	--local report_lines = {"Details! Relatorio para ".._details.sub_attributes [self.attribute].list [self.sub_attribute]}
 
 	
-	--> pega o conteúdo da window da right
+	--> pega o conteï¿½do da janela da direita
 	
-	return instance:send_report(report_lines)
+	return instance:send_report (report_lines)
 end
 
 local row_on_enter = function(self)
@@ -3243,8 +3266,8 @@ local row_on_enter = function(self)
 	self.mouse_over = true
 
 	--> aumenta o tamanho da bar
-	self:SetHeight(17) --> altura determinada pela instância
-	--> poe a bar com alfa 1 ao invés de 0.9
+	self:SetHeight(17) --> altura determinada pela instï¿½ncia
+	--> poe a bar com alfa 1 ao invï¿½s de 0.9
 	self:SetAlpha(1)
 
 	--> troca a cor da bar enquanto o mouse estiver em cima dela
@@ -3256,7 +3279,7 @@ local row_on_enter = function(self)
 	self:SetBackdropColor(0.0941, 0.0941, 0.0941)
 	
 	if (self.isTarget) then --> prepare o tooltip do dst
-		--> talvez devesse escurecer a window no fundo... pois o tooltip é transparente e pode confundir
+		--> talvez devesse escurecer a window no fundo... pois o tooltip ï¿½ transparente e pode confundir
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
 		
 		-- ~erro
@@ -3288,9 +3311,9 @@ local row_on_enter = function(self)
 		self.icon:SetAlpha(1)
 		
 		--> mostrar timerariamente o content da bar nas caixas de details
-		if (not info.displaying) then --> não this showing nada na right
-			info.displaying = self --> agora o showing é igual a this bar
-			info.showing_mouse_over = true --> o content da direta this sendo mostrado pq o mouse this passando por cima do bagulho e não pq foi clicado
+		if (not info.displaying) then --> nï¿½o this showing nada na right
+			info.displaying = self --> agora o showing ï¿½ igual a this bar
+			info.showing_mouse_over = true --> o content da direta this sendo mostrado pq o mouse this passando por cima do bagulho e nï¿½o pq foi clicado
 			info.showing = self._index --> diz  o index da bar que this sendo mostrado na right
 
 			info.player.details = self.show --> my table = player = player.detales = spellid ou name que this sendo mostrado na right
@@ -3327,7 +3350,7 @@ local row_on_leave = function(self)
 		--> volta com a alfa antiga da bar
 		self.icon:SetAlpha(0.8)
 		
-		--> remover o conteúdo que thisva sendo mostrado na right
+		--> remover o conteï¿½do que thisva sendo mostrado na right
 		if (info.showing_mouse_over) then
 			info.displaying = nil
 			info.showing_mouse_over = false
@@ -3371,13 +3394,13 @@ local row_on_mouseup = function(self)
 	if ((self.mouse_down+0.4 > _GetTime() and(x == self.x and y == self.y)) or(x == self.x and y == self.y)) then
 		--> setar os texts
 		
-		if (self.isMain) then --> se não for uma bar de dst
+		if (self.isMain) then --> se nï¿½o for uma bar de dst
 		
 			local bar_antiga = info.displaying			
 			if (bar_antiga and not info.showing_mouse_over) then
 			
 				bar_antiga.texture:SetStatusBarColor(1, 1, 1, 1) --> volta a texture normal
-				bar_antiga.on_focus = false --> não this mais no focus
+				bar_antiga.on_focus = false --> nï¿½o this mais no focus
 
 				--> CLICOU NA MESMA BARRA
 				if (bar_antiga == self) then --> 
@@ -3401,7 +3424,7 @@ local row_on_mouseup = function(self)
 				end
 			end
 			
-			--> NÃO TINHA BARRAS PRECIONADAS
+			--> Nï¿½O TINHA BARRAS PRECIONADAS
 			-- info.showing = self
 			info.showing_mouse_over = false
 			self:SetAlpha(1)
@@ -3570,10 +3593,10 @@ function gump:CreateNewBarInfo1(instance, index)
 
 	local this_bar = _CreateFrame("Button", "Details_infobox1_bar_"..index, info.container_bars.gump)
 	this_bar:SetWidth(300) --> tamanho da bar de acordo com o tamanho da window
-	this_bar:SetHeight(16) --> altura determinada pela instância
+	this_bar:SetHeight(16) --> altura determinada pela instï¿½ncia
 	this_bar.index = index
 
-	local y =(index-1)*17 --> 17 é a altura da bar
+	local y =(index-1)*17 --> 17 ï¿½ a altura da bar
 	y = y*-1 --> baixo
 	
 	this_bar:SetPoint("LEFT", window, "LEFT")
@@ -3620,8 +3643,8 @@ function gump:CreateNewBarInfo1(instance, index)
 	
 	info.bars1[index] = this_bar --> bar adicionada
 	
-	this_bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
-	this_bar.on_focus = false --> isso aqui é a parte da seleção e desceleção
+	this_bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
+	this_bar.on_focus = false --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 	
 	return this_bar
 end
@@ -3637,9 +3660,9 @@ function gump:CreateNewBarInfo2(instance, index)
 
 	local this_bar = _CreateFrame("Button", "Details_infobox2_bar_"..index, info.container_targets.gump)
 	this_bar:SetWidth(300) --> tamanho da bar de acordo com o tamanho da window
-	this_bar:SetHeight(16) --> altura determinada pela instância
+	this_bar:SetHeight(16) --> altura determinada pela instï¿½ncia
 
-	local y =(index-1)*17 --> 17 é a altura da bar
+	local y =(index-1)*17 --> 17 ï¿½ a altura da bar
 	y = y*-1 --> baixo
 	
 	this_bar:SetPoint("LEFT", window, "LEFT")
@@ -3684,9 +3707,9 @@ function gump:CreateNewBarInfo3(instance, index)
 
 	local this_bar = CreateFrame("Button", "Details_infobox3_bar_"..index, window)
 	this_bar:SetWidth(220) --> tamanho da bar de acordo com o tamanho da window
-	this_bar:SetHeight(16) --> altura determinada pela instância
+	this_bar:SetHeight(16) --> altura determinada pela instï¿½ncia
 	
-	local y =(index-1)*17 --> 17 é a altura da bar
+	local y =(index-1)*17 --> 17 ï¿½ a altura da bar
 	y = y*-1 --> baixo	
 	
 	this_bar:SetPoint("LEFT", window, "LEFT", x_start, 0)
