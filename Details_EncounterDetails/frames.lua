@@ -149,9 +149,9 @@ do
 		width_mod = width_mod or 0
 		
 		bar:SetWidth(200+width_mod) --> tamanho da bar de acordo com o tamanho da window
-		bar:SetHeight(16) --> altura determinada pela instância
+		bar:SetHeight(16) --> altura determinada pela instï¿½ncia
 
-		local y =(index-1)*17 --> 17 é a altura da bar
+		local y =(index-1)*17 --> 17 ï¿½ a altura da bar
 		y_mod = y_mod or 0
 		y = y + y_mod
 		y = y*-1 --> baixo
@@ -951,6 +951,7 @@ do
 	BossFrame.EmoteWidgets = {}
 	
 	scrollframe = CreateFrame("ScrollFrame", "EncounterDetails_EmoteScroll", BossFrame, "FauxScrollFrameTemplate")
+	scrollframe:EnableMouseWheel(1)
 	scrollframe:SetScript("OnVerticalScroll", function(self, offset) FauxScrollFrame_OnVerticalScroll(self, offset, 14, refresh_emotes) end)
 	scrollframe:SetPoint("topleft", BossFrame, "topleft", 200, -75)
 	scrollframe:SetPoint("bottomright", BossFrame, "bottomright", -33, 42)
@@ -1223,6 +1224,7 @@ do
 		container_damagetaken_window:SetHeight(100)
 		container_damagetaken_window:SetScrollChild(container_damagetaken_frame)
 		container_damagetaken_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -90)
+		container_damagetaken_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewScrollBar(container_damagetaken_window, container_damagetaken_frame, 4, -2)
 		container_damagetaken_window.slider:Altura(89)
@@ -1289,6 +1291,7 @@ do
 		container_abilities_window:SetHeight(100)
 		container_abilities_window:SetScrollChild(container_abilities_frame)
 		container_abilities_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -211)
+		container_abilities_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewScrollBar(container_abilities_window, container_abilities_frame, 4, -2)
 		container_abilities_window.slider:Altura(89)
@@ -1366,6 +1369,7 @@ do
 		container_adds_window:SetHeight(65)
 		container_adds_window:SetScrollChild(container_adds_frame)
 		container_adds_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 255, -113)
+		container_adds_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewLabel(container_adds_window, container_adds_window, nil, "titulo", Loc["STRING_ADDS"], "QuestFont_Large", 16, {1, 1, 1})
 		container_adds_window.titulo:SetPoint("bottomleft", container_adds_window, "topleft", 0, 4)
@@ -1437,6 +1441,7 @@ do
 		container_interrupt_window:SetHeight(65)
 		container_interrupt_window:SetScrollChild(container_interrupt_frame)
 		container_interrupt_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 470, -113)
+		container_interrupt_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewLabel(container_interrupt_window, container_interrupt_window, nil, "titulo", Loc["STRING_INTERRUPTS"], "QuestFont_Large", 16, {1, 1, 1})
 		container_interrupt_window.titulo:SetPoint("bottomleft", container_interrupt_window, "topleft", 0, 4)
@@ -1509,6 +1514,7 @@ do
 		container_dispell_window:SetHeight(68)
 		container_dispell_window:SetScrollChild(container_dispell_frame)
 		container_dispell_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 245, -231)
+		container_dispell_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewLabel(container_dispell_window, container_dispell_window, nil, "titulo", Loc["STRING_DISPELLS"], "QuestFont_Large", 16, {1, 1, 1})
 		container_dispell_window.titulo:SetPoint("bottomleft", container_dispell_window, "topleft", 0, 4)
@@ -1585,6 +1591,7 @@ do
 		container_dead_window:SetHeight(70)
 		container_dead_window:SetScrollChild(container_dead_frame)
 		container_dead_window:SetPoint("TOPLEFT", frame, "TOPLEFT", 472, -235)
+		container_dead_window:EnableMouseWheel(1)
 
 		DetailsFrameWork:NewLabel(container_dead_window, container_dead_window, nil, "titulo", Loc["STRING_DEATH_LOG"], "QuestFont_Large", 16, {1, 1, 1})
 		container_dead_window.titulo:SetPoint("bottomleft", container_dead_window, "topleft", 0, 3)
@@ -1601,7 +1608,7 @@ do
 		frame.overall_dead = container_dead_window
 		
 		
-	--> funções dos botões das fases
+	--> funï¿½ï¿½es dos botï¿½es das fases
 		local disable_func = function(self) self.text:SetTextColor(.4, .4, .4) end 
 		local enable_func = function(self) self.text:SetTextColor(.7, .7, .7) end 
 		
@@ -1612,7 +1619,7 @@ do
 			return true
 		end
 		
-	--> Botão Overall
+	--> Botï¿½o Overall
 		local button_overall = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowOverall, _, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_overall:SetPoint("topleft", frame, "topleft", 480, -50)
@@ -1623,7 +1630,7 @@ do
 		button_overall.tooltip = Loc["STRING_SHOW_ALL_DATA"].."\n|cFFFF0000"..Loc["STRING_NOT IMPLEMENTED"]
 		
 
-	--> Botão Fase 1
+	--> Botï¿½o Fase 1
 		local button_fase1 = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowFase, 1, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_fase1:SetPoint("left", button_overall, "right", 2, 0)
@@ -1633,7 +1640,7 @@ do
 		button_fase1:SetScript("OnDisable", disable_func)
 		button_fase1.tooltip = Loc["STRING_SHOW_PHASE_DATA"].."\n|cFFFF0000"..Loc["STRING_NOT IMPLEMENTED"]
 		
-	--> Botão Fase 2	
+	--> Botï¿½o Fase 2	
 		local button_fase2 = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowFase, 2, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_fase2:SetPoint("left", button_fase1, "right", 2, 0)
@@ -1643,7 +1650,7 @@ do
 		button_fase2:SetScript("OnDisable", disable_func)
 		button_fase2.tooltip = Loc["STRING_SHOW_PHASE_DATA"].."\n|cFFFF0000"..Loc["STRING_NOT IMPLEMENTED"]
 		
-	--> Botão Fase 3
+	--> Botï¿½o Fase 3
 		local button_fase3 = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowFase, 3, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_fase3:SetPoint("left", button_fase2, "right", 2, 0)
@@ -1653,7 +1660,7 @@ do
 		button_fase3:SetScript("OnDisable", disable_func)
 		button_fase3.tooltip = Loc["STRING_SHOW_PHASE_DATA"].."\n|cFFFF0000"..Loc["STRING_NOT IMPLEMENTED"]
 		
-	--> Botão Fase 4
+	--> Botï¿½o Fase 4
 		local button_fase4 = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowFase, 4, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_fase4:SetPoint("left", button_fase3, "right", 2, 0)
@@ -1663,7 +1670,7 @@ do
 		button_fase4:SetScript("OnDisable", disable_func)
 		button_fase4.tooltip = Loc["STRING_SHOW_PHASE_DATA"].."\n|cFFFF0000"..Loc["STRING_NOT IMPLEMENTED"]
 		
-	--> Botão Fase 5
+	--> Botï¿½o Fase 5
 		local button_fase5 = DetailsFrameWork:NewDetailsButton(frame, frame, _, frame.ShowFase, 5, nil, 32, 16,
 		"Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button_disabled", "Interface\\AddOns\\Details_EncounterDetails\\images\\boss_frame_button")
 		button_fase5:SetPoint("left", button_fase4, "right", 2, 0)
@@ -1681,7 +1688,7 @@ do
 	button_fase4:SetFrameLevel(frame:GetFrameLevel()+2)
 	button_fase5:SetFrameLevel(frame:GetFrameLevel()+2)
 		
-		--> os botões das fases estão desactivedos pois não foram implementados ainda
+		--> os botï¿½es das fases estï¿½o desactivedos pois nï¿½o foram implementados ainda
 		--[[
 		button_overall:Disable()
 		button_fase1:Disable()
@@ -1691,7 +1698,7 @@ do
 		button_fase5:Disable()
 		--]]
 		
-	--> botão close
+	--> botï¿½o close
 		frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 		frame.close:SetWidth(32)
 		frame.close:SetHeight(32)
