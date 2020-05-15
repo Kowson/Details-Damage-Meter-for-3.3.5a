@@ -1283,7 +1283,8 @@
 			if (absorb_spell_list [spellid] and _recording_healing) then
 				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
 					-- we cant track overhealing on shields in wotlk 
-					shields [dst_name][spellid][src_name] = nil
+					-- schedule removal for later since partial absorbs remove the buff first, then apply the absorbed damage.
+					_details:ScheduleTimer("unbuff_shield", 0.1, dst_name, spellid, src_name, shields[dst_name][spellid][src_name].time_applied)
 				end
 			end
 			------------------------------------------------------------------------------------------------
@@ -1351,6 +1352,18 @@
 				end
 			end
 		end
+	end
+
+	function _details:unbuff_shield(dst_name, spellid, src_name, time_applied)
+		if (shields[dst_name] and shields[dst_name][spellid]) then
+			local shield = shields[dst_name][spellid][src_name]
+			if (not shield) then
+				return
+			end
+			if (shield.time_applied == time_applied) then 
+				shields[dst_name][spellid][src_name] = nil
+			end
+		end  
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------
