@@ -1,1 +1,4 @@
 copy.sh
+node_modules
+gulpfile.js
+.vscode
