@@ -86,27 +86,27 @@ function attribute_heal:Newtable(serial, name, link)
 		last_event = 0,
 		on_hold = false,
 		delay = 0,
-		last_value = nil, --> ultimo valor que this player teve, sdst quando a bar dele é atualizada
+		last_value = nil, --> ultimo valor que this player teve, sdst quando a bar dele ï¿½ atualizada
 		last_hps = 0, --> heal por segundo
 
 		end_time = nil,
 		start_time = 0,
 
-		pets = {}, --> name já formatado: pet name <owner name>
+		pets = {}, --> name jï¿½ formatado: pet name <owner name>
 		
 		heal_enemy = {}, --> quando o player heal um enemy
 		heal_enemy_amt = 0,
 
-		--container armazenará os IDs das abilities usadas por this player
+		--container armazenarï¿½ os IDs das abilities usadas por this player
 		spell_tables = container_abilities:NewContainer(container_heal),
 		
-		--container armazenará os seriais dos targets que o player aplicou damage
+		--container armazenarï¿½ os seriais dos targets que o player aplicou damage
 		targets = container_combatants:NewContainer(container_heal_target)
 	}
 	
 	_setmetatable(_new_healActor, attribute_heal)
 	
-	if (link) then --> se não for a shadow
+	if (link) then --> se nï¿½o for a shadow
 		--_new_healActor.last_events_table = _details:CreateActorLastEventTable()
 		--_new_healActor.last_events_table.original = true
 	
@@ -144,7 +144,7 @@ function _details:ContainerSortHeal(container, amount, keyName2)
 	_table_sort(container,  _details.SortKeySimpleHeal)
 	
 	if (amount) then 
-		for i = amount, 1, -1 do --> de trás pra frente
+		for i = amount, 1, -1 do --> de trï¿½s pra frente
 			if (container[i][keyName] < 1) then
 				amount = amount-1
 			else
@@ -198,8 +198,8 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 	
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal
 
-	--> não há bars para mostrar -- not have something to show
-	if (#showing._ActorTable < 1) then --> não há bars para mostrar
+	--> nï¿½o hï¿½ bars para mostrar -- not have something to show
+	if (#showing._ActorTable < 1) then --> nï¿½o hï¿½ bars para mostrar
 		--> colocado isso recentemente para do as bars de damage sumirem na troca de attribute
 		return _details:HideBarsNotUsed(instance, showing)
 	end
@@ -211,12 +211,12 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 	
 	local using_cache = false
 	
-	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instância
+	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instï¿½ncia
 	local content = showing._ActorTable
 	local amount = #content
 	local mode = instance.mode
 	
-	--> pega which a sub key que será usada
+	--> pega which a sub key que serï¿½ usada
 	if (export) then
 	
 		if (_type(export) == "boolean") then 
@@ -321,11 +321,11 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 		--
 		if (not using_cache) then
 			for index, player in _ipairs(content) do
-				if (player.group) then --> é um player e this em group
+				if (player.group) then --> ï¿½ um player e this em group
 					if (player[keyName] < 1) then --> damage menor que 1, interromper o loop
 						amount = index - 1
 						break
-					elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? não daria pra pega-lo com uma chave[1] nad group == true?
+					elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? nï¿½o daria pra pega-lo com uma chave[1] nad group == true?
 						instance.top = content[1][keyName]
 					end
 					
@@ -340,23 +340,23 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 	end
 	
 	--> refaz o mapa do container
-	--> se for cache não precisa remapear
+	--> se for cache nï¿½o precisa remapear
 	showing:remapear()
 
 	if (export) then 
 		return total, keyName, instance.top, amount
 	end
 	
-	if (amount < 1) then --> não há bars para mostrar
+	if (amount < 1) then --> nï¿½o hï¿½ bars para mostrar
 		instance:HideScrollBar()
 		return _details:EndRefresh(instance, total, combat_table, showing) --> retorna a table que precisa ganhar o refresh
 	end
 
 	instance:ActualizeScrollBar(amount)
 	
-	--depois faz a atualização normal dele através dos iterators
+	--depois faz a atualizaï¿½ï¿½o normal dele atravï¿½s dos iterators
 	local which_bar = 1
-	local bars_container = instance.bars --> evita buscar N vezes a key .bars dentro da instância
+	local bars_container = instance.bars --> evita buscar N vezes a key .bars dentro da instï¿½ncia
 	local percentage_type = instance.row_info.percent_type
 	local baseframe = instance.baseframe
 	
@@ -421,33 +421,41 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], iter_last-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
-					which_bar = which_bar+1
+				for i = instance.barS[1], iter_last-1, 1 do
+					if (content[i]) then  --> vai atualizar sï¿½ o range que this sendo mostrado
+						content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
+						which_bar = which_bar+1
+					end
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], iter_last, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
-					which_bar = which_bar+1
+				for i = instance.barS[1], iter_last, 1 do
+					if (content[i]) then --> vai atualizar sï¿½ o range que this sendo mostrado
+						content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
+						which_bar = which_bar+1
+					end
 				end
 			end
 
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], instance.barS[2]-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
-					which_bar = which_bar+1
+				for i = instance.barS[1], instance.barS[2]-1, 1 do 
+					if (content[i]) then--> vai atualizar sï¿½ o range que this sendo mostrado
+						content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
+						which_bar = which_bar+1
+					end
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
-					which_bar = which_bar+1
+				for i = instance.barS[1], instance.barS[2], 1 do
+					if (content[i]) then --> vai atualizar sï¿½ o range que this sendo mostrado
+						content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
+						which_bar = which_bar+1
+					end
 				end
 			end
 		end
@@ -477,31 +485,31 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = iter_last, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
@@ -524,7 +532,7 @@ function attribute_heal:RefreshWindow(instance, combat_table, force, export)
 		end
 	end
 	
-	--> beta, hidar bars não usadas durante um refresh forçado
+	--> beta, hidar bars nï¿½o usadas durante um refresh forï¿½ado
 	if (force) then
 		if (instance.mode == 2) then --> group
 			for i = which_bar, instance.rows_fit_in_window  do
@@ -559,7 +567,7 @@ local actor_class_color_r, actor_class_color_g, actor_class_color_b
 --function attribute_heal:UpdateBar(instance, which_bar, place, total, sub_attribute, force)
 function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations)
 
-	local this_bar = instance.bars[which_bar] --> pega a referência da bar na window
+	local this_bar = instance.bars[which_bar] --> pega a referï¿½ncia da bar na window
 	
 	if (not this_bar) then
 		print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -568,11 +576,11 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 	
 	local table_previous = this_bar.my_table
 	
-	this_bar.my_table = self --grava uma referência dessa class de damage na bar
-	self.my_bar = this_bar --> salva uma referência da bar no objeto do player
+	this_bar.my_table = self --grava uma referï¿½ncia dessa class de damage na bar
+	self.my_bar = this_bar --> salva uma referï¿½ncia da bar no objeto do player
 	
-	this_bar.placing = place --> salva na bar which a colocação dela.
-	self.placing = place --> salva which a colocação do player no objeto dele
+	this_bar.placing = place --> salva na bar which a colocaï¿½ï¿½o dela.
+	self.placing = place --> salva which a colocaï¿½ï¿½o do player no objeto dele
 	
 	local healing_total = self.total --> total de damage que this player deu
 	local hps
@@ -609,7 +617,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 		else
 			hps = self.last_hps
 			
-			if (hps == 0) then --> não calculou o dps dele ainda mas entrou em standby
+			if (hps == 0) then --> nï¿½o calculou o dps dele ainda mas entrou em standby
 				hps = healing_total/self:Time()
 				self.last_hps = hps
 			end
@@ -654,7 +662,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_overheal, "", percentage, self))
 			else
-				this_bar.text_right:SetText(formated_overheal .."(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken não será possivel correto?
+				this_bar.text_right:SetText(formated_overheal .."(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken nï¿½o serï¿½ possivel correto?
 			end
 			this_percentage = _math_floor((self.totalover/instance.top) * 100) --> determina which o tamanho da bar
 			
@@ -665,7 +673,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_healtaken, "", percentage, self))
 			else		
-				this_bar.text_right:SetText(formated_healtaken .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken não será possivel correto?
+				this_bar.text_right:SetText(formated_healtaken .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken nï¿½o serï¿½ possivel correto?
 			end
 			this_percentage = _math_floor((self.healing_taken/instance.top) * 100) --> determina which o tamanho da bar
 		
@@ -676,7 +684,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_enemyheal, "", percentage, self))
 			else
-				this_bar.text_right:SetText(formated_enemyheal .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken não será possivel correto?
+				this_bar.text_right:SetText(formated_enemyheal .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken nï¿½o serï¿½ possivel correto?
 			end
 			this_percentage = _math_floor((self.heal_enemy_amt/instance.top) * 100) --> determina which o tamanho da bar
 			
@@ -687,7 +695,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_absorbs, "", percentage, self))
 			else
-				this_bar.text_right:SetText(formated_absorbs .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken não será possivel correto?
+				this_bar.text_right:SetText(formated_absorbs .. "(" .. percentage .. "%)") --seta o text da right --_cstr("%.1f", dps) .. " - ".. DPS do damage taken nï¿½o serï¿½ possivel correto?
 			end
 			this_percentage = _math_floor((self.totalabsorb/instance.top) * 100) --> determina which o tamanho da bar
 		end
@@ -742,8 +750,8 @@ function attribute_heal:RefreshBar2(this_bar, instance, table_previous, force, t
 			return self:RefreshBar(this_bar, instance)
 			
 		else
-			--> agora this comparando se a table da bar é diferente da table na atualização previous
-			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posição ou se ela apenas será atualizada
+			--> agora this comparando se a table da bar ï¿½ diferente da table na atualizaï¿½ï¿½o previous
+			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posiï¿½ï¿½o ou se ela apenas serï¿½ atualizada
 			
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -756,7 +764,7 @@ function attribute_heal:RefreshBar2(this_bar, instance, table_previous, force, t
 			
 				return self:RefreshBar(this_bar, instance)
 				
-			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table então compara a percentage
+			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table entï¿½o compara a percentage
 				--> apenas atualizar
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -910,7 +918,7 @@ function _details:CloseShields()
 	
 	local spells_table = {}
 
-	--não da de close os shields, precisa saber o total dele, unitaura nao retorna o valor do shield
+	--nï¿½o da de close os shields, precisa saber o total dele, unitaura nao retorna o valor do shield
 	for dst_name, spellid_table in _pairs(shields) do
 		for spellid, caster_table in _pairs(spellid_table) do
 			if (not spells_table[spellid]) then
@@ -930,7 +938,7 @@ end
 --------------------------------------------- // TOOLTIPS // ---------------------------------------------
 
 
----------> TOOLTIPS BIFURCAÇÃO
+---------> TOOLTIPS BIFURCAï¿½ï¿½O
 function attribute_heal:ToolTip(instance, number, bar, keydown)
 	--> seria possivel aqui colocar o icon da class dele?
 
@@ -975,7 +983,7 @@ function attribute_heal:ToolTip_HealingTaken(instance, number, bar, keydown)
 	
 	for name, _ in _pairs(healers) do --> agressores seria a list de names
 		local this_healer = showing._ActorTable[showing._NameIndexTable[name]]
-		if (this_healer) then --> checagem por causa do total e do garbage collector que não limpa os names que deram damage
+		if (this_healer) then --> checagem por causa do total e do garbage collector que nï¿½o limpa os names que deram damage
 			local targets = this_healer.targets
 			local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
 			if (this_dst and this_dst.total > 0) then
@@ -1313,7 +1321,7 @@ end
 
 
 --------------------------------------------- // JANELA DETALHES // ---------------------------------------------
----------- bifurcação
+---------- bifurcaï¿½ï¿½o
 function attribute_heal:SetInfo()
 	if (info.sub_attribute == 1 or info.sub_attribute == 2) then
 		return self:SetInfoHealingDone()
@@ -1391,7 +1399,7 @@ function attribute_heal:SetInfoHealTaken()
 
 		if (not info.showing_mouse_over) then
 			if (table[1] == self.details) then --> table[1] = NOME = NOME que this na caixa da right
-				if (not bar.on_focus) then --> se a bar não tiver no focus
+				if (not bar.on_focus) then --> se a bar nï¿½o tiver no focus
 					bar.texture:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 					bar.on_focus = true
 					if (not info.displaying) then
@@ -1468,7 +1476,7 @@ function attribute_heal:SetInfoOverHealing()
 
 		if (not info.showing_mouse_over) then
 			if (table[1] == self.details) then --> table[1] = spellid = spellid que this na caixa da right
-				if (not bar.on_focus) then --> se a bar não tiver no focus
+				if (not bar.on_focus) then --> se a bar nï¿½o tiver no focus
 					bar.texture:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 					bar.on_focus = true
 					if (not info.displaying) then
@@ -1676,7 +1684,7 @@ function attribute_heal:SetInfoHealingDone()
 			bar.text_right:SetText(_details:comma_value(table[2]) .." ".. instance.dividers.open .. _cstr("%.1f", table[3]) .. instance.dividers.close) --seta o text da right
 		end
 		
-		-- o que mostrar no local do ícone?
+		-- o que mostrar no local do ï¿½cone?
 		--bar.icon:SetTexture(table[4][3])
 		
 		bar.my_table = self
@@ -1694,7 +1702,7 @@ function attribute_heal:SetInfoHealingDone()
 end
 
 function attribute_heal:SetTooltipTargets(this_bar, index, instance)
-	-- eu ja sei quem é o dst a mostrar os details
+	-- eu ja sei quem ï¿½ o dst a mostrar os details
 	-- dar foreach no container de abilities -- pegar os targets da ability -- e ver se dentro do container tem o mine dst.
 	
 	local enemy = this_bar.name_enemy
@@ -1791,7 +1799,7 @@ function attribute_heal:SetTooltipTargets(this_bar, index, instance)
 end
 
 function attribute_heal:SetDetails(spellid, bar)
-	--> bifurgações
+	--> bifurgaï¿½ï¿½es
 	if (info.sub_attribute == 1 or info.sub_attribute == 2 or info.sub_attribute == 3) then
 		return self:SetDetailsHealingDone(spellid, bar)
 	elseif (info.sub_attribute == 4) then
@@ -1845,9 +1853,9 @@ function attribute_heal:SetDetailsHealingTaken(name, bar)
 	for index, table in _ipairs(my_spells) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -2083,10 +2091,10 @@ end
 			--actor.last_events_table = _details:CreateActorLastEventTable()
 		end
 		
-	--> restore e liga o ator com a sua shadow durante a inicialização
+	--> restore e liga o ator com a sua shadow durante a inicializaï¿½ï¿½o
 		function attribute_heal:r_onlyrefresh_shadow(actor)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_heal = _details.table_overall[2]
 				local shadow = overall_heal._ActorTable[overall_heal._NameIndexTable[actor.name]]
 
@@ -2130,7 +2138,7 @@ end
 	
 		function attribute_heal:r_connect_shadow(actor, no_refresh)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_heal = _details.table_overall[2]
 				local shadow = overall_heal._ActorTable[overall_heal._NameIndexTable[actor.name]]
 
