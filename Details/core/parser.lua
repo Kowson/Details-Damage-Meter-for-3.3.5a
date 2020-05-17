@@ -3370,6 +3370,8 @@
 			return
 		end
 	end
+
+	_details.parser_frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	_details.parser_frame:SetScript("OnEvent", _details.OnParserEvent)
 
 	function _details:UpdateParser()
