@@ -1,4 +1,4 @@
---[[ Esta class irá abrigar todo a e_energy ganha de uma ability
+--[[ Esta class irï¿½ abrigar todo a e_energy ganha de uma ability
 Parents:
 	addon -> combat atual -> e_energy-> container de players -> this class
 
@@ -101,14 +101,14 @@ function attribute_energy:Newtable(serial, name, link)
 		focus_from = {},
 		holypower_from = {},
 		
-		last_value = nil, --> ultimo valor que this player teve, sdst quando a bar dele é atualizada
+		last_value = nil, --> ultimo valor que this player teve, sdst quando a bar dele ï¿½ atualizada
 
 		pets = {},
 		
-		--container armazenará os seriais dos targets que o player aplicou damage
+		--container armazenarï¿½ os seriais dos targets que o player aplicou damage
 		targets = container_combatants:NewContainer(container_energy_target),
 		
-		--container armazenará os IDs das abilities usadas por this player
+		--container armazenarï¿½ os IDs das abilities usadas por this player
 		spell_tables = container_abilities:NewContainer(container_energy),
 	}
 	
@@ -148,7 +148,7 @@ function _details:ContainerSortEnergy(container, amount, keyName2)
 	_table_sort(container,  _details.SortKeySimpleEnergy)
 	
 	if (amount) then 
-		for i = amount, 1, -1 do --> de trás pra frente
+		for i = amount, 1, -1 do --> de trï¿½s pra frente
 			if (container[i][keyName] < 1) then
 				amount = amount-1
 			else
@@ -164,14 +164,14 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
 
-	if (#showing._ActorTable < 1) then --> não há bars para mostrar
+	if (#showing._ActorTable < 1) then --> nï¿½o hï¿½ bars para mostrar
 		return _details:HideBarsNotUsed(instance, showing) 
 	end
 	
 	local total = 0 --> total iniciado como ZERO
 	instance.top = 0
 	
-	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instância
+	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instï¿½ncia
 	local content = showing._ActorTable
 	local amount = #content
 	local mode = instance.mode
@@ -223,8 +223,8 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 		--> faz o sort da categoria
 		_table_sort(content, function(a, b) return a[keyName] > b[keyName] end)
 		
-		--> não mostrar resultados com zero
-		for i = amount, 1, -1 do --> de trás pra frente
+		--> nï¿½o mostrar resultados com zero
+		for i = amount, 1, -1 do --> de trï¿½s pra frente
 			if (content[i][keyName] < 1) then
 				amount = amount-1
 			else
@@ -232,7 +232,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			end
 		end
 		
-		total = combat_table.totals[class_type][keyName] --> pega o total de damage já aplicado
+		total = combat_table.totals[class_type][keyName] --> pega o total de damage jï¿½ aplicado
 		
 		instance.top = content[1][keyName]
 		
@@ -253,11 +253,11 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			end)
 		
 		for index, player in _ipairs(content) do
-			if (player.group) then --> é um player e this em group
+			if (player.group) then --> ï¿½ um player e this em group
 				if (player[keyName] < 1) then --> damage menor que 1, interromper o loop
 					amount = index - 1
 					break
-				elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? não daria pra pega-lo com uma chave[1] nad group == true?
+				elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? nï¿½o daria pra pega-lo com uma chave[1] nad group == true?
 					instance.top = content[1][keyName]
 				end
 				
@@ -276,7 +276,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 		return total, keyName, instance.top, amount
 	end
 	
-	if (amount < 1) then --> não há bars para mostrar
+	if (amount < 1) then --> nï¿½o hï¿½ bars para mostrar
 		instance:HideScrollBar()
 		return _details:EndRefresh(instance, total, combat_table, showing) --> retorna a table que precisa ganhar o refresh
 	end
@@ -349,32 +349,32 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], iter_last-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], iter_last-1, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], iter_last, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], iter_last, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
 
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], instance.barS[2]-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], instance.barS[2]-1, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
@@ -405,31 +405,31 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = iter_last, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
@@ -452,7 +452,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 		end
 	end
 	
-	--> beta, hidar bars não usadas durante um refresh forçado
+	--> beta, hidar bars nï¿½o usadas durante um refresh forï¿½ado
 	if (force) then
 		if (instance.mode == 2) then --> group
 			for i = which_bar, instance.rows_fit_in_window  do
@@ -483,7 +483,7 @@ local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 function attribute_energy:UpdateBar(instance, bars_container, which_bar, place, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations)
 
-	local this_bar = instance.bars[which_bar] --> pega a referência da bar na window
+	local this_bar = instance.bars[which_bar] --> pega a referï¿½ncia da bar na window
 	
 	if (not this_bar) then
 		print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -567,8 +567,8 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 			return self:RefreshBar(this_bar, instance)
 			
 		else
-			--> agora this comparando se a table da bar é diferente da table na atualização previous
-			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posição ou se ela apenas será atualizada
+			--> agora this comparando se a table da bar ï¿½ diferente da table na atualizaï¿½ï¿½o previous
+			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posiï¿½ï¿½o ou se ela apenas serï¿½ atualizada
 			
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -581,7 +581,7 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 			
 				return self:RefreshBar(this_bar, instance)
 				
-			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table então compara a percentage
+			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table entï¿½o compara a percentage
 				--> apenas atualizar
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -780,7 +780,7 @@ function attribute_energy:Sources_and_Spells(received_from, showing, keyName, ab
 end
 
 
----------> TOOLTIPS BIFURCAÇÃO
+---------> TOOLTIPS BIFURCAï¿½ï¿½O
 function attribute_energy:ToolTip(instance, number, bar, keydown)
 	--> seria possivel aqui colocar o icon da class dele?
 	--GameCooltip:AddLine(bar.placing..". "..self.name)
@@ -891,14 +891,14 @@ end
 
 --------------------------------------------- // JANELA DETALHES // ---------------------------------------------
 
----------> DETALHES BIFURCAÇÃO
+---------> DETALHES BIFURCAï¿½ï¿½O
 function attribute_energy:SetInfo()
 	if (info.sub_attribute <= 4) then --> damage done & dps
 		return self:SetInfoRegenReceived()
 	end
 end
 
----------> DETALHES bloco da right BIFURCAÇÃO
+---------> DETALHES bloco da right BIFURCAï¿½ï¿½O
 function attribute_energy:SetDetails(spellid, bar)
 	if (info.sub_attribute <= 4) then
 		return self:SetDetailsRegenReceived(spellid, bar)
@@ -997,7 +997,7 @@ function attribute_energy:SetInfoRegenReceived()
 		end	
 
 		bar.my_table = self --> grava o player na table
-		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso é necessário?
+		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso ï¿½ necessï¿½rio?
 
 		bar:Show()
 	end	
@@ -1031,9 +1031,9 @@ function attribute_energy:SetDetailsRegenReceived(name, bar)
 	for index, table in _ipairs(from) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -1127,11 +1127,11 @@ end
 			end
 		end
 		
-	--> restore e liga o ator com a sua shadow durante a inicialização
+	--> restore e liga o ator com a sua shadow durante a inicializaï¿½ï¿½o
 	
 		function attribute_energy:r_onlyrefresh_shadow(actor)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_energy = _details.table_overall[3]
 				local shadow = overall_energy._ActorTable[overall_energy._NameIndexTable[actor.name]]
 
@@ -1173,7 +1173,7 @@ end
 	
 		function attribute_energy:r_connect_shadow(actor, no_refresh)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_energy = _details.table_overall[3]
 				local shadow = overall_energy._ActorTable[overall_energy._NameIndexTable[actor.name]]
 

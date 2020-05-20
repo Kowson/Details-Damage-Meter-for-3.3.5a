@@ -121,7 +121,7 @@
 			return
 		else	
 			if (flag) then
-				--> conferir se o player é um player
+				--> conferir se o player ï¿½ um player
 				if (_bit_band(flag, OBJECT_TYPE_PLAYER) ~= 0) then
 					novo_objeto.class = "UNGROUPPLAYER"
 					return
@@ -140,7 +140,7 @@
 
 		if (flag) then
 
-			--> é um player
+			--> ï¿½ um player
 			if (_bit_band(flag, OBJECT_TYPE_PLAYER) ~= 0) then
 			
 				novo_objeto.displayName = _details:GetNickname(serial, false, true) --> serial, default, silent
@@ -189,15 +189,13 @@
 							end
 						end
 					else
-						local oponentes = GetNumArenaOpponentSpecs()
 						local found = false
-						for i = 1, oponentes do
-							local name = GetUnitName("arena" .. i, true)
-							if (name == name) then
-								local spec = GetArenaOpponentSpec(i)
-								if (spec) then
-									local id, name, description, icon, background, role, class = GetSpecializationInfoByID(spec)
-									novo_objeto.role = role
+						for i = 1, 3 do
+							local name = GetUnitName("arena" .. i)
+							if name ~= nil then 
+								local _, class = UnitClass("arena" .. i)
+								if (name == name) then
+									--novo_objeto.role = role
 									novo_objeto.class = class
 									novo_objeto.enemy = true
 									novo_objeto.arena_enemy = true
@@ -205,26 +203,12 @@
 								end
 							end
 						end
-						
-						local role = UnitGroupRolesAssigned(name)
-						if (role ~= "NONE") then
-							novo_objeto.role = role
-							found = true
-						end
-						
-						if (not found and name == _details.playername) then						
-							local role = UnitGroupRolesAssigned("player")
-							if (role ~= "NONE") then
-								novo_objeto.role = role
-							end
-						end
-						
 					end
 				
 					novo_objeto.group = true
 				end
 			
-			--> é um pet
+			--> ï¿½ um pet
 			elseif (owner_of_pet) then 
 				novo_objeto.owner = owner_of_pet
 				novo_objeto.ownerName = owner_of_pet.name
@@ -239,7 +223,7 @@
 				novo_objeto.displayName = name
 			end
 			
-			--> é enemy
+			--> ï¿½ enemy
 			if (_bit_band(flag, 0x00000040) ~= 0) then 
 				if (_bit_band(flag, OBJECT_TYPE_PLAYER) == 0 and _bit_band(flag, OBJECT_TYPE_PETGUARDIAN) == 0) then
 					novo_objeto.monster = true
@@ -253,12 +237,12 @@
 	-- CatchCombatant(GUID, name, flags, 
 	function container_combatants:CatchCombatant(serial, name, flag, create, isOwner)
 		--print("Serial: "..serial.." | Name: "..name)
-		--> verifica se é um pet, se for confere se tem o name do owner, se não tiver, precisa por
+		--> verifica se ï¿½ um pet, se for confere se tem o name do owner, se nï¿½o tiver, precisa por
 		local owner_of_pet
 		
-		--if (flag and _bit_band(flag, OBJECT_TYPE_PETS) ~= 0) then --> é um pet
-		if (_details.table_pets.pets[serial]) then --> é um pet
-			--> aqui ele precisaria achar as tag < > pra saber se o name passado já não veio com o owner imbutido, se não tiver as tags, terá que ser posto aqui
+		--if (flag and _bit_band(flag, OBJECT_TYPE_PETS) ~= 0) then --> ï¿½ um pet
+		if (_details.table_pets.pets[serial]) then --> ï¿½ um pet
+			--> aqui ele precisaria achar as tag < > pra saber se o name passado jï¿½ nï¿½o veio com o owner imbutido, se nï¿½o tiver as tags, terï¿½ que ser posto aqui
 			if (not name:find("<") or not name:find(">")) then --> finding is slow, do you have another way to do that?
 				local name_dele, owner_name, owner_serial, owner_flag = _details.table_pets:CatchDono(serial, name, flag)
 				if (name_dele and owner_name) then
@@ -274,7 +258,7 @@
 		if (index) then
 			return self._ActorTable[index], owner_of_pet, name
 		
-		--> não achou, create
+		--> nï¿½o achou, create
 		elseif (create) then
 
 			--> espelho do container no overall
@@ -294,7 +278,7 @@
 				end
 			end
 
-			local novo_objeto = self.creation_func(_, serial, name, shadow_objeto) --> shadow_objeto passa para o class_damage gravar no .targets e .spell_tables, mas não grava nele mesmo
+			local novo_objeto = self.creation_func(_, serial, name, shadow_objeto) --> shadow_objeto passa para o class_damage gravar no .targets e .spell_tables, mas nï¿½o grava nele mesmo
 			novo_objeto.name = name
 
 		-- type do container
@@ -323,7 +307,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> não executar 2x
+					if (shadow) then --> nï¿½o executar 2x
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -355,7 +339,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> não executar 2x
+					if (shadow) then --> nï¿½o executar 2x
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -381,7 +365,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> não executar 2x
+					if (shadow) then --> nï¿½o executar 2x
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -408,7 +392,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> não executar 2x
+					if (shadow) then --> nï¿½o executar 2x
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -510,7 +494,7 @@
 		end
 	end
 
-	--> chama a função para ser executada em todos os atores
+	--> chama a funï¿½ï¿½o para ser executada em todos os atores
 	function container_combatants:ActorCallFunction(func, ...)
 		for index, actor in _ipairs(self._ActorTable) do
 			func(nil, actor, ...)
@@ -541,7 +525,7 @@
 	end
 
 	function _details.refresh:r_container_combatants(container, shadow)
-		--> reconstrói meta e indexes
+		--> reconstrï¿½i meta e indexes
 			_setmetatable(container, _details.container_combatants)
 			container.__index = _details.container_combatants
 			container.creation_func = container_combatants:CreationFunc(container.type)

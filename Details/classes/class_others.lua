@@ -131,7 +131,7 @@ function _details:ContainerSortMisc(container, amount, keyName2)
 	_table_sort(container,  _details.SortKeySimpleMisc)
 	
 	if (amount) then 
-		for i = amount, 1, -1 do --> de trás pra frente
+		for i = amount, 1, -1 do --> de trï¿½s pra frente
 			if (container[i][keyName] < 1) then
 				amount = amount-1
 			else
@@ -415,8 +415,8 @@ end
 
 function attribute_misc:DeadActualizeBar(death, which_bar, placing, instance)
 
-	death["dead"] = true --> marca que this table é uma table de deaths, usado no controla na hora de preparer o tooltip
-	local this_bar = instance.bars[which_bar] --> pega a referência da bar na window
+	death["dead"] = true --> marca que this table ï¿½ uma table de deaths, usado no controla na hora de preparer o tooltip
+	local this_bar = instance.bars[which_bar] --> pega a referï¿½ncia da bar na window
 	
 	if (not this_bar) then
 		print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -458,14 +458,14 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 	
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
 	
-	if (#showing._ActorTable < 1) then --> não há bars para mostrar
+	if (#showing._ActorTable < 1) then --> nï¿½o hï¿½ bars para mostrar
 		return _details:HideBarsNotUsed(instance, showing)
 	end
 	
 	local total = 0	
 	instance.top = 0
 	
-	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instância
+	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instï¿½ncia
 	local content = showing._ActorTable
 	local amount = #content
 	local mode = instance.mode
@@ -500,7 +500,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 		
 	else	
 		
-		--> pega which a sub key que será usada
+		--> pega which a sub key que serï¿½ usada
 		if (sub_attribute == 1) then --> CC BREAKS
 			keyName = "cc_break"
 		elseif (sub_attribute == 2) then --> RESS
@@ -523,7 +523,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 	
 	if (keyName == "dead") then 
 		local deaths = combat_table.last_events_tables
-		--> não precisa reordenar, uma vez que sempre vai da na ordem do último a morrer até o primeiro
+		--> nï¿½o precisa reordenar, uma vez que sempre vai da na ordem do ï¿½ltimo a morrer atï¿½ o primeiro
 		-- _table_sort(deaths, function(m1, m2) return m1[2] < m2[2] end) --[1] = table com a death[2] = time[3] = name do player
 		instance.top = 1
 		total = #deaths
@@ -537,24 +537,24 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 			return _details:EndRefresh(instance, total, combat_table, showing) --> retorna a table que precisa ganhar o refresh
 		end
 		
-		--estra showing ALL então posso seguir o padrão correto? primeiro, atualiza a scroll bar...
+		--estra showing ALL entï¿½o posso seguir o padrï¿½o correto? primeiro, atualiza a scroll bar...
 		instance:ActualizeScrollBar(total)
 		
-		--depois faz a atualização normal dele através dos iterators
+		--depois faz a atualizaï¿½ï¿½o normal dele atravï¿½s dos iterators
 		local which_bar = 1
 		local bars_container = instance.bars
 		local percentage_type = instance.row_info.percent_type
 
 		if (instance.bars_sort_direction == 1) then
-			for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
-				if (deaths[i]) then --> correção para um raro e desconhecido problema onde deaths[i] é nil
+			for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+				if (deaths[i]) then --> correï¿½ï¿½o para um raro e desconhecido problema onde deaths[i] ï¿½ nil
 					attribute_misc:DeadActualizeBar(deaths[i], which_bar, i, instance)
 					which_bar = which_bar+1
 				end
 			end
 			
 		elseif (instance.bars_sort_direction == 2) then
-			for i = instance.barS[2], instance.barS[1], 1 do --> vai atualizar só o range que this sendo mostrado
+			for i = instance.barS[2], instance.barS[1], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
 				attribute_misc:DeadActualizeBar(deaths[i], which_bar, i, instance)
 				which_bar = which_bar+1
 			end
@@ -569,8 +569,8 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 			--> faz o sort da categoria e retorna o amount corrigido
 			_table_sort(content, _details.SortIfHaveKey)
 			
-			--> não mostrar resultados com zero
-			for i = amount, 1, -1 do --> de trás pra frente
+			--> nï¿½o mostrar resultados com zero
+			for i = amount, 1, -1 do --> de trï¿½s pra frente
 				if (not content[i][keyName] or content[i][keyName] < 1) then
 					amount = amount - 1
 				else
@@ -588,8 +588,8 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 		
 			_table_sort(content, _details.SortIfHaveKey)
 			
-			--> não mostrar resultados com zero
-			for i = amount, 1, -1 do --> de trás pra frente
+			--> nï¿½o mostrar resultados com zero
+			for i = amount, 1, -1 do --> de trï¿½s pra frente
 				if (not content[i][keyName] or content[i][keyName] < 1) then
 					amount = amount - 1
 				else
@@ -610,11 +610,11 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 			--end
 			
 			for index, player in _ipairs(content) do
-				if (player.group) then --> é um player e this em group
+				if (player.group) then --> ï¿½ um player e this em group
 					if (not player[keyName] or player[keyName] < 1) then --> damage menor que 1, interromper o loop
 						amount = index - 1
 						break
-					elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? não daria pra pega-lo com uma chave[1] nad group == true?
+					elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? nï¿½o daria pra pega-lo com uma chave[1] nad group == true?
 						instance.top = content[1][keyName]
 					end
 					
@@ -636,15 +636,15 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 		return total, keyName, instance.top, amount
 	end
 	
-	if (amount < 1) then --> não há bars para mostrar
+	if (amount < 1) then --> nï¿½o hï¿½ bars para mostrar
 		instance:HideScrollBar() --> precisaria esconder a scroll bar
 		return _details:EndRefresh(instance, total, combat_table, showing) --> retorna a table que precisa ganhar o refresh
 	end
 
-	--estra showing ALL então posso seguir o padrão correto? primeiro, atualiza a scroll bar...
+	--estra showing ALL entï¿½o posso seguir o padrï¿½o correto? primeiro, atualiza a scroll bar...
 	instance:ActualizeScrollBar(amount)
 	
-	--depois faz a atualização normal dele através dos iterators
+	--depois faz a atualizaï¿½ï¿½o normal dele atravï¿½s dos iterators
 	local which_bar = 1
 	local bars_container = instance.bars
 	local percentage_type = instance.row_info.percent_type
@@ -658,14 +658,14 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 	UsingCustomRightText = instance.row_info.textR_enable_custom_text
 	
 	if (instance.bars_sort_direction == 1) then --top to bottom
-		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
-			content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, nil, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+			content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, nil, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 			which_bar = which_bar+1
 		end
 		
 	elseif (instance.bars_sort_direction == 2) then --bottom to top
-		for i = instance.barS[2], instance.barS[1], 1 do --> vai atualizar só o range que this sendo mostrado
-			content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, nil, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+		for i = instance.barS[2], instance.barS[1], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+			content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, nil, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 			which_bar = which_bar+1
 		end
 		
@@ -686,7 +686,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 		end
 	end
 	
-	--> beta, hidar bars não usadas durante um refresh forçado
+	--> beta, hidar bars nï¿½o usadas durante um refresh forï¿½ado
 	if (force) then
 		if (instance.mode == 2) then --> group
 			for i = which_bar, instance.rows_fit_in_window  do
@@ -721,7 +721,7 @@ function attribute_misc:UpdateBar(instance, bars_container, which_bar, place, to
 
 	--print(self.ress)
 
-	local this_bar = instance.bars[which_bar] --> pega a referência da bar na window
+	local this_bar = instance.bars[which_bar] --> pega a referï¿½ncia da bar na window
 	
 	if (not this_bar) then
 		print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -805,8 +805,8 @@ function attribute_misc:RefreshBar2(this_bar, instance, table_previous, force, t
 			return self:RefreshBar(this_bar, instance)
 			
 		else
-			--> agora this comparando se a table da bar é diferente da table na atualização previous
-			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posição ou se ela apenas será atualizada
+			--> agora this comparando se a table da bar ï¿½ diferente da table na atualizaï¿½ï¿½o previous
+			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posiï¿½ï¿½o ou se ela apenas serï¿½ atualizada
 			
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -819,7 +819,7 @@ function attribute_misc:RefreshBar2(this_bar, instance, table_previous, force, t
 			
 				return self:RefreshBar(this_bar, instance)
 				
-			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table então compara a percentage
+			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table entï¿½o compara a percentage
 				--> apenas atualizar
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -949,7 +949,7 @@ end
 --------------------------------------------- // TOOLTIPS // ---------------------------------------------
 
 
----------> TOOLTIPS BIFURCAÇÃO
+---------> TOOLTIPS BIFURCAï¿½ï¿½O
 function attribute_misc:ToolTip(instance, number, bar, keydown)
 	--> seria possivel aqui colocar o icon da class dele?
 	GameTooltip:ClearLines()
@@ -1850,14 +1850,14 @@ end
 --------------------------------------------- // JANELA DETALHES // ---------------------------------------------
 
 
----------> DETALHES BIFURCAÇÃO
+---------> DETALHES BIFURCAï¿½ï¿½O
 function attribute_misc:SetInfo()
 	if (info.sub_attribute == 3) then --> interrupt
 		return self:SetInfoInterrupt()
 	end
 end
 
----------> DETALHES bloco da right BIFURCAÇÃO
+---------> DETALHES bloco da right BIFURCAï¿½ï¿½O
 function attribute_misc:SetDetails(spellid, bar)
 	if (info.sub_attribute == 3) then --> interrupt
 		return self:SetDetailsInterrupt(spellid, bar)
@@ -1906,18 +1906,18 @@ function attribute_misc:SetInfoInterrupt()
 
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo1(instance, index)
 			
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
-			bar.on_focus = false --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
+			bar.on_focus = false --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 
-		--> isso aqui é tudo da seleção e desceleção das bars
+		--> isso aqui ï¿½ tudo da seleï¿½ï¿½o e desceleï¿½ï¿½o das bars
 		
 		if (not info.showing_mouse_over) then
 			if (table[1] == self.details) then --> table[1] = spellid = spellid que this na caixa da right
-				if (not bar.on_focus) then --> se a bar não tiver no focus
+				if (not bar.on_focus) then --> se a bar nï¿½o tiver no focus
 					bar.texture:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 					bar.on_focus = true
 					if (not info.displaying) then
@@ -1944,7 +1944,7 @@ function attribute_misc:SetInfoInterrupt()
 		
 		bar.icon:SetTexture(table[5])
 
-		bar.my_table = self --> grava o player na barrinho... é estranho pq todas as bars vão ter o mesmo valor do player
+		bar.my_table = self --> grava o player na barrinho... ï¿½ estranho pq todas as bars vï¿½o ter o mesmo valor do player
 		bar.show = table[1] --> grava o spellid na bar
 		bar:Show() --> mostra a bar
 
@@ -2003,11 +2003,11 @@ function attribute_misc:SetInfoInterrupt()
 		end	
 		
 		--gump:TextBarOnInfo2(index, , )
-		-- o que mostrar no local do ícone?
+		-- o que mostrar no local do ï¿½cone?
 		--bar.icon:SetTexture(table[4][3])
 		
 		bar.my_table = self --> grava o player na table
-		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso é necessário?
+		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso ï¿½ necessï¿½rio?
 		
 		-- no place do spell id colocar o que?
 		--bar.spellid = table[5]
@@ -2061,9 +2061,9 @@ function attribute_misc:SetDetailsInterrupt(spellid, bar)
 	for index, table in _ipairs(abilities_targets) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -2134,7 +2134,7 @@ function attribute_misc:SetTooltipTargets(this_bar, index)
 end
 
 
---if (this_spell.counter == this_spell.c_amt) then --> só teve critical
+--if (this_spell.counter == this_spell.c_amt) then --> sï¿½ teve critical
 --	gump:SetaDetailInfoText(1, nil, nil, nil, nil, nil, "DPS: "..crit_dps)
 --end
 
@@ -2179,11 +2179,11 @@ end
 			end
 		end
 		
-	--> restore e liga o ator com a sua shadow durante a inicialização
+	--> restore e liga o ator com a sua shadow durante a inicializaï¿½ï¿½o
 	
 		function attribute_misc:r_onlyrefresh_shadow(actor)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_misc = _details.table_overall[4]
 				local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
 			
@@ -2308,7 +2308,7 @@ end
 	
 		function attribute_misc:r_connect_shadow(actor, no_refresh)
 		
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_misc = _details.table_overall[4]
 				local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
 			
@@ -2412,7 +2412,7 @@ end
 					--> verifica se tem o container
 						if (not shadow.buff_uptime_spell_targets) then
 							shadow.buff_uptime = 0
-							shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+							shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 							shadow.buff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 						end
 				
@@ -2457,7 +2457,7 @@ end
 					--verifica se tem o container
 						if (not shadow.interrupt_targets) then
 							shadow.interrupt = 0
-							shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+							shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 							shadow.interrupt_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 							shadow.interrompeu_oque = {}
 						end
@@ -2502,7 +2502,7 @@ end
 					--> verifica se tem o container
 						if (not shadow.ress_targets) then
 							shadow.ress = 0
-							shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+							shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 							shadow.ress_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 						end
 				
@@ -2525,7 +2525,7 @@ end
 					--> verifica se tem o container
 						if (not shadow.dispell_targets) then
 							shadow.dispell = 0
-							shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+							shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 							shadow.dispell_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 							shadow.dispell_oque = {}
 						end
@@ -2570,7 +2570,7 @@ end
 					--> verifica se tem o container
 						if (not shadow.cc_break) then
 							shadow.cc_break = 0
-							shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+							shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 							shadow.cc_break_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 							shadow.cc_break_oque = {}
 						end
@@ -2626,10 +2626,10 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh interrupts
 	if (this_player.interrupt_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.interrupt_targets) then
 				shadow.interrupt = 0
-				shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				shadow.interrupt_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 				shadow.interrompeu_oque = {}
 			end
@@ -2640,10 +2640,10 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh buff uptime
 	if (this_player.buff_uptime_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.buff_uptime_spell_targets) then
 				shadow.buff_uptime = 0
-				shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				shadow.buff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 			end
 		--> recupera metas e indexes
@@ -2653,7 +2653,7 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh buff uptime
 	if (this_player.debuff_uptime_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.debuff_uptime_targets) then
 				shadow.debuff_uptime = 0
 				if (this_player.boss_debuff) then
@@ -2675,7 +2675,7 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh cooldowns defensive
 	if (this_player.cooldowns_defensive_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.cooldowns_defensive_targets) then
 				shadow.cooldowns_defensive = 0
 				shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target)
@@ -2688,10 +2688,10 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh ressers
 	if (this_player.ress_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.ress_targets) then
 				shadow.ress = 0
-				shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				shadow.ress_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 			end
 		--> recupera metas e indexes
@@ -2701,10 +2701,10 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh dispells
 	if (this_player.dispell_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.dispell_targets) then
 				shadow.dispell = 0
-				shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				shadow.dispell_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 				shadow.dispell_oque = {}
 			end
@@ -2715,10 +2715,10 @@ function _details.refresh:r_attribute_misc(this_player, shadow)
 	
 	--> refresh cc_breaks
 	if (this_player.cc_break_targets) then
-		--> constrói os containers na shadow se não existir
+		--> constrï¿½i os containers na shadow se nï¿½o existir
 			if (not shadow.cc_break) then
 				shadow.cc_break = 0
-				shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+				shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 				shadow.cc_break_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
 				shadow.cc_break_oque = {}
 			end
@@ -2843,7 +2843,7 @@ attribute_misc.__add = function(table1, table2)
 	
 		if (not table1.buff_uptime) then
 			table1.buff_uptime = 0
-			table1.buff_uptime_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			table1.buff_uptime_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			table1.buff_uptime_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
 		end
 	
@@ -2913,7 +2913,7 @@ attribute_misc.__add = function(table1, table2)
 	
 		if (not table1.cooldowns_defensive) then
 			table1.cooldowns_defensive = 0
-			table1.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			table1.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			table1.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
 		end
 	
@@ -3015,7 +3015,7 @@ attribute_misc.__add = function(table1, table2)
 	
 		if (not table1.cc_break) then
 			table1.cc_break = 0
-			table1.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irá usar apenas o .total
+			table1.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois irï¿½ usar apenas o .total
 			table1.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			table1.cc_break_oque = {}
 		end

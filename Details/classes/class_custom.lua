@@ -398,13 +398,13 @@
 				
 				gump:Fade(row1, "out")
 				
-				for i = iter_last, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
+				for i = iter_last, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
 					instance_container._ActorTable[i]:UpdateBar(bars_container, which_bar, percentage_type, i, total, top, instance, force, percent_script, total_script, combat)
 					which_bar = which_bar+1
 				end
 			
 			else
-				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
+				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
 					instance_container._ActorTable[i]:UpdateBar(bars_container, which_bar, percentage_type, i, total, top, instance, force, percent_script, total_script, combat)
 					which_bar = which_bar+1
 				end
@@ -506,8 +506,8 @@
 				return self:RefreshBar(this_bar, instance)
 				
 			else
-				--> agora this comparando se a table da bar é diferente da table na atualização previous
-				if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posição ou se ela apenas será atualizada
+				--> agora this comparando se a table da bar ï¿½ diferente da table na atualizaï¿½ï¿½o previous
+				if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posiï¿½ï¿½o ou se ela apenas serï¿½ atualizada
 				
 					this_bar.statusbar:SetValue(this_percentage)
 				
@@ -520,7 +520,7 @@
 					
 					return self:RefreshBar(this_bar, instance)
 					
-				elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table então compara a percentage
+				elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table entï¿½o compara a percentage
 					--> apenas atualizar
 					if (_details.is_using_row_animations) then
 						
