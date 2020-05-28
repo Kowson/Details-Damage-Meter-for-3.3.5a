@@ -47,11 +47,11 @@ local ulduar = {
 	},
 	
 	find_boss_encounter = function()
-		--> find Assembly of Iron (this encounter doesn't have a boss frames before Assembly of Iron comes into in play)
+		--> find Assembly of Iron 
 		if (_details.table_current and _details.table_current[1] and _details.table_current[1]._ActorTable) then
 			for _, damage_actor in ipairs (_details.table_current[1]._ActorTable) do
 				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
-				if (serial == 73909) then --Archmage Aethas Sunreaver
+				if (serial == 32867) then --Assembly of Iron Guy
 					return 5 --> Assembly of Iron boss index
 				end
 			end
@@ -60,47 +60,47 @@ local ulduar = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			852, 849, 866, 867, 881, 864, 856, 850, 846, 870, 851, 865, 853, 869,
+		744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757,
 		-- The Siege of Ulduar
-			[852] = 1, -- Flame Leviathan
-			[849] = 2, -- Ignis the Furnace Master
-			[866] = 3, -- Razorscale
-			[867] = 4, -- XT-002 Deconstructor
+			[744] = 1, -- Flame Leviathan
+			[745] = 2, -- Ignis the Furnace Master
+			[746] = 3, -- Razorscale
+			[747] = 4, -- XT-002 Deconstructor
 		-- The Antechamber of Ulduar
-			[881] = 5, -- Assembly of Iron
-			[864] = 6, -- Kologarn
-			[856] = 7, -- Auriaya
+			[748] = 5, -- Assembly of Iron
+			[749] = 6, -- Kologarn
+			[750] = 7, -- Auriaya
 		-- The Keepers of Ulduar
-			[850] = 8, -- Hodir
-			[846] = 9, -- Thorim
-			[870] = 10, -- Freya
-			[851] = 11, -- Mimiron
+			[751] = 8, -- Hodir
+			[752] = 9, -- Thorim
+			[753] = 10, -- Freya
+			[754] = 11, -- Mimiron
 		-- The Descent Into Madness
-			[865] = 12, -- General Vezax
-			[853] = 13, -- Yogg-Saron
+			[755] = 12, -- General Vezax
+			[756] = 13, -- Yogg-Saron
 		-- Supermassive
-			[869] = 14, -- Algalon
+			[757] = 14, -- Algalon
 	},
 	
 	encounter_ids2 = {
 		-- The Siege of Ulduar
-			[1602] = 1, -- Flame Leviathan
-			[1598] = 2, -- Ignis the Furnace Master
-			[1624] = 3, -- Razorscale
-			[1604] = 4, -- XT-002 Deconstructor
+			[758] = 1, -- Flame Leviathan
+			[759] = 2, -- Ignis the Furnace Master
+			[760] = 3, -- Razorscale
+			[761] = 4, -- XT-002 Deconstructor
 		-- The Antechamber of Ulduar
-			[1622] = 5, -- Assembly of Iron
-			[1600] = 6, -- Kologarn
-			[1606] = 7, -- Auriaya
-			[1603] = 8, -- Hodir
+			[762] = 5, -- Assembly of Iron
+			[763] = 6, -- Kologarn
+			[762] = 7, -- Auriaya
+			[763] = 8, -- Hodir
 		-- The Keepers of Ulduar
-			[1595] = 9, -- Thorim
-			[1594] = 10, -- Freya
-			[1599] = 11, -- Mimiron
+			[764] = 9, -- Thorim
+			[765] = 10, -- Freya
+			[766] = 11, -- Mimiron
 		-- The Descent Into Madness
-			[1601] = 12, -- General Vezax
-			[1593] = 13, -- Yogg-Saron
-			[1623] = 14, -- Algalon
+			[767] = 12, -- General Vezax
+			[768] = 13, -- Yogg-Saron
+			[769] = 14, -- Algalon
 	},
 	
 	boss_ids = {
@@ -130,98 +130,6 @@ local ulduar = {
 	},
 	
 	trash_ids = {
-		-- Flame Leviathan
-		[34164] = true, -- Mechagnome Battletank
-		[34234] = true, -- Runeforged Sentry
-		[33572] = true, -- Steelforged Defender
-		[33237] = true, -- Ulduar Colossus
-		
-		-- Razorscale
-		[72655] = true, --Fragment of Pride
-		[72658] = true, --Amalmated Hubris
-		[72662] = true, --Vanity
-		[72663] = true, --Arrogance
-		[72661] = true, --Zeal
-		
-		--XT-002 Deconstructor
-		[72791] = true, --lingering corruption
-		
-		--Assembly of Iron
-		--[72367] = true, --dragonmaw tidal shaman
-		--[72354] = true, --dragonmaw bonecrusher
-		[72365] = true, --dragonmaw canoner
-		[72350] = true, --dragonmaw elite grunt
-		--[72351] = true, --dragonmaw flamebarer
-		
-		--> shamans
-		[72412] = true, -- korkron grunt
-		[72150] = true, -- kro kron shadowmage
-		[72451] = true, --
-		[72455] = true, --
-		[72490] = true, --overseer mojka
-		[72434] = true, --tresure guard
-		[72421] = true, --korkron overseer
-		[72452] = true, --dire wolf
-		[72496] = true, --overseer thathung
-		[72562] = true, --poison bolt toten
-		
-		--> nazgrim
-		[72131] = true, -- blind blade master
-		[72191] = true, -- overlord runthak
-		[72194] = true, -- hellscreen demolisher
-		[72564] = true, -- doom lord
-		[71771] = true, -- korkron arcweaver
-		[71772] = true, -- korkron assassin
-		[71773] = true, -- krokron warshaman
-		[71770] = true, -- krokron iron blade
-		--[71715] = true, -- orgrimmar faithful -- also is used in nazgrim encounter
-		
-		--> Thorim
-		[72728] = true, --korkron blood axe
-		[72784] = true, --korkron gunner
-		[72903] = true, --korkron siegemaster
-		[72744] = true, --korkron skullspliter
-		[72768] = true, --korkron warwolf
-		[72770] = true, --korkron darkfarseer
-		
-		--> Freya
-		[73904] = true, --korkron iron sentinel
-		[73742] = true, --thresher turret
-		[73767] = true, --korkron shrederer
-		[73775] = true, --war master kragg
-		[73152] = true, --storeroom guard
-		
-		--> blackfuse
-		[73539] = true, --korkron den mother
-		[73541] = true, --korkron wolf puppy
-		[73194] = true, --korkron iron scorpion
-		--
-		[72981] = true, --aggron
-		[72964] = true, --gorodan
-		[72986] = true, --shanna sparkfizz
-		[73091] = true, --blackfuse sellsword
-		[73095] = true, --blackfuse enginer
-		
-		--> thok
-		--73195 --krokon jailer
-		[73188] = true, --captive cave bat
-		[73184] = true, --starved yeti
-		[73185] = true, --enraged mushan beast
-		[73223] = true, --pterrodax
-		
-		--> paragons
-		[72954] = true, --korthik guard
-		[72929] = true, --srathik amber master
-		[73012] = true, --klaxxi skirmisher
-		[72927] = true, --kovok
-
-		--> garrosh
-		[73414] = true, --korkron reaper
-		[73452] = true, --harbinger of y'shaarj
-		[73415] = true, --ichor of y'shaarj
-		
-		
-		
 	},
 	
 	encounters = {
@@ -559,36 +467,36 @@ local ulduar = {
 			},
 			
 			continuo = {
-	63356, -- SPELL_OVERHEAD_SMASH_10				=
-	64003, -- SPELL_OVERHEAD_SMASH_25				=
-	63573, -- SPELL_ONEARMED_OVERHEAD_SMASH_10	=
-	64006, -- SPELL_ONEARMED_OVERHEAD_SMASH_25	=
-	62030, -- SPELL_PETRIFYING_BREATH_10			=
-	63980, -- SPELL_PETRIFYING_BREATH_25			=
-	63716, -- SPELL_STONE_SHOUT_10				=
-	64005, -- SPELL_STONE_SHOUT_25				=
+				63356, -- SPELL_OVERHEAD_SMASH_10				=
+				64003, -- SPELL_OVERHEAD_SMASH_25				=
+				63573, -- SPELL_ONEARMED_OVERHEAD_SMASH_10	=
+				64006, -- SPELL_ONEARMED_OVERHEAD_SMASH_25	=
+				62030, -- SPELL_PETRIFYING_BREATH_10			=
+				63980, -- SPELL_PETRIFYING_BREATH_25			=
+				63716, -- SPELL_STONE_SHOUT_10				=
+				64005, -- SPELL_STONE_SHOUT_25				=
 
-	63347, -- SPELL_FOCUSED_EYEBEAM_10			=
-	63977, -- SPELL_FOCUSED_EYEBEAM_25			=
-	63676, -- SPELL_FOCUSED_EYEBEAM_RIGHT			= -- NPC -> KOLOGARN
-	63352, -- SPELL_FOCUSED_EYEBEAM_LEFT			= -- KOLOGARN -> NPC
+				63347, -- SPELL_FOCUSED_EYEBEAM_10			=
+				63977, -- SPELL_FOCUSED_EYEBEAM_25			=
+				63676, -- SPELL_FOCUSED_EYEBEAM_RIGHT			= -- NPC -> KOLOGARN
+				63352, -- SPELL_FOCUSED_EYEBEAM_LEFT			= -- KOLOGARN -> NPC
 
-	63629, -- SPELL_ARM_DEAD_10					=
-	63979, -- SPELL_ARM_DEAD_25					=
-	63821, -- SPELL_RUBBLE_FALL_10				=
-	64001, -- SPELL_RUBBLE_FALL_25				=
-	64753, -- SPELL_ARM_RESPAWN_VISUAL			=
+				63629, -- SPELL_ARM_DEAD_10					=
+				63979, -- SPELL_ARM_DEAD_25					=
+				63821, -- SPELL_RUBBLE_FALL_10				=
+				64001, -- SPELL_RUBBLE_FALL_25				=
+				64753, -- SPELL_ARM_RESPAWN_VISUAL			=
 
-	63766, -- SPELL_ARM_SWEEP_10					=
-	63983, -- SPELL_ARM_SWEEP_25					=
+				63766, -- SPELL_ARM_SWEEP_10					=
+				63983, -- SPELL_ARM_SWEEP_25					=
 
-	62166, -- SPELL_STONE_GRIP_10					=
-	63981, -- SPELL_STONE_GRIP_25					=
-	62056, -- SPELL_RIDE_RIGHT_ARM_10				=
-	63985, -- SPELL_RIDE_RIGHT_ARM_25				=
+				62166, -- SPELL_STONE_GRIP_10					=
+				63981, -- SPELL_STONE_GRIP_25					=
+				62056, -- SPELL_RIDE_RIGHT_ARM_10				=
+				63985, -- SPELL_RIDE_RIGHT_ARM_25				=
 
-	63818, -- SPELL_RUBBLE_ATTACK_10				=
-	63978, -- SPELL_RUBBLE_ATTACK_25				=
+				63818, -- SPELL_RUBBLE_ATTACK_10				=
+				63978, -- SPELL_RUBBLE_ATTACK_25				=
 			},
 			
 			phases = { 
@@ -644,7 +552,7 @@ local ulduar = {
 			phases = { 
 				{ --> phase 1: 
 					adds = {
-						33515, --> Earthbreaker Haromm
+						33515, --> Auriaya
 						34035, --> Feral Defender
 						34014, --> Sanctum Sentry
 					},

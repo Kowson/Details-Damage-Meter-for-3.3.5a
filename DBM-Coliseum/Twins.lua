@@ -46,7 +46,7 @@ local debuffTargets					= {}
 local debuffIcon					= 8
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 204, "Twin Val'kyr")
+	DBM:FireCustomEvent("DBM_EncounterStart", 641, "Twin Val'kyr")
 	timerSpecial:Start(-delay)
 	warnSpecial:Schedule(40-delay)
 	timerAchieve:Start(-delay)
@@ -59,7 +59,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 204, "Twin Val'kyr", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 641, "Twin Val'kyr", wipe)
 end
 
 local lightEssence = GetSpellInfo(67223)

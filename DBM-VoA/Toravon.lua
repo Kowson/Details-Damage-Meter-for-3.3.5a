@@ -26,9 +26,14 @@ local timerNextOrb			= mod:NewNextTimer(32, 72095)
 --local timerToravonEnrage	= mod:NewTimer(300, "ToravonEnrage", 26662)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 885, "Toravon the Ice Watcher")
 	timerNextOrb:Start(13-delay)
 	timerWhiteout:Start(25-delay)
 --	timerToravonEnrage:Start(-delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 885, "Toravon the Ice Watcher", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

@@ -33,6 +33,7 @@ mod:AddBoolOption("RangeFrame")
 
 local overchargedMob
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 774, "Emalon the Storm Watcher")
 	overchargedMob = nil
 	timerOvercharge:Start(-delay)
 	timerNovaCD:Start(20-delay)
@@ -42,7 +43,8 @@ function mod:OnCombatStart(delay)
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 774, "Archavon the Stone Watcher", wipe)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end

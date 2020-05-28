@@ -37,7 +37,7 @@ mod:AddBoolOption("RangeFrame")
 local lastcharge				= {} 
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 846, "Thorim")
+	DBM:FireCustomEvent("DBM_EncounterStart", 752, "Thorim")
 	enrageTimer:Start()
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Show(10)
@@ -51,7 +51,7 @@ local function sortFails1C(e1, e2)
 end
 
 function mod:OnCombatEnd()
-	DBM:FireCustomEvent("DBM_EncounterEnd", 846, "Thorim", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 752, "Thorim", wipe)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end

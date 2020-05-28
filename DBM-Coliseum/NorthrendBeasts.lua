@@ -102,7 +102,7 @@ local function updateHealthFrame(phase)
 end
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 201, "Beasts of Northrend")
+	DBM:FireCustomEvent("DBM_EncounterStart", 629, "Beasts of Northrend")
 	table.wipe(bileTargets)
 	table.wipe(toxinTargets)
 	table.wipe(phases)
@@ -117,7 +117,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 201, "Beasts of Northrend", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 629, "Beasts of Northrend", wipe)
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()
 	end

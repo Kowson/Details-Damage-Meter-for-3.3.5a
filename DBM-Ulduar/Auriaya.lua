@@ -48,7 +48,7 @@ local isFeared			= false
 local catLives = 9
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 856, "Auriaya")
+	DBM:FireCustomEvent("DBM_EncounterStart", 750, "Auriaya")
 	catLives = 9
 	enrageTimer:Start(-delay)
 	timerNextFear:Start(35-delay) 
@@ -57,7 +57,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 856, "Auriaya", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 750, "Auriaya", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

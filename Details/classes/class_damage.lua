@@ -119,7 +119,7 @@
 				_table_sort(container,  _details.SortKeySimple)
 				
 				if (amount) then 
-					for i = amount, 1, -1 do --> de trás pra frente
+					for i = amount, 1, -1 do --> de trï¿½s pra frente
 						if (container[i][keyName] < 1) then
 							amount = amount-1
 						else
@@ -169,7 +169,7 @@
 				local total = 0
 				
 				for index, player in _ipairs(container) do
-					if (_bit_band(player.flag_original, 0x00000060) ~= 0) then --> é um enemy
+					if (_bit_band(player.flag_original, 0x00000060) ~= 0) then --> ï¿½ um enemy
 						total = total + player[keyName]
 					else
 						amount = index-1
@@ -330,7 +330,7 @@
 		local name = frag[1]
 		local GameCooltip = GameCooltip
 		
-		--> mantendo a função o mais low level possível
+		--> mantendo a funï¿½ï¿½o o mais low level possï¿½vel
 		local damage_container = instance.showing[1]
 		
 		local frag_actor = damage_container._ActorTable[damage_container._NameIndexTable[ name ]]
@@ -346,11 +346,11 @@
 			
 				local damager_actor = damage_container._ActorTable[damage_container._NameIndexTable[ aggressor ]]
 				
-				if (damager_actor and not damager_actor.owner) then --> checagem por causa do total e do garbage collector que não limpa os names que deram damage
+				if (damager_actor and not damager_actor.owner) then --> checagem por causa do total e do garbage collector que nï¿½o limpa os names que deram damage
 				
 					local targets = damager_actor.targets
 					
-					local specific_target = targets._ActorTable[targets._NameIndexTable[ name ]] --> é ele mesmo
+					local specific_target = targets._ActorTable[targets._NameIndexTable[ name ]] --> ï¿½ ele mesmo
 					if (specific_target) then
 						damage_taken_table[#damage_taken_table+1] = {aggressor, specific_target.total, damager_actor.class}
 					end
@@ -438,8 +438,8 @@
 
 	function attribute_damage:ActualizeFrags(table, which_bar, placing, instance)
 
-		table["frags"] = true --> marca que this table é uma table de frags, usado no controla na hora de preparer o tooltip
-		local this_bar = instance.bars[which_bar] --> pega a referência da bar na window
+		table["frags"] = true --> marca que this table ï¿½ uma table de frags, usado no controla na hora de preparer o tooltip
+		local this_bar = instance.bars[which_bar] --> pega a referï¿½ncia da bar na window
 		
 		if (not this_bar) then
 			print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -483,7 +483,7 @@
 			gump:Fade(this_bar, "out")
 		end
 
-		--> ele nao come o text quando a instância this muito pequena
+		--> ele nao come o text quando a instï¿½ncia this muito pequena
 		this_bar.texture:SetVertexColor(_unpack(_details.class_colors[table[3]]))
 		
 		if (table[3] == "UNKNOW" or table[3] == "UNGROUPPLAYER" or table[3] == "ENEMY") then
@@ -610,7 +610,7 @@
 
 	function attribute_misc:ActualizeVoidZone(which_bar, placing, instance)
 
-		--> pega a referência da bar na window
+		--> pega a referï¿½ncia da bar na window
 		local this_bar = instance.bars[which_bar]
 		
 		if (not this_bar) then
@@ -684,7 +684,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 	
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
 
-	--> não há bars para mostrar -- not have something to show
+	--> nï¿½o hï¿½ bars para mostrar -- not have something to show
 	if (#showing._ActorTable < 1) then 
 		--> colocado isso recentemente para do as bars de damage sumirem na troca de attribute
 		return _details:HideBarsNotUsed(instance, showing) 
@@ -697,12 +697,12 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 	
 	local using_cache = false
 	
-	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instância
+	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis instï¿½ncia
 	local content = showing._ActorTable --> pega a list de players -- get actors table from container
 	local amount = #content
 	local mode = instance.mode
 	
-	--> pega which a sub key que será usada --sub keys
+	--> pega which a sub key que serï¿½ usada --sub keys
 	if (export) then
 	
 		if (_type(export) == "boolean") then 		
@@ -817,7 +817,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 		local bars_container = instance.bars
 
 		
-		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
+		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
 			attribute_damage:ActualizeFrags(ntable[i], which_bar, i, instance)
 			which_bar = which_bar+1
 		end
@@ -834,7 +834,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			if (actor.boss_debuff) then
 				index = index + 1
 			
-				--pega no container de damage o actor responsável por aplicar o debuff
+				--pega no container de damage o actor responsï¿½vel por aplicar o debuff
 				local twin_damage_actor = showing._NameIndexTable[actor.damage_twin] or showing._NameIndexTable["[*] " .. actor.damage_twin]
 				
 				if (twin_damage_actor) then
@@ -921,7 +921,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 		local which_bar = 1
 		local bars_container = instance.bars
 
-		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
+		for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
 			vtable[i]:ActualizeVoidZone(which_bar, i, instance)
 			which_bar = which_bar+1
 		end
@@ -1005,11 +1005,11 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			--
 			if (not using_cache) then
 				for index, player in _ipairs(content) do
-					if (player.group) then --> é um player e this em group
+					if (player.group) then --> ï¿½ um player e this em group
 						if (player[keyName] < 1) then --> damage menor que 1, interromper o loop
 							amount = index - 1
 							break
-						elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? não daria pra pega-lo com uma chave[1] nad group == true?
+						elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? nï¿½o daria pra pega-lo com uma chave[1] nad group == true?
 							instance.top = content[1][keyName]
 						end
 						
@@ -1033,7 +1033,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 		return total, keyName, instance.top, amount
 	end
 
-	if (amount < 1) then --> não há bars para mostrar
+	if (amount < 1) then --> nï¿½o hï¿½ bars para mostrar
 		if (force) then
 			if (instance.mode == 2) then --> group
 				for i = 1, instance.rows_fit_in_window  do
@@ -1048,7 +1048,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 	instance:ActualizeScrollBar(amount)
 
 	local which_bar = 1
-	local bars_container = instance.bars --> evita buscar N vezes a key .bars dentro da instância
+	local bars_container = instance.bars --> evita buscar N vezes a key .bars dentro da instï¿½ncia
 	local percentage_type = instance.row_info.percent_type
 	local baseframe = instance.baseframe
 	
@@ -1120,32 +1120,32 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], iter_last-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], iter_last-1, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], iter_last, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], iter_last, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
 
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[1], instance.barS[2]-1, 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], instance.barS[2]-1, 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[1], instance.barS[2], 1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
@@ -1176,31 +1176,31 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			gump:Fade(row1, "out")
 			
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = iter_last, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = iter_last, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
 		else
 			if (following and myPos and myPos > instance.rows_fit_in_window and instance.barS[2] < myPos) then
-				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2]-1, instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 				
-				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				content[myPos]:UpdateBar(instance, bars_container, which_bar, myPos, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 				which_bar = which_bar+1
 			else
-				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar só o range que this sendo mostrado
-					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instância, index, total, valor da 1º bar
+				for i = instance.barS[2], instance.barS[1], -1 do --> vai atualizar sï¿½ o range que this sendo mostrado
+					content[i]:UpdateBar(instance, bars_container, which_bar, i, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations) --> instï¿½ncia, index, total, valor da 1ï¿½ bar
 					which_bar = which_bar+1
 				end
 			end
@@ -1223,7 +1223,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 		end
 	end
 	
-	--> beta, hidar bars não usadas durante um refresh forçado
+	--> beta, hidar bars nï¿½o usadas durante um refresh forï¿½ado
 	if (force) then
 		if (instance.mode == 2) then --> group
 			for i = which_bar, instance.rows_fit_in_window  do
@@ -1237,7 +1237,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 end
 
 function attribute_damage:Custom(_customName, _combat, sub_attribute, spell, dst)
-	--> vai ter só o que a spell causou em alguém
+	--> vai ter sï¿½ o que a spell causou em alguï¿½m
 	--print(spell)
 	--print(self.name)
 	--print(self.spell_tables._ActorTable)
@@ -1280,9 +1280,9 @@ local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 --self = this class de damage
 function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations)
-							-- instância, container das bars, which bar, colocação, total?, sub attribute, forçar refresh, key
+							-- instï¿½ncia, container das bars, which bar, colocaï¿½ï¿½o, total?, sub attribute, forï¿½ar refresh, key
 	
-	local this_bar = bars_container[which_bar] --> pega a referência da bar na window
+	local this_bar = bars_container[which_bar] --> pega a referï¿½ncia da bar na window
 	
 	if (not this_bar) then
 		print("DEBUG: problema com <instance.this_bar> "..which_bar.." "..place)
@@ -1291,11 +1291,11 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 	
 	local table_previous = this_bar.my_table
 	
-	this_bar.my_table = self --> grava uma referência desse objeto na bar
-	self.my_bar = this_bar --> grava uma referência da bar no objeto
+	this_bar.my_table = self --> grava uma referï¿½ncia desse objeto na bar
+	self.my_bar = this_bar --> grava uma referï¿½ncia da bar no objeto
 	
-	this_bar.placing = place --> salva na bar which a colocação mostrada.
-	self.placing = place --> salva no objeto which a colocação mostrada
+	this_bar.placing = place --> salva na bar which a colocaï¿½ï¿½o mostrada.
+	self.placing = place --> salva no objeto which a colocaï¿½ï¿½o mostrada
 	
 	local damage_total = self.total --> total de damage que this player deu
 	local dps
@@ -1309,7 +1309,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 		percentage = _cstr("%.1f", self[keyName] / instance.top * 100)
 	end
 
-	--time da shadow não é mais calcuside pela timemachine
+	--time da shadow nï¿½o ï¿½ mais calcuside pela timemachine
 	if ((_details.time_type == 2 and self.group) or not _details:CaptureGet("damage") or not self.shadow) then --not self.shadow is overall but...
 		if (not self.shadow and combat_time == 0) then
 			local p = _details.table_current(1, self.name)
@@ -1330,7 +1330,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			dps = damage_total/self:Time() --calcula o dps dthis objeto
 			self.last_dps = dps --salva o dps dele
 		else
-			if (self.last_dps == 0) then --> não calculou o dps dele ainda mas entrou em standby
+			if (self.last_dps == 0) then --> nï¿½o calculou o dps dele ainda mas entrou em standby
 				dps = damage_total/self:Time()
 				self.last_dps = dps
 			else
@@ -1467,8 +1467,8 @@ end
 			return self:RefreshBar(this_bar, instance)
 			
 		else
-			--> agora this comparando se a table da bar é diferente da table na atualização previous
-			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posição ou se ela apenas será atualizada
+			--> agora this comparando se a table da bar ï¿½ diferente da table na atualizaï¿½ï¿½o previous
+			if (not table_previous or table_previous ~= this_bar.my_table or force) then --> aqui diz se a bar do player mudou de posiï¿½ï¿½o ou se ela apenas serï¿½ atualizada
 			
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -1481,7 +1481,7 @@ end
 				
 				return self:RefreshBar(this_bar, instance)
 				
-			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table então compara a percentage
+			elseif (this_percentage ~= this_bar.last_value) then --> continua showing a mesma table entï¿½o compara a percentage
 				--> apenas atualizar
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
@@ -1625,7 +1625,7 @@ end
 
 
 
----------> TOOLTIPS BIFURCAÇÃO
+---------> TOOLTIPS BIFURCAï¿½ï¿½O
 
 function attribute_damage:ToolTip(instance, number, bar, keydown)
 	--> seria possivel aqui colocar o icon da class dele?
@@ -1906,7 +1906,7 @@ function attribute_damage:ToolTip_DamageTaken(instance, number, bar, keydown)
 
 	for name, _ in _pairs(agressores) do --> agressores seria a list de names
 		local this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
-		if (this_agressor) then --> checagem por causa do total e do garbage collector que não limpa os names que deram damage
+		if (this_agressor) then --> checagem por causa do total e do garbage collector que nï¿½o limpa os names que deram damage
 			local targets = this_agressor.targets
 			local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
 			if (this_dst) then
@@ -2087,7 +2087,7 @@ end
 --------------------------------------------- // JANELA DETALHES // ---------------------------------------------
 
 
----------> DETALHES BIFURCAÇÃO
+---------> DETALHES BIFURCAï¿½ï¿½O
 function attribute_damage:SetInfo()
 	if (info.sub_attribute == 1 or info.sub_attribute == 2 or info.sub_attribute == 6) then --> damage done & dps
 		return self:SetInfoDamageDone()
@@ -2098,7 +2098,7 @@ function attribute_damage:SetInfo()
 	end
 end
 
----------> DETALHES bloco da right BIFURCAÇÃO
+---------> DETALHES bloco da right BIFURCAï¿½ï¿½O
 function attribute_damage:SetDetails(spellid, bar)
 	if (info.sub_attribute == 1 or info.sub_attribute == 2) then
 		return self:SetDetailsDamageDone(spellid, bar)
@@ -2107,7 +2107,7 @@ function attribute_damage:SetDetails(spellid, bar)
 	elseif (info.sub_attribute == 4) then
 		return self:SetDetailsFriendlyFire(spellid, bar)
 	elseif (info.sub_attribute == 6) then
-		if (_bit_band(self.flag_original, 0x00000400) ~= 0) then --é um player
+		if (_bit_band(self.flag_original, 0x00000400) ~= 0) then --ï¿½ um player
 			return self:SetDetailsDamageDone(spellid, bar)
 		end
 		return self:SetDetailsEnemy(spellid, bar)
@@ -2166,7 +2166,7 @@ function attribute_damage:SetInfoFriendlyFire()
 		
 		if (not info.showing_mouse_over) then
 			if (table[1] == self.details) then --> table[1] = NOME = NOME que this na caixa da right
-				if (not bar.on_focus) then --> se a bar não tiver no focus
+				if (not bar.on_focus) then --> se a bar nï¿½o tiver no focus
 					bar.texture:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 					bar.on_focus = true
 					if (not info.displaying) then
@@ -2352,7 +2352,7 @@ end
 --[[exported]] function _details:FocusLock(row, spellid)
 	if (not info.showing_mouse_over) then
 		if (spellid == self.details) then --> table[1] = spellid = spellid que this na caixa da right
-			if (not row.on_focus) then --> se a bar não tiver no focus
+			if (not row.on_focus) then --> se a bar nï¿½o tiver no focus
 				row.texture:SetStatusBarColor(129/255, 125/255, 69/255, 1)
 				row.on_focus = true
 				if (not info.displaying) then
@@ -2473,9 +2473,9 @@ function attribute_damage:SetInfoDamageDone()
 		for index, table in _ipairs(mine_agressores) do
 			bar = bars[index]
 
-			if (not bar) then --> se a bar não existir, create ela então
+			if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 				bar = gump:CreateNewBarInfo2(instance, index)
-				bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+				bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 			end
 			
 			if (index == 1) then
@@ -2509,7 +2509,7 @@ function attribute_damage:SetInfoDamageDone()
 			end
 			
 			bar.my_table = self --> grava o player na table
-			bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso é necessário?
+			bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso ï¿½ necessï¿½rio?
 			
 			-- no place do spell id colocar o que?
 			bar.spellid = "enemies"
@@ -2572,7 +2572,7 @@ function attribute_damage:SetInfoDamageDone()
 			end
 			
 			bar.my_table = self --> grava o player na table
-			bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso é necessário?
+			bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso ï¿½ necessï¿½rio?
 			
 			-- no place do spell id colocar o que?
 			bar.spellid = table[5]
@@ -2595,12 +2595,12 @@ function attribute_damage:SetDetailsFriendlyFire(name, bar)
 	local combat_table = info.instance.showing
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
 
-	--> será apresentada as spells que deram damage no player dst
+	--> serï¿½ apresentada as spells que deram damage no player dst
 	
 	local friendlyfire = self.friendlyfire
 
 	local total = friendlyfire._ActorTable[friendlyfire._NameIndexTable[name]].total
-	local content = friendlyfire._ActorTable[friendlyfire._NameIndexTable[name]].spell_tables._ActorTable --> assumindo que name é o name do Target que tomou damage // bastaria pegar a table de abilities dele
+	local content = friendlyfire._ActorTable[friendlyfire._NameIndexTable[name]].spell_tables._ActorTable --> assumindo que name ï¿½ o name do Target que tomou damage // bastaria pegar a table de abilities dele
 
 	local my_spells = {}
 
@@ -2620,9 +2620,9 @@ function attribute_damage:SetDetailsFriendlyFire(name, bar)
 	for index, table in _ipairs(my_spells) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -2681,9 +2681,9 @@ function attribute_damage:SetDetailsEnemy(spellid, bar)
 	for index, table in _ipairs(target_pool) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -2771,9 +2771,9 @@ function attribute_damage:SetDetailsDamageTaken(name, bar)
 	for index, table in _ipairs(my_spells) do
 		bar = bars[index]
 
-		if (not bar) then --> se a bar não existir, create ela então
+		if (not bar) then --> se a bar nï¿½o existir, create ela entï¿½o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui é a parte da seleção e desceleção
+			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui ï¿½ a parte da seleï¿½ï¿½o e desceleï¿½ï¿½o
 		end
 		
 		if (index == 1) then
@@ -3152,7 +3152,7 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> core functions
 
-	--> limpa as tables timerárias ao reset
+	--> limpa as tables timerï¿½rias ao reset
 		function attribute_damage:ClearTempTables()
 			for i = #ntable, 1, -1 do
 				ntable[i] = nil
@@ -3191,9 +3191,9 @@ end
 			--actor.last_events_table = _details:CreateActorLastEventTable()
 		end
 		
-	--> restore e liga o ator com a sua shadow durante a inicialização(startup function)
+	--> restore e liga o ator com a sua shadow durante a inicializaï¿½ï¿½o(startup function)
 		function attribute_damage:r_onlyrefresh_shadow(actor)
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_damage = _details.table_overall[1]
 				local shadow = overall_damage._ActorTable[overall_damage._NameIndexTable[actor.name]]
 				
@@ -3255,7 +3255,7 @@ end
 		
 		function attribute_damage:r_connect_shadow(actor, no_refresh)
 	
-			--> create uma shadow desse ator se ainda não tiver uma
+			--> create uma shadow desse ator se ainda nï¿½o tiver uma
 				local overall_damage = _details.table_overall[1]
 				local shadow = overall_damage._ActorTable[overall_damage._NameIndexTable[actor.name]]
 				
@@ -3421,7 +3421,7 @@ function _details.clear:c_attribute_damage_FF(container)
 		
 		for _, ability in _pairs(abilities._ActorTable) do
 			_details.clear:c_ability_damage(ability)
-			--pode parar aqui, o container de targets não é usado no friendly fire
+			--pode parar aqui, o container de targets nï¿½o ï¿½ usado no friendly fire
 		end
 	end	
 end

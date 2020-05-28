@@ -82,7 +82,7 @@ local function warnNapalmShellTargets()
 end
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 851, "Mimiron")
+	DBM:FireCustomEvent("DBM_EncounterStart", 754, "Mimiron")
     phase = 0
     hardmode = false
 	is_spinningUp = false
@@ -101,7 +101,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd()
-	DBM:FireCustomEvent("DBM_EncounterEnd", 851, "Mimiron", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 754, "Mimiron", wipe)
 	DBM.BossHealth:Hide()
 	if self.Options.RangeFrame then
 		DBM.RangeCheck:Hide()

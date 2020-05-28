@@ -34,13 +34,13 @@ local toc = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			201, 202, 203, 204, 205,
+		629, 633, 637, 1089, 645,
 		-- Trial of the Crusader
-			[201] = 1, -- Beasts of Northrend
-			[202] = 2, -- Lord Jaraxxus
-			[203] = 3, -- Faction Champions
-			[204] = 4, -- Twin Val'kyr
-			[205] = 5, -- Anub'arak
+			[629] = 1, -- Beasts of Northrend
+			[633] = 2, -- Lord Jaraxxus
+			[637] = 3, -- Faction Champions
+			[641] = 4, -- Twin Val'kyr
+			[645] = 5, -- Anub'arak
 	},
 	
 	encounter_ids2 = {
@@ -72,53 +72,66 @@ local toc = {
 					},
 			
 			phases = {
-				{
+				{ -- Phase 1: Gormak
 					spells = {
-						-- Gormok
-							62911, --> Thorim's Hammer
-							66331, --> 66880, --> SPELL_IMPALE
-							67648, --> SPELL_STAGGERING_STOMP
-							66636, --> SPELL_RISING_ANGER
-							66406, --> SPELL_SNOBOLLED
-							66408, --> SPELL_BATTER
-							66313, --> SPELL_FIRE_BOMB
-							66318, --> SPELL_FIRE_BOMB_AURA
-							66407, --> SPELL_HEAD_CRACK
-						-- Jormungar 
-							66880, --> SPELL_ACID_SPIT	
-							66818, --> SPELL_ACID_SPEW	
-							66901, --> SPELL_PARALYTIC_SPRAY
-							66824, --> SPELL_PARALYTIC_BITE	
-
-							66796, --> SPELL_FIRE_SPIT	
-							66821, --> SPELL_MOLTEN_SPEW
-							66902, --> SPELL_BURNING_SPRAY
-							66879, --> SPELL_BURNING_BITE
-
-							66881, --> SPELL_SLIME_POOL_DAMAGE
-							66882, --> SPELL_SLIME_POOL_EFFECT
-							66794, --> SPELL_SWEEP_0						
-							67646, --> SPELL_SWEEP_1		
-			
-							66969, --> SPELL_CHURNING_GROUND				
-						-- Icehowl
-							66770, --> SPELL_FEROCIOUS_BUTT				
-							67345, --> SPELL_WHIRL							
-							66689, --> SPELL_ARCTIC_BREATH					
-
-							66683, --> SPELL_MASSIVE_CRASH								
-							66734, --> SPELL_TRAMPLE						
+						62911, --> Thorim's Hammer
+						66331, --> 66880, --> SPELL_IMPALE
+						67648, --> SPELL_STAGGERING_STOMP
+						66636, --> SPELL_RISING_ANGER
+						66406, --> SPELL_SNOBOLLED
+						66408, --> SPELL_BATTER
+						66313, --> SPELL_FIRE_BOMB
+						66318, --> SPELL_FIRE_BOMB_AURA
+						66407, --> SPELL_HEAD_CRACK						
 						},
 						
 					adds = {
 						34796, --> NPC_GORMOK
-						34799, --> NPC_DREADSCALE
-						35144, --> NPC_ACIDMAW
-						
-						35176, --> NPC_SLIME_POOL
 						34800, --> Snobold Vassal
 					}
-				},
+				}, -- end phase 1
+
+				{ -- phase 2 Dreadscale
+					spells = {
+						66880, --> SPELL_ACID_SPIT	
+						66818, --> SPELL_ACID_SPEW	
+						66901, --> SPELL_PARALYTIC_SPRAY
+						66824, --> SPELL_PARALYTIC_BITE	
+
+						66796, --> SPELL_FIRE_SPIT	
+						66821, --> SPELL_MOLTEN_SPEW
+						66902, --> SPELL_BURNING_SPRAY
+						66879, --> SPELL_BURNING_BITE
+
+						66881, --> SPELL_SLIME_POOL_DAMAGE
+						66882, --> SPELL_SLIME_POOL_EFFECT
+						66794, --> SPELL_SWEEP_0						
+						67646, --> SPELL_SWEEP_1		
+		
+						66969, --> SPELL_CHURNING_GROUND
+					},
+					
+					adds = {
+						34799, --> NPC_DREADSCALE
+						35144, --> NPC_ACIDMAW
+						35176, --> NPC_SLIME_POOL
+					}
+				}, -- end phase 2
+
+				{ -- phase 3 Icehowl
+					spells = {
+						66770, --> SPELL_FEROCIOUS_BUTT				
+						67345, --> SPELL_WHIRL							
+						66689, --> SPELL_ARCTIC_BREATH					
+
+						66683, --> SPELL_MASSIVE_CRASH								
+						66734, --> SPELL_TRAMPLE
+					},
+
+					adds = {
+						34797 -- NPC_ICEHOWL
+					}
+				}
 			}
 		}, --> end of Beasts of Northrend
 		

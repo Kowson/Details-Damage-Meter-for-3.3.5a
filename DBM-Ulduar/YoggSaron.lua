@@ -68,7 +68,7 @@ local brainLinkIcon = 7
 local Guardians = 0
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 853, "Yogg-Saron")
+	DBM:FireCustomEvent("DBM_EncounterStart", 756, "Yogg-Saron")
 	Guardians = 0
 	phase = 1
 	enrageTimer:Start()
@@ -84,7 +84,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 853, "Yogg-Saron", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 756, "Yogg-Saron", wipe)
 end
 
 function mod:FervorTarget()

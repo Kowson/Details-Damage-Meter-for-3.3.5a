@@ -11,7 +11,8 @@ do
 	--> return if the player is inside a raid supported by details
 	function _details:IsInInstance()
 		local zoneName, zoneType, _, _, _, _ = GetInstanceInfo()
-		local zoneMapID
+		local zoneMapID = GetCurrentMapAreaID()
+		--[[
 		if(zoneType == "raid") then
 			if (zoneName == "Ulduar") then zoneMapID = 530
 			elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -26,6 +27,7 @@ do
 			end
 		else zoneMapID = 4
 		end
+		]]--
 		if (_details.EncounterInformation[zoneMapID]) then
 			return true
 		else
@@ -90,8 +92,8 @@ do
 	end
 	
 	--> return if the boss need sync
-	function _details:GetEncounterEwhichize(mapid, bossindex)
-		return _details.EncounterInformation[mapid] and _details.EncounterInformation[mapid].encounters[bossindex] and _details.EncounterInformation[mapid].encounters[bossindex].ewhichize
+	function _details:GetEncounterEqualize(mapid, bossindex)
+		return _details.EncounterInformation[mapid] and _details.EncounterInformation[mapid].encounters[bossindex] and _details.EncounterInformation[mapid].encounters[bossindex].equalize
 	end
 	
 	--> return the function for the boss

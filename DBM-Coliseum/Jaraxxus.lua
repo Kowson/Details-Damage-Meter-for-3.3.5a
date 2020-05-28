@@ -65,7 +65,7 @@ mod:AddBoolOption("IncinerateShieldFrame", true, "misc")
 
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 202, "Lord Jaraxxus")
+	DBM:FireCustomEvent("DBM_EncounterStart", 633, "Lord Jaraxxus")
 	if self.Options.IncinerateShieldFrame then
 		DBM.BossHealth:Show(L.name)
 		DBM.BossHealth:AddBoss(34780, L.name)
@@ -83,7 +83,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 202, "Lord Jaraxxus", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 633, "Lord Jaraxxus", wipe)
 	DBM.BossHealth:Clear()
 end
 

@@ -149,11 +149,11 @@ mod:AddBoolOption("PlaySoundOnBladestorm", mod:IsMelee())
 
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 203, "Faction Champions")
+	DBM:FireCustomEvent("DBM_EncounterStart", 637, "Faction Champions")
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 203, "Faction Champions", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 637, "Faction Champions", wipe)
 end
 
 function mod:SPELL_CAST_SUCCESS(args)

@@ -34,14 +34,14 @@ local timerAchieve			= mod:NewTimer(120, "TimerSpeedKill");
 mod:AddBoolOption("SetIconOnStormCloud")
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 850, "Hodir")
+	DBM:FireCustomEvent("DBM_EncounterStart", 751, "Hodir")
 	enrageTimer:Start(-delay)
 	timerAchieve:Start()
 	timerFlashFrCD:Start(-delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 850, "Hodir", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 751, "Hodir", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

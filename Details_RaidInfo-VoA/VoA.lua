@@ -36,8 +36,14 @@ local voa = {
 		if (_details.table_current and _details.table_current[1] and _details.table_current[1]._ActorTable) then
 			for _, damage_actor in ipairs (_details.table_current[1]._ActorTable) do
 				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
-				if (serial == 73909) then --Archmage Aethas Sunreaver
-					return 5 --> galakras boss index
+				if (serial == 31125) then -- Archavon
+					return 1
+				elseif (serial == 33993) then -- Emalon
+					return 2
+				elseif (serial == 35013) then -- Koralon
+					return 3
+				elseif (serial == 38433) then -- Toravon
+					return 4 
 				end
 			end
 		end
@@ -45,24 +51,17 @@ local voa = {
 	
 	encounter_ids = {
 		--> Ids by Index
-			852, 849, 866, 867,
-		-- Vale of Eternal Sorrows
-			[852] = 1, -- Flame Leviathan
-			[849] = 2, -- Ignis the Furnace Master
-			[866] = 3, -- Norushen
-			[867] = 4, -- Sha of Pride
+		772, 1127, 1128, 1129,
+			[772] = 1, -- Archavon
+			[774] = 2, -- Emalon
+			[776] = 3, -- Koralon
+			[885] = 4, -- Toravon
 	},
 	
 	encounter_ids2 = {
-		-- Vale of Eternal Sorrows
-			[1602] = 1, -- Flame Leviathan
-			[1598] = 2, -- Ignis the Furnace Master
-			[1624] = 3, -- Norushen
-			[1604] = 4, -- Sha of Pride
 	},
 	
 	boss_ids = {
-		-- The Siege of VoA
 			[31125]	= 1,	-- Archavon
 			[33993]	= 2,	-- Emalon
 			[35013]	= 3,	-- Koralon
@@ -94,18 +93,22 @@ local voa = {
 						[58666] = {0x1}, --> Impale 10
 						[60882] = {0x1}, --> Impale 25
 					},
+
+			continuo = {
+						58678, --> Rock Shards
+						58960, --> Leap 10
+						60894, -->  Leap 25
+						58663, --> Stomp 10
+						60880, --> Stomp 25
+						58666, --> Impale 10
+						60882, --> Impale 25
+			},
 			
 			phases = {
-				--> phase 1 - Tears of the Vale
+				--> phase 1 
 				{
 					spells = {
-							58678, --> Thorim's Hammer
-							58960, --> Hodir's Fury
-							60894, --> Mimiron's Inferno
-							58663, --> Flame Vents
-							60880, --> Missile Barrage
-							58666, --> Battering Ram
-							60882, --> Pursued
+						-- all spells are continuous
 						},
 						
 					adds = {
@@ -113,7 +116,7 @@ local voa = {
 					}
 				},
 			}
-		}, --> end of Immerseus 
+		}, --> end Archavon
 		
 		
 ------------> Emalon ------------------------------------------------------------------------------
@@ -125,7 +128,7 @@ local voa = {
 			spell_mechanics =	{
 						[64217] = {0x1000}, --> Overcharged
 						[64219] = {0x200}, --> Overcharged Blast
-						[64218] = {0x200}, --> Overcharge
+						[64218] = {0x200}, --> Overcharged
 						[64213] = {0x2000}, --> Chain Lightning
 						[64215] = {0x2000}, --> Chain Lightning
 						[64216] = {0x80}, --> Lightning Nova
@@ -135,13 +138,13 @@ local voa = {
 
 		
 			continuo = {
-						64217, --> Flame Jets (10)
-						64219, --> Flame Jets (25)
-						64218, --> Scorch (10)
-						64213, --> Scorch (25)
-						64215, --> Activate Construct
-						64216, --> Brittle (10)
-						65279, --> Brittle (25)
+						64217, --> Overcharged
+						64219, --> Overcharged Blast
+						64218, --> Overcharged
+						64213, --> Chain Lightning
+						64215, --> Chain Lightning
+						64216, --> Lightning Nova
+						65279, --> Lightning Nova
 			},
 		
 			phases = {
@@ -157,7 +160,7 @@ local voa = {
 				}			
 			} 
 	
-		}, --> end of Ignis the Furnace Master
+		}, --> end of Emalon
 		
 ------------> Koralon ------------------------------------------------------------------------------
 
@@ -176,13 +179,13 @@ local voa = {
 			},
 			
 			continuo = {
-						67333, --> Meteor Fists
-						67329, -->  Devouring Flame (25)
-						67332, --> Fireball
+						67333, --> Burning Breath
+						67329, --> Flaming Cinder
+						67332, --> Meteor Fists
 			},
 			
 			phases = {
-				{ -- flying phase
+				{
 					adds = 	{
 							35013, --> Koralon
 					},
@@ -191,7 +194,7 @@ local voa = {
 				},
 			}
 
-		}, --> end of Razorscale
+		}, --> end of Koralon
 		
 ------------> Toravon ------------------------------------------------------------------------------	
 		[4] = {
@@ -210,46 +213,25 @@ local voa = {
 			},
 			
 			continuo = {
-				63024, --> Swelling Pride
-				64234, --> Reaching Attack 
-				63018, --> Wounded Pride (not a damage)
-				65121, --> Mark of Arrogance
-				62776, --> Bursting Pride
+				63024, --> Freezing Ground
+				64234, --> Frozen Orb
+				63018, --> Whiteout
+				65121,  --> Frozen Mallet
+				62776, --> Frozen Orb Damage
 				72120, --> Frostbite
 			},
 			
 			phases = { 
 				{ --> phase 1
 					adds = {
-						38433, --> XT-002 Deconstructor
+						38433, --> Toravon
 						38456, --> Frozen Orb
 						38461, --> Frozen Orb Stalker
 						} 
 				}
 			}
-		}, --> end of XT-002 Deconstructor
+		}, --> end of Toravon
 				
-	} --> End SoO
+	} --> End VoA
 }
-
---[[
-				[0x1] = "|cFF00FF00"..Loc ["STRING_HEAL"].."|r", 
-				[0x2] = "|cFF710000"..Loc ["STRING_LOWDPS"].."|r", 
-				[0x4] = "|cFF057100"..Loc ["STRING_LOWHEAL"].."|r", 
-				[0x8] = "|cFFd3acff"..Loc ["STRING_VOIDZONE"].."|r", 
-				[0x10] = "|cFFbce3ff"..Loc ["STRING_DISPELL"].."|r", 
-				[0x20] = "|cFFffdc72"..Loc ["STRING_INTERRUPT"].."|r", 
-				[0x40] = "|cFFd9b77c"..Loc ["STRING_POSITIONING"].."|r", 
-				[0x80] = "|cFFd7ff36"..Loc ["STRING_RUNAWAY"].."|r", 
-				[0x100] = "|cFF9a7540"..Loc ["STRING_TANKSWITCH"] .."|r", 
-				[0x200] = "|cFFff7800"..Loc ["STRING_MECHANIC"].."|r", 
-				[0x400] = "|cFFbebebe"..Loc ["STRING_CROWDCONTROL"].."|r", 
-				[0x800] = "|cFF6e4d13"..Loc ["STRING_TANKCOOLDOWN"].."|r", 
-				[0x1000] = "|cFFffff00"..Loc ["STRING_KILLADD"].."|r", 
-				[0x2000] = "|cFFff9999"..Loc ["STRING_SPREADOUT"].."|r", 
-				[0x4000] = "|cFFffff99"..Loc ["STRING_STOPCAST"].."|r",
-				[0x8000] = "|cFFffff99"..Loc ["STRING_FACING"].."|r",
-				[0x10000] = "|cFFffff99"..Loc ["STRING_STACK"].."|r",
---]]
-
 _details:InstallEncounter (voa)

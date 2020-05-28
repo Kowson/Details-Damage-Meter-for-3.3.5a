@@ -43,7 +43,7 @@ mod:AddBoolOption("BypassLatencyCheck", false)--Use old scan method without sync
 
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 865, "General Vezax")
+	DBM:FireCustomEvent("DBM_EncounterStart", 755, "General Vezax")
 	timerEnrage:Start(-delay)
 	timerHardmode:Start(-delay)
 	timerNextSurgeofDarkness:Start(-delay)
@@ -51,7 +51,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 865, "General Vezax", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 755, "General Vezax", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

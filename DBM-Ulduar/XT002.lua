@@ -41,14 +41,14 @@ mod:AddBoolOption("SetIconOnGravityBombTarget", true)
 mod:AddBoolOption("WarningTympanicTantrumIn10Sec", true)
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 867, "XT-002 Deconstructor")
+	DBM:FireCustomEvent("DBM_EncounterStart", 747, "XT-002 Deconstructor")
 	enrageTimer:Start(-delay)
 	timerAchieve:Start()
 	timerTympanicTantrumCD:Start(60-delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 867, "XT-002 Deconstructor", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 747, "XT-002 Deconstructor", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

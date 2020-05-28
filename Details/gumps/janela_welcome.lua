@@ -72,7 +72,7 @@ function _details:OpenWelcomeWindow()
 		rodape_bg:SetHeight(25)
 		rodape_bg:SetVertexColor(0, 0, 0, 1)
 		
-		local logotype = window:CreateTexture(nil, "overlay")
+		local logotype = window:CreateTexture(nil, "OVERLAY")
 		logotype:SetPoint("topleft", window, "topleft", 16, -20)
 		logotype:SetTexture([[Interface\Addons\Details\images\logotype]])
 		logotype:SetTexCoord(0.07421875, 0.73828125, 0.51953125, 0.890625)
@@ -88,7 +88,7 @@ function _details:OpenWelcomeWindow()
 		cancel:SetHighlightTexture([[Interface\Buttons\UI-GROUPLOOT-PASS-HIGHLIGHT]])
 		cancel:SetNormalTexture([[Interface\Buttons\UI-GroupLoot-Pass-Up]])
 		cancel:SetScript("OnClick", function() window:Hide() end)
-		local cancelText = cancel:CreateFontString(nil, "overlay", "GameFontNormal")
+		local cancelText = cancel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		cancelText:SetPoint("left", cancel, "right", 2, 0)
 		cancelText:SetText("Skip")
 		
@@ -256,7 +256,7 @@ local window_openned_at = time()
 		angel:SetHeight(256)
 		angel:SetAlpha(.2)
 		
-		local text1 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text1 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text1:SetPoint("topleft", window, "topleft", 13, -150)
 		text1:SetText(Loc["STRING_WELCOME_1"])
 		text1:SetJustifyH("left")
@@ -267,7 +267,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> Avatar and Nickname Page
 
-		local bg555 = window:CreateTexture(nil, "overlay")
+		local bg555 = window:CreateTexture(nil, "OVERLAY")
 		bg555:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg555:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg555:SetHeight(125*3)--125
@@ -275,13 +275,15 @@ local window_openned_at = time()
 		bg555:SetAlpha(.05)
 		bg555:SetTexCoord(1, 0, 0, 1)
 
-		local avatar_image = window:CreateTexture(nil, "overlay")
+		local avatar_image = window:CreateTexture(nil, "OVERLAY")
 		avatar_image:SetTexture([[Interface\AddOns\Details\images\UI-EJ-BOSS-Default]])
-		avatar_image:SetPoint("topright", window, "topright", -5, -21)
+		-- original value was -5, -21 but for some reason making it -50 fixed the avatar being layed behind the background DESPITE the background being ARTWORK and the avatar being OVERLAY
+		-- if the choose avatar panel breaks, look here first.
+		avatar_image:SetPoint("topright", window, "topright", -50, -21)
 		avatar_image:SetWidth(128*1.2)
 		avatar_image:SetHeight(64*1.2)
 		
-		local avatar_bg = g:NewImage(window, nil, 275, 60, nil, nil, "avatarPreview2", "$parentAvatarPreviewTexture2")
+		local avatar_bg = g:NewImage(window, nil, 275, 60, "ARTWORK", nil, "avatarPreview2", "$parentAvatarPreviewTexture2")
 		avatar_bg:SetTexture([[Interface\AddOns\Details\images\Weather-StaticField]])
 		avatar_bg:SetPoint("topright", window, "topright", -5, -36)
 		avatar_bg:SetTexCoord(0, 1, 1, 0)
@@ -292,9 +294,9 @@ local window_openned_at = time()
 		nickname:SetPoint("center", avatar_bg, "center", 0, -15)
 		_details:SetFontSize(nickname.widget, 18)
 		
-		avatar_bg:SetDrawLayer("overlay", 2)
-		avatar_image:SetDrawLayer("overlay", 3)
-		nickname:SetDrawLayer("overlay", 3)
+		avatar_bg:SetDrawLayer("ARTWORK")
+		avatar_image:SetDrawLayer("OVERLAY")
+		nickname:SetDrawLayer("OVERLAY")
 
 		local onPressEnter = function(_, _, text)
 			local accepted, errortext = _details:SetNickname(text)
@@ -348,18 +350,18 @@ local window_openned_at = time()
 		avatarbutton:SetPoint("left", nicknamebox, "right", 10, 0)
 		--
 
-		local bg_avatar = window:CreateTexture(nil, "overlay")
+		local bg_avatar = window:CreateTexture(nil, "OVERLAY")
 		bg_avatar:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg_avatar:SetHeight(125*3)--125
 		bg_avatar:SetWidth(89*3)--82
 		bg_avatar:SetAlpha(.1)
 		bg_avatar:SetTexCoord(1, 0, 0, 1)
 		
-		local text_avatar1 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_avatar1 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_avatar1:SetPoint("topleft", window, "topleft", 20, -80)
 		text_avatar1:SetText("Nickname and Avatar")
 		
-		local text_avatar2 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_avatar2 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_avatar2:SetPoint("topleft", window, "topleft", 30, -190)
 		text_avatar2:SetText("Avatars are shown up on tooltips and at the player detail window.")
 		text_avatar2:SetTextColor(1, 1, 1, 1)
@@ -369,9 +371,9 @@ local window_openned_at = time()
 		changemind:SetPoint("bottom", window, "bottom", 0, 19)
 		changemind.align = "|"
 		
-		--Ambos são senddos aos demais membros da sua guilda que também usam Details!. Seu apelido é mostrado ao invés do name do seu personagem.
+		--Ambos sï¿½o senddos aos demais membros da sua guilda que tambï¿½m usam Details!. Seu apelido ï¿½ mostrado ao invï¿½s do name do seu personagem.
 		
-		local text_avatar3 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_avatar3 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_avatar3:SetPoint("topleft", window, "topleft", 30, -110)
 		text_avatar3:SetText("Both are sent to the other members of your guild who also use Details!. Your nickname is displayed instead of the name of your character.")
 		text_avatar3:SetWidth(460)
@@ -380,7 +382,7 @@ local window_openned_at = time()
 		text_avatar3:SetJustifyV("top")
 		text_avatar3:SetTextColor(1, 1, 1, 1)
 
-		local pleasewait = window:CreateFontString(nil, "overlay", "GameFontNormalSmall")
+		local pleasewait = window:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 		pleasewait:SetPoint("bottomright", forward, "topright")
 		
 		local free_frame3 = CreateFrame("frame", nil, window)
@@ -427,7 +429,7 @@ local window_openned_at = time()
 
 	--SKINS
 
-		local bg55 = window:CreateTexture(nil, "overlay")
+		local bg55 = window:CreateTexture(nil, "OVERLAY")
 		bg55:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg55:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg55:SetHeight(125*3)--125
@@ -435,11 +437,11 @@ local window_openned_at = time()
 		bg55:SetAlpha(.05)
 		bg55:SetTexCoord(1, 0, 0, 1)
 
-		local text55 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text55 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text55:SetPoint("topleft", window, "topleft", 20, -80)
 		text55:SetText(Loc["STRING_WELCOME_42"])
 
-		local text555 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text555 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		--text555:SetPoint("topleft", window, "topleft", 30, -190)
 		text555:SetText(Loc["STRING_WELCOME_45"])
 		text555:SetTextColor(1, 1, 1, 1)
@@ -449,7 +451,7 @@ local window_openned_at = time()
 		window.changemind55Label:SetPoint("bottom", window, "bottom", 0, 19)
 		window.changemind55Label.align = "|"
 		
-		local text_appearance = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_appearance = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_appearance:SetPoint("topleft", window, "topleft", 30, -110)
 		text_appearance:SetText(Loc["STRING_WELCOME_43"])
 		text_appearance:SetWidth(460)
@@ -458,7 +460,7 @@ local window_openned_at = time()
 		text_appearance:SetJustifyV("top")
 		text_appearance:SetTextColor(1, 1, 1, 1)
 		
-		local skins_image = window:CreateTexture(nil, "overlay")
+		local skins_image = window:CreateTexture(nil, "OVERLAY")
 		skins_image:SetTexture([[Interface\Addons\Details\images\icons2]])
 		skins_image:SetPoint("topright", window, "topright", -30, -24)
 		skins_image:SetWidth(214)
@@ -732,7 +734,7 @@ local window_openned_at = time()
 		
 	-- DPS effective or active
 		
-		local ampulheta = window:CreateTexture(nil, "overlay")
+		local ampulheta = window:CreateTexture(nil, "OVERLAY")
 		ampulheta:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		ampulheta:SetPoint("bottomright", window, "bottomright", -10, 10)
 		ampulheta:SetHeight(125*3)--125
@@ -745,7 +747,7 @@ local window_openned_at = time()
 		window.changemind2Label:SetPoint("bottom", window, "bottom", 0, 19)
 		window.changemind2Label.align = "|"
 
-		local text2 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text2 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text2:SetPoint("topleft", window, "topleft", 20, -80)
 		text2:SetText(Loc["STRING_WELCOME_3"])
 		
@@ -757,22 +759,22 @@ local window_openned_at = time()
 		_G["WelcomeWindowChronameterText"]:SetText(Loc["STRING_WELCOME_4"])
 		_G["WelcomeWindowContinuousText"]:SetText(Loc["STRING_WELCOME_5"])
 		
-		local sword_icon = window:CreateTexture(nil, "overlay")
+		local sword_icon = window:CreateTexture(nil, "OVERLAY")
 		sword_icon:SetTexture([[Interface\TUTORIALFRAME\UI-TutorialFrame-AttackCursor]])
 		sword_icon:SetPoint("topright", window, "topright", -15, -30)
 		sword_icon:SetWidth(64*1.4)
 		sword_icon:SetHeight(64*1.4)
 		sword_icon:SetTexCoord(1, 0, 0, 1)
-		sword_icon:SetDrawLayer("overlay", 2)
-		local thedude = window:CreateTexture(nil, "overlay")
+		sword_icon:SetDrawLayer("OVERLAY", 2)
+		local thedude = window:CreateTexture(nil, "OVERLAY")
 		thedude:SetTexture([[Interface\TUTORIALFRAME\UI-TutorialFrame-TheDude]])
 		thedude:SetPoint("bottomright", sword_icon, "bottomleft", 70, 19)
 		thedude:SetWidth(128*1.0)
 		thedude:SetHeight(128*1.0)
 		thedude:SetTexCoord(0, 1, 0, 1)
-		thedude:SetDrawLayer("overlay", 3)
+		thedude:SetDrawLayer("OVERLAY", 3)
 		
-		local chronameter_text = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local chronameter_text = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		chronameter_text:SetText(Loc["STRING_WELCOME_6"])
 		chronameter_text:SetWidth(360)
 		chronameter_text:SetHeight(40)
@@ -781,7 +783,7 @@ local window_openned_at = time()
 		chronameter_text:SetTextColor(.8, .8, .8, 1)
 		chronameter_text:SetPoint("topleft", _G["WelcomeWindowChronameterText"], "topright", 0, 0)
 		
-		local continuous_text = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local continuous_text = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		continuous_text:SetText(Loc["STRING_WELCOME_7"])
 		continuous_text:SetWidth(340)
 		continuous_text:SetHeight(40)
@@ -814,7 +816,7 @@ local window_openned_at = time()
 
 	-- UPDATE SPEED
 		
-		local bg = window:CreateTexture(nil, "overlay")
+		local bg = window:CreateTexture(nil, "OVERLAY")
 		bg:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg:SetHeight(125*3)--125
@@ -827,11 +829,11 @@ local window_openned_at = time()
 		window.changemind4Label:SetPoint("bottom", window, "bottom", 0, 19)
 		window.changemind4Label.align = "|"
 		
-		local text4 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text4 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text4:SetPoint("topleft", window, "topleft", 20, -80)
 		text4:SetText(Loc["STRING_WELCOME_41"])
 		
-		local interval_text = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local interval_text = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		interval_text:SetText(Loc["STRING_WELCOME_12"])
 		interval_text:SetWidth(460)
 		interval_text:SetHeight(40)
@@ -840,7 +842,7 @@ local window_openned_at = time()
 		interval_text:SetTextColor(1, 1, 1, .9)
 		interval_text:SetPoint("topleft", window, "topleft", 30, -110)
 		
-		local dance_text = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local dance_text = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		dance_text:SetText(Loc["STRING_WELCOME_13"])
 		dance_text:SetWidth(460)
 		dance_text:SetHeight(40)
@@ -908,21 +910,21 @@ local window_openned_at = time()
 		window.segmentsSlider.tooltip = Loc["STRING_WELCOME_22"]
 		
 	--------------
-		local mech_icon = window:CreateTexture(nil, "overlay")
+		local mech_icon = window:CreateTexture(nil, "OVERLAY")
 		mech_icon:SetTexture([[Interface\Vehicles\UI-Vehicles-Endcap-Alliance]])
 		mech_icon:SetPoint("topright", window, "topright", -15, -15)
 		mech_icon:SetWidth(128*0.9)
 		mech_icon:SetHeight(128*0.9)
 		mech_icon:SetAlpha(0.8)
 		
-		local mech_icon2 = window:CreateTexture(nil, "overlay")
+		local mech_icon2 = window:CreateTexture(nil, "OVERLAY")
 		mech_icon2:SetTexture([[Interface\Vehicles\UI-Vehicles-Trim-Alliance]])
 		mech_icon2:SetPoint("topright", window, "topright", -10, -142)
 		mech_icon2:SetWidth(128*1.0)
 		mech_icon2:SetHeight(128*0.6)
 		mech_icon2:SetAlpha(0.6)
 		mech_icon2:SetTexCoord(0, 1, 40/128, 1)
-		mech_icon2:SetDrawLayer("overlay", 2)
+		mech_icon2:SetDrawLayer("OVERLAY", 2)
 		
 	----------------
 	
@@ -949,7 +951,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 6
 
-		local bg6 = window:CreateTexture(nil, "overlay")
+		local bg6 = window:CreateTexture(nil, "OVERLAY")
 		bg6:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg6:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg6:SetHeight(125*3)--125
@@ -957,11 +959,11 @@ local window_openned_at = time()
 		bg6:SetAlpha(.1)
 		bg6:SetTexCoord(1, 0, 0, 1)
 
-		local text5 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text5 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text5:SetPoint("topleft", window, "topleft", 20, -80)
 		text5:SetText(Loc["STRING_WELCOME_26"])
 		
-		local text_stretch = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_stretch = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_stretch:SetPoint("topleft", window, "topleft", 181, -105)
 		text_stretch:SetText(Loc["STRING_WELCOME_27"])
 		text_stretch:SetWidth(310)
@@ -970,7 +972,7 @@ local window_openned_at = time()
 		text_stretch:SetJustifyV("top")
 		text_stretch:SetTextColor(1, 1, 1, 1)
 		
-		local stretch_image = window:CreateTexture(nil, "overlay")
+		local stretch_image = window:CreateTexture(nil, "OVERLAY")
 		stretch_image:SetTexture([[Interface\Addons\Details\images\icons]])
 		stretch_image:SetPoint("right", text_stretch, "left", -12, 0)
 		stretch_image:SetWidth(144)
@@ -1003,7 +1005,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 7
 
-		local bg6 = window:CreateTexture(nil, "overlay")
+		local bg6 = window:CreateTexture(nil, "OVERLAY")
 		bg6:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg6:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg6:SetHeight(125*3)--125
@@ -1011,11 +1013,11 @@ local window_openned_at = time()
 		bg6:SetAlpha(.1)
 		bg6:SetTexCoord(1, 0, 0, 1)
 
-		local text6 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text6 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text6:SetPoint("topleft", window, "topleft", 20, -80)
 		text6:SetText(Loc["STRING_WELCOME_28"])
 		
-		local text_instance_button = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_instance_button = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_instance_button:SetPoint("topleft", window, "topleft", 25, -105)
 		text_instance_button:SetText(Loc["STRING_WELCOME_29"])
 		text_instance_button:SetWidth(270)
@@ -1024,7 +1026,7 @@ local window_openned_at = time()
 		text_instance_button:SetJustifyV("top")
 		text_instance_button:SetTextColor(1, 1, 1, 1)
 		
-		local instance_button_image = window:CreateTexture(nil, "overlay")
+		local instance_button_image = window:CreateTexture(nil, "OVERLAY")
 		instance_button_image:SetTexture([[Interface\Addons\Details\images\icons]])
 		instance_button_image:SetPoint("topright", window, "topright", -12, -70)
 		instance_button_image:SetWidth(204)
@@ -1055,7 +1057,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 8
 
-		local bg7 = window:CreateTexture(nil, "overlay")
+		local bg7 = window:CreateTexture(nil, "OVERLAY")
 		bg7:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg7:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg7:SetHeight(125*3)--125
@@ -1063,11 +1065,11 @@ local window_openned_at = time()
 		bg7:SetAlpha(.1)
 		bg7:SetTexCoord(1, 0, 0, 1)
 
-		local text7 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text7 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text7:SetPoint("topleft", window, "topleft", 20, -80)
 		text7:SetText(Loc["STRING_WELCOME_30"])
 		
-		local text_shortcut = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_shortcut = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_shortcut:SetPoint("topleft", window, "topleft", 25, -110)
 		text_shortcut:SetText(Loc["STRING_WELCOME_31"])
 		text_shortcut:SetWidth(320)
@@ -1076,14 +1078,14 @@ local window_openned_at = time()
 		text_shortcut:SetJustifyV("top")
 		text_shortcut:SetTextColor(1, 1, 1, 1)
 		
-		local shortcut_image1 = window:CreateTexture(nil, "overlay")
+		local shortcut_image1 = window:CreateTexture(nil, "OVERLAY")
 		shortcut_image1:SetTexture([[Interface\Addons\Details\images\icons]])
 		shortcut_image1:SetPoint("topright", window, "topright", -12, -20)
 		shortcut_image1:SetWidth(160)
 		shortcut_image1:SetHeight(91)
 		shortcut_image1:SetTexCoord(0, 0.31250, 0.82421875, 1)
 		
-		local shortcut_image2 = window:CreateTexture(nil, "overlay")
+		local shortcut_image2 = window:CreateTexture(nil, "OVERLAY")
 		shortcut_image2:SetTexture([[Interface\Addons\Details\images\icons]])
 		shortcut_image2:SetPoint("topright", window, "topright", -12, -110)
 		shortcut_image2:SetWidth(160)
@@ -1099,7 +1101,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 9
 
-		local bg77 = window:CreateTexture(nil, "overlay")
+		local bg77 = window:CreateTexture(nil, "OVERLAY")
 		bg77:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg77:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg77:SetHeight(125*3)--125
@@ -1107,11 +1109,11 @@ local window_openned_at = time()
 		bg77:SetAlpha(.1)
 		bg77:SetTexCoord(1, 0, 0, 1)
 
-		local text77 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text77 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text77:SetPoint("topleft", window, "topleft", 20, -80)
 		text77:SetText(Loc["STRING_WELCOME_32"])
 		
-		local text_snap = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_snap = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_snap:SetPoint("topleft", window, "topleft", 25, -101)
 		text_snap:SetText(Loc["STRING_WELCOME_33"])
 		text_snap:SetWidth(160)
@@ -1122,7 +1124,7 @@ local window_openned_at = time()
 		local source, _, flags = text_snap:GetFont()
 		text_snap:SetFont(source, 11, flags)
 		
-		local snap_image1 = window:CreateTexture(nil, "overlay")
+		local snap_image1 = window:CreateTexture(nil, "OVERLAY")
 		snap_image1:SetTexture([[Interface\Addons\Details\images\icons]])
 		snap_image1:SetPoint("topright", window, "topright", -12, -95)
 		snap_image1:SetWidth(308)
@@ -1139,7 +1141,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 10
 
-		local bg88 = window:CreateTexture(nil, "overlay")
+		local bg88 = window:CreateTexture(nil, "OVERLAY")
 		bg88:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg88:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg88:SetHeight(125*3)--125
@@ -1147,11 +1149,11 @@ local window_openned_at = time()
 		bg88:SetAlpha(.1)
 		bg88:SetTexCoord(1, 0, 0, 1)
 
-		local text88 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text88 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text88:SetPoint("topleft", window, "topleft", 20, -80)
 		text88:SetText(Loc["STRING_WELCOME_34"])
 		--|cFFFFFF00
-		local text_micro_display = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_micro_display = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_micro_display:SetPoint("topleft", window, "topleft", 25, -101)
 		text_micro_display:SetText(Loc["STRING_WELCOME_35"])
 		text_micro_display:SetWidth(160)
@@ -1162,7 +1164,7 @@ local window_openned_at = time()
 		--local source, _, flags = text_micro_display:GetFont()
 		--text_micro_display:SetFont(source, 11, flags)
 		
-		local micro_image1 = window:CreateTexture(nil, "overlay")
+		local micro_image1 = window:CreateTexture(nil, "OVERLAY")
 		micro_image1:SetTexture([[Interface\Addons\Details\images\icons]])
 		micro_image1:SetPoint("topright", window, "topright", -12, -95)
 		micro_image1:SetWidth(303)
@@ -1178,7 +1180,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 11
 
-		local bg11 = window:CreateTexture(nil, "overlay")
+		local bg11 = window:CreateTexture(nil, "OVERLAY")
 		bg11:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg11:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg11:SetHeight(125*3)--125
@@ -1186,11 +1188,11 @@ local window_openned_at = time()
 		bg11:SetAlpha(.1)
 		bg11:SetTexCoord(1, 0, 0, 1)
 
-		local text11 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text11 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text11:SetPoint("topleft", window, "topleft", 20, -80)
 		text11:SetText(Loc["STRING_WELCOME_36"])
 		--|cFFFFFF00
-		local text_plugins = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text_plugins = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text_plugins:SetPoint("topleft", window, "topleft", 25, -101)
 		text_plugins:SetText(Loc["STRING_WELCOME_37"])
 		text_plugins:SetWidth(220)
@@ -1201,7 +1203,7 @@ local window_openned_at = time()
 		--local source, _, flags = text_plugins:GetFont()
 		--text_plugins:SetFont(source, 11, flags)
 		
-		local plugins_image1 = window:CreateTexture(nil, "overlay")
+		local plugins_image1 = window:CreateTexture(nil, "OVERLAY")
 		plugins_image1:SetTexture([[Interface\Addons\Details\images\icons2]])
 		plugins_image1:SetPoint("topright", window, "topright", -12, -35)
 		plugins_image1:SetWidth(226)
@@ -1217,7 +1219,7 @@ local window_openned_at = time()
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> page 12
 
-		local bg8 = window:CreateTexture(nil, "overlay")
+		local bg8 = window:CreateTexture(nil, "OVERLAY")
 		bg8:SetTexture([[Interface\MainMenuBar\UI-MainMenuBar-EndCap-Human]])
 		bg8:SetPoint("bottomright", window, "bottomright", -10, 10)
 		bg8:SetHeight(125*3)--125
@@ -1225,11 +1227,11 @@ local window_openned_at = time()
 		bg8:SetAlpha(.1)
 		bg8:SetTexCoord(1, 0, 0, 1)
 
-		local text8 = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text8 = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text8:SetPoint("topleft", window, "topleft", 20, -80)
 		text8:SetText(Loc["STRING_WELCOME_38"])
 		
-		local text = window:CreateFontString(nil, "overlay", "GameFontNormal")
+		local text = window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		text:SetPoint("topleft", window, "topleft", 25, -110)
 		text:SetText(Loc["STRING_WELCOME_39"])
 		text:SetWidth(410)

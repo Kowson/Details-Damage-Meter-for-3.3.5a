@@ -28,9 +28,14 @@ local timerNextStomp		= mod:NewNextTimer(45, 60880)
 local timerArchavonEnrage	= mod:NewTimer(300, "ArchavonEnrage", 26662)
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 772, "Archavon the Stone Watcher")
 	timerArchavonEnrage:Start()
 	timerNextStomp:Start(-delay)
 	warnStompSoon:Schedule(40-delay)
+end
+
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 772, "Archavon the Stone Watcher", wipe)
 end
 
 function mod:SPELL_CAST_START(args)

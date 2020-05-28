@@ -168,7 +168,8 @@
 						if (serial) then
 						
 							local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
-							local zoneMapID
+							local zoneMapID = GetCurrentMapAreaID()
+							--[[
 							if(zoneType == "raid") then
 								if (zoneName == "Ulduar") then zoneMapID = 530
 								elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -183,6 +184,7 @@
 								end
 							else zoneMapID = 4
 							end
+							]]--
 							local BossIds = _details:GetBossIds(zoneMapID)
 							if (BossIds) then
 								local BossIndex = BossIds[serial]
@@ -210,7 +212,8 @@
 			end
 		
 			local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
-			local zoneMapID
+			local zoneMapID = GetCurrentMapAreaID()
+			--[[ 
 			if(zoneType == "raid") then
 				if (zoneName == "Ulduar") then zoneMapID = 530
 				elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -223,9 +226,8 @@
 				elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
 				else zoneMapID = 4
 				end
-			else zoneMapID = 4
 			end
-			
+			]]--
 			local BossIds = _details:GetBossIds(zoneMapID)
 			
 			if (BossIds) then
@@ -262,15 +264,15 @@
 				_details:Msg("(debug) started a new combat.")
 			end
 
-			--> não tem history, addon foi resetado, a primeira table é descartada -- Erase first table is do es not have a firts segment history, this occour after reset or first run
+			--> nï¿½o tem history, addon foi resetado, a primeira table ï¿½ descartada -- Erase first table is do es not have a firts segment history, this occour after reset or first run
 			if (not _details.table_history.tables[1]) then 
 				--> precisa zerar aqui a table overall
 				_table_wipe(_details.table_overall)
 				_table_wipe(_details.table_current)
-				--> aqui ele lost o self.showing das instâncias, precisa do com que elas atualizem
+				--> aqui ele lost o self.showing das instï¿½ncias, precisa do com que elas atualizem
 				_details.table_overall = _details.combat:Newtable()
 				
-				_details:instanceCallFunction(_details.ResetGump, nil, -1) --> reseta scrollbar, iterators, rodapé, etc
+				_details:instanceCallFunction(_details.ResetGump, nil, -1) --> reseta scrollbar, iterators, rodapï¿½, etc
 				_details:instanceCallFunction(_details.instanceFadeBars, -1) --> esconde todas as bars
 				_details:instanceCallFunction(_details.UpdateSegments) --> atualiza o showing
 			end
@@ -284,7 +286,7 @@
 			end
 
 			--> re-lock nos times da table passada -- lock again last table times
-			_details.table_current:LockTimes() --> lá em cima é feito wipe, não deveria ta dando merda nisso aqui? ou ela puxa da __index e da zero players no mapa e container
+			_details.table_current:LockTimes() --> lï¿½ em cima ï¿½ feito wipe, nï¿½o deveria ta dando merda nisso aqui? ou ela puxa da __index e da zero players no mapa e container
 			
 			local n_combat = _details:NumeroCombate(1) --aumenta o contador de combats -- combat number up
 			
@@ -293,15 +295,15 @@
 			_details.table_current = _details.combat:Newtable(true, _details.table_overall, n_combat, ...) --cria uma new table de combat
 			_details.table_current.previous_combat = ultimo_combat
 			
-			--> verifica se há alguma instância showing o segment atual -- change segment
+			--> verifica se hï¿½ alguma instï¿½ncia showing o segment atual -- change segment
 			_details:instanceCallFunction(_details.SwitchSegmentoAtual)
 
 			_details.table_current:seta_data(_details._details_props.DATA_TYPE_START) --seta na table do combat a data do start do combat -- setup time data
-			_details.in_combat = true --sinaliza ao addon que há um combat em andamento -- in combat flag up
+			_details.in_combat = true --sinaliza ao addon que hï¿½ um combat em andamento -- in combat flag up
 			
-			_details.table_current.combat_id = n_combat --> grava o número dthis combat na table atual -- setup combat id on new table
+			_details.table_current.combat_id = n_combat --> grava o nï¿½mero dthis combat na table atual -- setup combat id on new table
 			
-			--> é o timer que ve se o player ta em combat ou não -- check if any party or raid members are in combat
+			--> ï¿½ o timer que ve se o player ta em combat ou nï¿½o -- check if any party or raid members are in combat
 			_details.table_current.verifica_combat = _details:ScheduleRepeatingTimer("EstaEmCombate", 1) 
 
 			_table_wipe(_details.encounter_end_table)
@@ -313,6 +315,7 @@
 			_table_wipe(_details.cache_damage_group)
 			_table_wipe(_details.cache_healing_group)
 			_details:UpdateParserGears()
+
 			
 			_details.host_of = nil
 			_details.host_by = nil
@@ -398,7 +401,7 @@
 				end
 			end
 			
-			--> pega a zona do player e vê se foi uma fight against um Boss -- identifica se a fight foi com um boss
+			--> pega a zona do player e vï¿½ se foi uma fight against um Boss -- identifica se a fight foi com um boss
 			if (not _details.table_current.is_boss) then 
 		
 				--> function which runs after a boss encounter to try recognize a encounter
@@ -406,7 +409,8 @@
 				
 				if (not _details.table_current.is_boss) then
 					local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
-					local zoneMapID
+					local zoneMapID = GetCurrentMapAreaID()
+					--[[
 					if(zoneType == "raid") then
 							if (zoneName == "Ulduar") then zoneMapID = 530
 							elseif (zoneName == "Naxxramas") then zoneMapID = 536
@@ -421,6 +425,7 @@
 							end
 					else zoneMapID = 4
 					end
+					]]--
 					local findboss = _details:GetRaidBossFindFunction(zoneMapID)
 					if (findboss) then
 						local BossIndex = findboss()
@@ -436,7 +441,7 @@
 				_details.bossFunction = nil
 			end
 
-			--> finaliza a checagem se this ou não no combat -- finish combat check
+			--> finaliza a checagem se this ou nï¿½o no combat -- finish combat check
 			if (_details.table_current.verifica_combat) then 
 				_details:CancelTimer(_details.table_current.verifica_combat)
 				_details.table_current.verifica_combat = nil
@@ -474,8 +479,8 @@
 				end
 				
 				if (_details.debug) then
-					_details:Msg("(debug) forcing ewhichize actors behavior.")
-					_details:EwhichizeActorsSchedule(_details.host_of)
+					_details:Msg("(debug) forcing Equalize actors behavior.")
+					_details:EqualizeActorsSchedule(_details.host_of)
 				end
 				
 				--> verifica memory
@@ -523,9 +528,9 @@
 					
 					if (_details.table_current.instance_type == "raid") then
 						--> schedule captures off
-						
+						_details:CancelAllCaptureSchedules() -- cancel any scheduled capture sets 
 						_details:CaptureSet(false, "damage", false, 15)
-						_details:CaptureSet(false, "energy", false, 15)
+						_details:CaptureSet(false, "heal", false, 15)
 						_details:CaptureSet(false, "aura", false, 15)
 						_details:CaptureSet(false, "energy", false, 15)
 						_details:CaptureSet(false, "spellcast", false, 15)
@@ -536,14 +541,14 @@
 					end
 					
 					--> schedule sync
-					_details:EwhichizeActorsSchedule(_details.host_of)
-					if (_details:GetEncounterEwhichize(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
+					_details:EqualizeActorsSchedule(_details.host_of)
+					if (_details:GetEncounterEqualize(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
 						_details:ScheduleTimer("DelayedSyncAlert", 3)
 					end
 					
 				else
 					if (_details.debug) then
-						_details:EwhichizeActorsSchedule(_details.host_of)
+						_details:EqualizeActorsSchedule(_details.host_of)
 					end
 				end
 			end
@@ -557,11 +562,11 @@
 			
 			--if ( time_of_combat >= _details.minimum_combat_time) then --> time minimo precisa ser 5 seconds pra acrecentar a table ao history
 			if ( time_of_combat >= 5 or not _details.table_history.tables[1]) then --> time minimo precisa ser 5 seconds pra acrecentar a table ao history
-				_details.table_history:adicionar(_details.table_current) --move a table atual para dentro do histórico
+				_details.table_history:adicionar(_details.table_current) --move a table atual para dentro do histï¿½rico
 			else
 				--> this is a little bit complicated, need a specific function for combat cancellation
 			
-				--_table_wipe(_details.table_current) --> descarta ela, não será mais usada
+				--_table_wipe(_details.table_current) --> descarta ela, nï¿½o serï¿½ mais usada
 				_details.table_current = _details.table_history.tables[1] --> pega a table do ultimo combat
 
 				if (_details.table_current.start_time == 0) then
@@ -576,7 +581,7 @@
 				
 				if (_details.solo) then
 					local this_instance = _details.table_instances[_details.solo]
-					if (_details.SoloTables.CombatID == _details:NumeroCombate()) then --> significa que o solo mode validou o combat, como matar um bixo muito low level com uma só porrada
+					if (_details.SoloTables.CombatID == _details:NumeroCombate()) then --> significa que o solo mode validou o combat, como matar um bixo muito low level com uma sï¿½ porrada
 						if (_details.SoloTables.CombatIDLast and _details.SoloTables.CombatIDLast ~= 0) then --> volta os dados da fight previous
 						
 							_details.SoloTables.CombatID = _details.SoloTables.CombatIDLast
@@ -600,8 +605,8 @@
 				_details:CancelTimer(_details.cloud_process)
 			end
 			
-			_details.in_combat = false --sinaliza ao addon que não há combat no momento
-			_details.leaving_combat = false --sinaliza que não this mais saindo do combat
+			_details.in_combat = false --sinaliza ao addon que nï¿½o hï¿½ combat no momento
+			_details.leaving_combat = false --sinaliza que nï¿½o this mais saindo do combat
 			
 			_table_wipe(_details.cache_damage_group)
 			_table_wipe(_details.cache_healing_group)
@@ -658,7 +663,7 @@
 			--> inicia um novo combat
 			_details:EnterCombat()
 		
-			--> sinaliza que esse combat é arena
+			--> sinaliza que esse combat ï¿½ arena
 			_details.table_current.arena = true
 			_details.table_current.is_arena = {name = _details.zone_name, zone = _details.zone_name, mapid = _details.zone_id}
 		end
@@ -698,7 +703,7 @@
 			end
 		end
 		
-		function _details:MakeEwhichizeOnActor(player, realm, receivedActor)
+		function _details:MakeEqualizeOnActor(player, realm, receivedActor)
 		
 			local combat = _details:GetCombat("current")
 			local damage, heal, energy, misc = _details:GetAllActors("current", player)
@@ -731,11 +736,11 @@
 						misc = combat[4]:CatchCombatant(guid, actorName, 0x514, true)
 						
 						if (_details.debug) then
-							_details:Msg("(debug) ewhichize received actor:", actorName, damage, heal)
+							_details:Msg("(debug) Equalize received actor:", actorName, damage, heal)
 						end
 					else
 						if (_details.debug) then
-							_details:Msg("(debug) ewhichize couldn't get guid for player ",player)
+							_details:Msg("(debug) Equalize couldn't get guid for player ",player)
 						end
 					end
 				end
@@ -798,7 +803,7 @@
 			end
 		end
 		
-		function _details:EwhichizePets()
+		function _details:EqualizePets()
 			--> check for pets without owner
 			for _, actor in _ipairs(_details.table_current[1]._ActorTable) do 
 				--> have flag and the flag tell us he is a pet
@@ -811,7 +816,7 @@
 			end
 		end
 		
-		function _details:EwhichizeActorsSchedule(host_of)
+		function _details:EqualizeActorsSchedule(host_of)
 		
 			--> store pets sent through 'needpetowner'
 			_details.sent_pets = _details.sent_pets or {n = time()}
@@ -821,15 +826,15 @@
 			end
 			
 			--> pet equilize disabled on details 1.4.0
-			--_details:ScheduleTimer("EwhichizePets", 1+math.random())
+			--_details:ScheduleTimer("EqualizePets", 1+math.random())
 
 			--> do not equilize if there is any disabled capture
 			--if (_details:CaptureIsAllEnabled()) then
-				_details:ScheduleTimer("EwhichizeActors", 2+math.random()+math.random() , host_of)
+				_details:ScheduleTimer("EqualizeActors", 2+math.random()+math.random() , host_of)
 			--end
 		end
 		
-		function _details:EwhichizeActors(host_of)
+		function _details:EqualizeActors(host_of)
 		
 			if (_details.debug) then
 				_details:Msg("(debug) sending equilize actor data")
@@ -872,7 +877,7 @@
 			--> send os dados do proprio host pra ele antes
 			if (host_of) then
 				_details:SendRaidDataAs(_details.network.ids.CLOUD_EQUALIZE, host_of, nil, data)
-				_details:EwhichizeActors()
+				_details:EqualizeActors()
 			else
 				_details:SendRaidData(_details.network.ids.CLOUD_EQUALIZE, data)
 			end
@@ -1036,22 +1041,22 @@
 				GameCooltip:SetHost(DetailsTooltipAnchor, myPoint, anchorPoint, x_Offset, y_Offset)
 			end
 			
-			local this_bar = self.bars[which_bar] --> bar que o mouse passou em cima e irá mostrar o tooltip
+			local this_bar = self.bars[which_bar] --> bar que o mouse passou em cima e irï¿½ mostrar o tooltip
 			local objeto = this_bar.my_table --> pega a referencia da table --> retorna a class_damage ou class_heal
-			if (not objeto) then --> a bar não possui um objeto
+			if (not objeto) then --> a bar nï¿½o possui um objeto
 				return false
 			end
 
 			--verifica por tooltips especiais:
-			if (objeto.dead) then --> é uma bar de dead
-				return _details:ToolTipDead(self, objeto, this_bar, keydown) --> instância,[death], bar
+			if (objeto.dead) then --> ï¿½ uma bar de dead
+				return _details:ToolTipDead(self, objeto, this_bar, keydown) --> instï¿½ncia,[death], bar
 			elseif (objeto.frags) then
 				return _details:ToolTipFrags(self, objeto, this_bar, keydown)
 			elseif (objeto.boss_debuff) then
 				return _details:ToolTipVoidZones(self, objeto, this_bar, keydown)
 			end
 			
-			local t = objeto:ToolTip(self, which_bar, this_bar, keydown) --> instância, nº bar, objeto bar, keydown
+			local t = objeto:ToolTip(self, which_bar, this_bar, keydown) --> instï¿½ncia, nï¿½ bar, objeto bar, keydown
 			
 			if (t) then
 			
@@ -1087,7 +1092,7 @@
 		end
 		
 		function _details:HideBarsNotUsed(instance, showing)
-			--> primeira atualização após uma mudança de segment -->  verifica se há mais bars sendo mostradas do que o necessário	
+			--> primeira atualizaï¿½ï¿½o apï¿½s uma mudanï¿½a de segment -->  verifica se hï¿½ mais bars sendo mostradas do que o necessï¿½rio	
 			--------------------
 				if (instance.v_bars) then
 					for bar_number = instance.rows_showing+1, instance.rows_created do
@@ -1104,7 +1109,7 @@
 
 			local combat_table = self.showing
 
-			--> confere se a instância possui uma table válida
+			--> confere se a instï¿½ncia possui uma table vï¿½lida
 			if (not combat_table) then
 				if (not self.freezed) then
 					return self:Freeze()
@@ -1114,7 +1119,7 @@
 
 			local need_refresh = combat_table[self.attribute].need_refresh
 			if (not need_refresh and not force) then
-				return --> não precisa de refresh
+				return --> nï¿½o precisa de refresh
 			--else
 				--combat_table[self.attribute].need_refresh = false
 			end
@@ -1135,7 +1140,7 @@
 
 		function _details:UpdateGumpMain(instance, force)
 			
-			if (not instance or type(instance) == "boolean") then --> o primeiro parâmetro não foi uma instância ou ALL
+			if (not instance or type(instance) == "boolean") then --> o primeiro parï¿½metro nï¿½o foi uma instï¿½ncia ou ALL
 				force = instance
 				instance = self
 			end
@@ -1151,7 +1156,7 @@
 					end
 				end
 				
-				--> marcar que não precisa ser atualizada
+				--> marcar que nï¿½o precisa ser atualizada
 				for index, this_instance in _ipairs(_details.table_instances) do
 					if (this_instance.active and this_instance.showing) then
 						if (this_instance.mode == mode_GROUP or this_instance.mode == mode_ALL) then
@@ -1162,7 +1167,7 @@
 					end
 				end
 
-				if (not force) then --atualizar o gump de details também se ele estiver aberto
+				if (not force) then --atualizar o gump de details tambï¿½m se ele estiver aberto
 					if (info.active) then
 						return info.player:SetInfo()
 					end

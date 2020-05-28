@@ -73,7 +73,7 @@ local brundirAlive = true
 local steelbreakerAlive = true
 
 function mod:OnCombatStart(delay)
-	DBM:FireCustomEvent("DBM_EncounterStart", 881, "Iron Council")
+	DBM:FireCustomEvent("DBM_EncounterStart", 748, "Iron Council")
 	enrageTimer:Start()
 	timerRuneofPower:Start(30)
 	timerOverloadCooldown:Start(40)
@@ -86,7 +86,7 @@ function mod:OnCombatStart(delay)
 end
 
 function mod:OnCombatEnd(wipe)
-	DBM:FireCustomEvent("DBM_EncounterEnd", 881, "Iron Council", wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 748, "Iron Council", wipe)
 end
 
 function mod:RuneOfPower()
