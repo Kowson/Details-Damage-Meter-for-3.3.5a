@@ -17,12 +17,6 @@ do
 	
 	local Loc = LibStub("AceLocale-3.0"):GetLocale( "Details" )
 	
-	--[[
-
-|cFFFFFF00-|r Fixed an addon crash bug when clicking directly on the sword button.\n\n|cFFFFFF00-|r Removed Flat Skin, added new skin: Serenity.\n\n
-	--]]
-
-	
 	Loc["STRING_VERSION_LOG"] = "|cFFFFFF00v1.29.3(|cFFFFCC00Oct 11, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Fixed an addon crash bug when clicking directly on the sword button.\n\n|cFFFFFF00-|r Removed Flat Skin, added new skin: Serenity.\n\n|cFFFFFF00-|r Fixed many issues with bar animations.\n\n|cFFFFFF00-|r Fixed combat encounter start if the player already is in combat when the boss is pulled.\n\n|cFFFFFF00-|r Fixed wheel scroll when sometimes it move very slow or doesn't move the bars at all.\n\n|cFFFFFF00-|r Added option 'Always Show Me' which when enabled and you aren't at the top ranked players shown in the window, it forces to show you in the last bar.\n\n|cFFFFFF00-|r Added option 'First Hit' which when enabled show who did the first struck in the combat(normally is who pulled the boss).\n\n|cFFFFFF00-|r Added a panel to change class colors.\n\n|cFFFFFF00v1.28.3(|cFFFFCC00Oct 04, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added support for plugin descriptions on options panel.\n\n|cFFFFFF00-|r Added scale option.\n\n|cFFFFFF00-|r Added a Change Log button on Options Panel.\n\n|cFFFFFF00-|r Added option to use the same profile on all characters without asking.\n\n|cFFFFFF00-|r Added a shortcut color button on main panel on Options Panel.\n\n|cFFFFFF00-|r Added auto erase/ask to erase options.\n\n|cFFFFFF00-|r Bars now highlight when hover over.\n\n|cFFFFFF00-|r Fixed problem with drag the window when the toolbar is on the bottom side.\n\n|cFFFFFF00v1.27.0(|cFFFFCC00Set 27, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Minimalistic skin is now the old minimalistic v2.\n\n|cFFFFFF00-|r Minimalistic v2 got a new texture, little more darker.\n\n|cFFFFFF00-|r Few tweaks to make more easy making groups of windows.\n\n|cFFFFFF00-|r Bookmark now accepts more than two columns.\n\n|cFFFFFF00v1.26.3(|cFFFFCC00Set 18, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Changed the way to set the broker text to be more customizable.\n\n|cFFFFFF00-|r Fixed the problem with custom display report.\n\n|cFFFFFF00-|r Added tutorial and a config panel for bookmarks.\n\n|cFFFFFF00-|r Added option for choose the format type of data broker's text.\n\n|cFFFFFF00-|r Changed few icons on damage done tooltip.\n\n|cFFFFFF00-|r Fixed the class color on texts for healing attribute.\n\n|cFFFFFF00-|r Added options for change the tooltip border's size, color and texture.\n\n|cFFFFFF00-|r Added buttons for test interrupt and cooldown announcers under raid tools section.\n\n|cFFFFFF00v1.25.1(|cFFFFCC00Set 09, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added buttons to edit the total and percentage code for custom displays.\n\n|cFFFFFF00-|r Fixed a problem while report custom displays.\n\n|cFFFFFF00-|r Added Acitivity Time for Damage + Healing, tooltip show the activity separately.\n\n|cFFFFFF00-|r Major changes on Encounter Details Plugin making more easy to use.\n\n|cFFFFFF00-|r Removed Spell Details Plugin.\n\n|cFFFFFF00-|r Added new plugin for Solo Mode: Dps Tuning.\n\n|cFFFFFF00v1.24.5(|cFFFFCC00Ago 31, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added Raid Tools bracket on Options Panel.\n\n|cFFFFFF00-|r Added interrupt, cooldown and death announcers(raid tools).\n\n|cFFFFFF00-|r Added pre potion recognition, showing after the encounter on the chat only for you(raid tools).\n\n|cFFFFFF00-|r Added a Boss Emotes tab for Encounter Details plugin |cFF999999(thanks Bloodforce-Azralon)|r.\n\n|cFFFFFF00-|r Rework on Activity Time, now it is tuned to closely match warcraftlogs |cFF999999(thanks www.warcraftlogs.com)|r.\n\n|cFFFFFF00-|r Added two new customs: Damage Activity Time and Healing Activity Time.\n\n|cFFFFFF00-|r Time Attack Plugin now have six fixed time amount options for test your dps on training dummies.\n\n|cFFFFFF00-|r Time Attack Plugin can now also share results on your realm, between players with the same class.\n\n|cFFFFFF00v1.23.6(|cFFFFCC00Ago 24, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added 2 new bar textures and 6 new fonts.\n\n|cFFFFFF00-|r Swapped left and middle button for enemy bars, now left button open damage taken and middle button player detail window.\n\n|cFFFFFF00-|r Added new skin: Minimalistic v2.\n\n|cFFFFFF00-|r Minimalistic v2 is now the default skin.\n\n|cFFFFFF00-|r Few changes on both icon packs with transparency.\n\n|cFFFFFF00-|r Replaced the slash command '/d' with '/de' |cFF999999(thanks @kamuul-mmochampion forum)|r.\n\n|cFFFFFF00-|r Added custom spells for Atonement, Power Word: Solance and Life Bloom |cFF999999(thanks @skmzarn-mmochampion forum)|r.\n\n|cFFFFFF00v1.22.4(|cFFFFCC00Ago 15, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added new skin: ElvUI Frame Style(Black White).\n\n|cFFFFFF00-|r Align With Right Chat Window option now check if the window have statusbar enabled.\n\n|cFFFFFF00-|r Few improvements on report for Deaths and Spells over Player Detail Window.\n\n|cFFFFFF00-|r Added option to disable reset button(reset only using its tooltip menu).\n\n|cFFFFFF00-|r Added option for disable window groups.\n\n|cFFFFFF00-|r Added option for select the icon pack to use, also added black white icon pack.\n\n|cFFFFFF00-|r Fixed many bugs involving skins and profiles, thing should run more smooth now.\n\n|cFFFFFF00-|r Plugin Time Attack now correctly saves the attempt when pressing the big save button.\n\n|cFFFFFF00-|r Added support for hotcorners.\n\n|cFFFFFF00v1.21.4(|cFFFFCC00Ago 9, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added Shaman's Ancestral Guidance on cooldowns list |cFF999999(thanks @skmzarn-mmochampion forum)|r.\n\n|cFFFFFF00-|r Added a profile selection screen when Details! are running for the first time on a character.\n\n|cFFFFFF00-|r Added Menu Text Size option over miscellaneous section on options panel |cFF999999(thanks @ Revi-mmochampion forum)|r.\n\n|cFFFFFF00-|r Fixed a bug over Healing Player Details Window where pets wasn't being shown |cFF999999(thanks @Mystery2012-mmochampion forum)|r.\n\n|cFFFFFF00-|r Fixed issue with summoning pets with unknown owners where it was breaking the summon of all the others pets. |cFF999999(thanks @ThunderLost-curse website)|r.\n\n|cFFFFFF00-|r Hot Corners isn't no more a part of Details!, instead of that, Hot Corner is now a standalone addon which needs to be installed separately for who wants to use it.\n\n|cFFFFFF00-|r Skin data is now stored inside the profiles, many code parts got rewrite, still may have few bugs but it's more reliable then before.\n\n|cFFFFFF00-|r Rework on Auras and Voidzones: now shows damage, dps and percentage. Also its tooltip got fixes and now shows the correct damage done to players.\n\n|cFFFFFF00-|r Tooltip for Enemies now shows damage taken from players |cFF999999(thanks @Arieth-mmochampion forum)|r.\n\n|cFFFFFF00-|r Right clicking a real-time enemy bar, makes it back to Enemies display instead of show Bookmark panel |cFF999999(thanks @Arieth-mmochampion forum)|r.\n\n|cFFFFFF00-|r Tank comparison from previous segment now uses the same percentage method from player comparison panel.\n\n|cFFFFFF00-|r Fix bug with the slash command 'show' where was ignoring the window limit set on options panel |cFF999999(thanks @Castiel-US-Azralon realm)|r.\n\n|cFFFFFF00-|r Fixed few bugs with scroll bars, including scrolls on dropdown menu and player detail window |cFF999999(thanks @Revi-mmochampion forum)|r.\n\n|cFFFFFF00v1.20.2(|cFFFFCC00Aug 1, 2014|r|cFFFFFF00)|r:\n\n|cFFFFFF00-|r Added a option under Miscellaneous section to provide spell link instead of spell name for helpful spells when reporting a death |cFF999999(thanks @skmzarn-mmochampion forum)|r.\n\n|cFFFFFF00-|r Improvements done on how deaths are handled, now latest events before death will be more precise.\n\n|cFFFFFF00-|r Implemented Damage Taken from environment like lava, gravity, etc.\n\n|cFFFFFF00-|r Added Warlock's Fire and Brimstone spell on customized spells."
 	Loc["STRING_DETAILS1"] = "|cffffaeaeDetails!:|r "
 
@@ -35,57 +29,55 @@ do
 		_details.opened_windows = 0
 		
 	--> containers
-		--> armazenas as funções do parser - All parse functions 
+		--> All parse functions
 			_details.parser = {} 
 			_details.parser_functions = {}
 			_details.parser_frame = CreateFrame("Frame", nil, _UIParent)
 			_details.parser_frame:Hide()
-		--> armazena os shields - Shields information for absorbs
+		--> Shields information for absorbs
 			_details.shields = {} 
-		--> armazena as funções dos frames - Frames functions
+		--> Frames functions
 			_details.gump = {} 
 			function _details:GetFramework()
 				return self.gump
 			end
-		--> armazena as funções para inicialização dos dados - Metatable functions
+		--> Metatable functions for initializing the data
 			_details.refresh = {} 
-		--> armazena as funções para limpar e guardas os dados - Metatable functions
+		--> Metatable functions for cleaning and saving the data
 			_details.clear = {} 
-		--> armazena a config do painel de fast switch
+		--> Fast switch panel config
 			_details.switch = {} 
-		--> armazena os estilos stargets
+		--> Saved styles
 			_details.savedStyles = {}
-		--> armazena quais attributes possue window de attributes - contain attributes and sub attributos wich have a detailed window(left click on a row)
+		--> Contain attributes and sub attributos which have a detailed window(left click on a row)
 			_details.row_singleclick_overwrite = {} 
-		--> report
+		--> Report options
 			_details.ReportOptions = {}
-		--> armazena os buffs registrados - store buffs ids and functions
+		--> Buffs ids and functions
 			_details.Buffs = {} --> initialize buff table
-		-->  cache de group
+		--> Group cache
 			_details.cache_damage_group = {}
 			_details.cache_healing_group = {}
-		--> ignored pets
+		--> Ignored pets
 			_details.pets_ignored = {}
 			_details.pets_no_owner = {}
-		--> armazena as skins disponíveis para as windows
+		--> Available windows skins
 			_details.skins = {}
-		--> armazena os hooks das funções do parser
+		--> Parser hooks
 			_details.hooks = {}
-		--> informações sobre a fight do boss atual
+		--> Information about current boss fight
 			_details.encounter_end_table = {}
 			_details.encounter_table = {}
-		--> informações sobre a arena atual
+		--> Information about current arena fight
 			_details.arena_table = {}
 			_details.arena_info = {
 				[562] = {file = "LoadScreenBladesEdgeArena", coords = {0, 1, 0.29296875, 0.9375}}, -- Circle of Blood Arena
-				[617] = {file = "LoadScreenDalaranSewersArena", coords = {0, 1, 0.29296875, 0.857421875}}, --Dalaran Arena
-				[559] = {file = "LoadScreenNagrandArenaBattlegrounds", coords = {0, 1, 0.341796875, 1}}, --Ring of Trials
-				[980] = {file = "LoadScreenTolvirArena", coords = {0, 1, 0.29296875, 0.857421875}}, --Tol'Viron Arena
-				[572] = {file = "LoadScreenRuinsofLordaeronBattlegrounds", coords = {0, 1, 0.341796875, 1}}, --Ruins of Lordaeron
-				[1134] = {file = "LoadingScreen_Shadowpan_bg", coords = {0, 1, 0.29296875, 0.857421875}}, -- Tiger's Peak
-				--"LoadScreenOrgrimmarArena", --Ring of Valor 
+				[617] = {file = "LoadScreenDalaranSewersArena", coords = {0, 1, 0.29296875, 0.857421875}}, -- Dalaran Arena
+				[559] = {file = "LoadScreenNagrandArenaBattlegrounds", coords = {0, 1, 0.341796875, 1}}, -- Ring of Trials
+				[572] = {file = "LoadScreenRuinsofLordaeronBattlegrounds", coords = {0, 1, 0.341796875, 1}}, -- Ruins of Lordaeron
+				[618] = {file = "LoadScreenOrgrimmarArena", coords = {0, 1, 0.29296875, 0.857421875}}, -- Ring of Valor
 			}
-		--> armazena instances inactives
+		--> Unused instances
 			_details.unused_instances = {}
 			
 			function _details:GetArenaInfo(mapid)

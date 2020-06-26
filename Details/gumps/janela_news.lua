@@ -1,7 +1,7 @@
-local _details = 		_G._details
+local _details = _G._details
 local Loc = LibStub("AceLocale-3.0"):GetLocale( "Details" )
 
-local g =	_details.gump
+local g = _details.gump
 local _
 
 function _details:OpenNewsWindow()
@@ -19,7 +19,7 @@ function _details:CreateOrOpenNewsWindow()
 	-- /script _details.OpenNewsWindow()
 	
 	if (not frame) then
-		--> construir a window de news
+		--> construct a news window
 		frame = CreateFrame("frame", "DetailsNewsWindow", UIParent, "ButtonFrameTemplate")
 		frame:SetPoint("center", UIParent, "center")
 		frame:SetFrameStrata("FULLSCREEN")
@@ -113,24 +113,24 @@ function _details:CreateOrOpenNewsWindow()
 		--> forum text
 		local forum_button = CreateFrame("Button", "DetailsNewsWindowForumButton", frame, "OptionsButtonTemplate")
 		forum_button:SetPoint("bottomleft", frame, "bottomleft", 10, 4)
-		forum_button:SetText("Forum Thread")
+		forum_button:SetText("Details! Repository")
 		forum_button:SetScript("OnClick", function(self)
 			--> copy and paste
-			_details:CopyPaste("http://www.mmo-champion.com/threads/1480721-New-damage-meter-%28Details!%29-need-help-with-tests-and-feedbacks")
+			_details:CopyPaste("https://github.com/Kowson/Details-Damage-Meter-for-3.3.5a")
 		end)
 		forum_button:SetWidth(130)
 		
 		local forum_button_text = frame:CreateFontString("DetailsNewsWindowForumButtonText", "overlay", "GameFontNormalSmall")
 		forum_button_text:SetPoint("left", forum_button, "right", 3, 0)
-		forum_button_text:SetText("on mmo-champions, for feedback, feature request, bug report.")
+		forum_button_text:SetText("on github, for feedback, feature request, bug report.")
 		forum_button_text:SetTextColor(.7, .7, .7, 1)
 		
 		function frame:Title(title)
 			frame.TitleText:SetText(title or "")
 		end
 		
-		function frame:Text(text)
-			text:SetText(text or "")
+		function frame:Text(textt)
+			text:SetText(textt or "")
 		end
 		
 		function frame:Icon(path)
