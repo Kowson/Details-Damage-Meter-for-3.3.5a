@@ -76,3 +76,24 @@ function PortraitFrameCloseButton_OnClick(self)
 		HideParentPanel(self);
 	end	
 end
+
+
+function ActionButton_OverlayGlowAnimOutFinished(animGroup)
+	local overlay = animGroup:GetParent();
+	local actionButton = overlay:GetParent();
+	overlay:Hide();
+	actionButton.overlay = nil;
+end
+
+
+function ActionButton_OverlayGlowOnUpdate(self, elapsed)
+	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01);
+	local cooldown = self:GetParent().cooldown;
+	-- we need some threshold to avoid dimming the glow during the gdc
+	-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
+	if(cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000) then
+		self:SetAlpha(0.5);
+	else
+		self:SetAlpha(1.0);
+	end
+end
