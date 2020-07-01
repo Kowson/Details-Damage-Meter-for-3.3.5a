@@ -87,7 +87,7 @@ end
 
 
 function ActionButton_OverlayGlowOnUpdate(self, elapsed)
-	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01);
+	AnimateAnts(self.ants, 256, 256, 48, 48, 25, elapsed, 0.01);
 	local cooldown = self:GetParent().cooldown;
 	-- we need some threshold to avoid dimming the glow during the gdc
 	-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
@@ -95,5 +95,35 @@ function ActionButton_OverlayGlowOnUpdate(self, elapsed)
 		self:SetAlpha(0.5);
 	else
 		self:SetAlpha(1.0);
+	end
+end
+
+function AnimateAnts(texture, textureWidth, textureHeight, frameWidth, frameHeight, numFrames, elapsed, throttle)
+	if ( not texture.frame ) then
+		-- initialize everything
+		texture.frame = 1;
+		texture.throttle = throttle;
+		texture.numColumns = floor(textureWidth/frameWidth);
+		texture.numRows = floor(textureHeight/frameHeight);
+		texture.columnWidth = frameWidth/textureWidth;
+		texture.rowHeight = frameHeight/textureHeight;
+	end
+	local frame = texture.frame;
+	if ( not texture.throttle or texture.throttle > throttle ) then
+		local framesToAdvance = floor(texture.throttle / throttle);
+		while ( frame + framesToAdvance > numFrames ) do
+			frame = frame - numFrames;
+		end
+		frame = frame + framesToAdvance;
+		texture.throttle = 0;
+		local left = mod(frame-1, texture.numColumns)*texture.columnWidth;
+		local right = left + texture.columnWidth;
+		local bottom = ceil(frame/texture.numColumns)*texture.rowHeight;
+		local top = bottom - texture.rowHeight;
+		texture:SetTexCoord(left, right, top, bottom);
+
+		texture.frame = frame;
+	else
+		texture.throttle = texture.throttle + elapsed;
 	end
 end

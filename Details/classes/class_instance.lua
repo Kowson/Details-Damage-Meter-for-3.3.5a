@@ -2036,12 +2036,6 @@ function _details:SwitchTable(instance, segment, attribute, sub_attribute, start
 			_details.popup:Select(2, instance.sub_attribute, attribute)
 		end
 
-		--_details:SetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1", nil)
-		if (not _details:GetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1") and not _details.initializing and not starting_instance) then
-			if (not _G["DetailsWelcomeWindow"] or not _G["DetailsWelcomeWindow"]:IsShown()) then
-				_details:TutorialBookmark(instance)
-			end
-		end
 		
 		if (_details.cloud_process) then
 			

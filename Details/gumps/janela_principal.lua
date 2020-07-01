@@ -2477,7 +2477,7 @@ local function show_anti_overlap(instance, host, side)
 	anti_menu_overlap:Show()
 end
 
-_details.snap_alert = CreateFrame("frame", "DetailsSnapAlertFrame", UIParent)--, "ActionBarButtonSpellActivationAlert")
+_details.snap_alert = CreateFrame("frame", "DetailsSnapAlertFrame", UIParent, "ActionBarButtonSpellActivationAlert")
 _details.snap_alert:Hide()
 _details.snap_alert:SetFrameStrata("FULLSCREEN")
 
@@ -2569,7 +2569,7 @@ do
 		self:SetPoint("center", UIParent, "center", x, y)
 	end
 	
-	tooltip_anchor.alert = CreateFrame("frame", "DetailsTooltipAnchorAlert", UIParent)--, "ActionBarButtonSpellActivationAlert")
+	tooltip_anchor.alert = CreateFrame("frame", "DetailsTooltipAnchorAlert", UIParent, "ActionBarButtonSpellActivationAlert")
 	tooltip_anchor.alert:SetFrameStrata("FULLSCREEN")
 	tooltip_anchor.alert:Hide()
 	tooltip_anchor.alert:SetPoint("topleft", tooltip_anchor, "topleft", -60, 6)
