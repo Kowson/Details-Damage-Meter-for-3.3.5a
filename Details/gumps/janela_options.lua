@@ -87,10 +87,10 @@ local function UniqueGetTalentSpecInfo(isInspect)
 	return specIdx, specName, specIcon, specBackground
 end
 
-function _details:OpenOptionsWindow(instance, no_reopen)
+function _details:OpenOptionsWindow(instance, no_reopen, section)
 
 	if (not instance.mine_id) then
-		instance, no_reopen = unpack(instance)
+		instance, no_reopen, section = unpack(instance)
 	end
 
 	GameCooltip:Close()
@@ -107,7 +107,7 @@ function _details:OpenOptionsWindow(instance, no_reopen)
 	end
 	
 	if (_G.DetailsOptionsWindow and _G.DetailsOptionsWindow.full_created) then
-		return _G.DetailsOptionsWindow.MyObject:update_all(instance)
+		return _G.DetailsOptionsWindow.MyObject:update_all(instance, section)
 	end
 	
 	if (not window) then
@@ -501,6 +501,7 @@ local menus = { --labels nos menus
 		local textcolor = {.8, .8, .8, 1}
 		local last_pressed
 		local all_buttons = {}
+		window.menu_buttons = all_buttons
 		local true_index = 1
 		local selected_textcolor = "wheat"
 
@@ -1008,14 +1009,41 @@ function window:CreateFrame20()
 		titulo_tooltips_desc.height = 20
 		
 		-- text color
+		-- texts anchors
+		g:NewLabel(frame20, _, "$parentTooltipTextColorLeftLabel", "TooltipTextColorLeftLabel", Loc["STRING_LEFT"], "GameFontHighlightLeft")
+		g:NewLabel(frame20, _, "$parentTooltipTextColorRightLabel", "TooltipTextColorRightLabel", Loc["STRING_RIGHT"], "GameFontHighlightLeft")
+		g:NewLabel(frame20, _, "$parentTooltipTextColorAnchorLabel", "TooltipTextColorAnchorLabel", Loc["STRING_OPTIONS_TOOLTIPS_ANCHORCOLOR"], "GameFontHighlightLeft")
+		-- left color pick
 		local tooltip_text_color_callback = function(button, r, g, b, a)
-			_details.tooltip.fontcolor = {r, g, b, a}
+			local c = _detalhes.tooltip.fontcolor
+			c[1], c[2], c[3], c[4] = r, g, b, a
 		end
 		g:NewColorPickButton(frame20, "$parentTooltipTextColorPick", "TooltipTextColorPick", tooltip_text_color_callback)
+		-- right color pick
+		local tooltip_text_color_callback_right = function(button, r, g, b, a)
+			local c = _detalhes.tooltip.fontcolor_right
+			c[1], c[2], c[3], c[4] = r, g, b, a
+		end
+		g:NewColorPickButton(frame20, "$parentTooltipTextColorPickRight", "TooltipTextColorPickRight", tooltip_text_color_callback_right)
+		-- anchor color pick
+		local tooltip_text_color_callback_anchor = function(button, r, g, b, a)
+			local c = _detalhes.tooltip.header_text_color
+			c[1], c[2], c[3], c[4] = r, g, b, a
+		end
+		g:NewColorPickButton(frame20, "$parentTooltipTextColorPickAnchor", "TooltipTextColorPickAnchor", tooltip_text_color_callback_anchor)
+		-- text label
 		g:NewLabel(frame20, _, "$parentTooltipTextColorLabel", "TooltipTextColorLabel", Loc["STRING_OPTIONS_TOOLTIPS_FONTCOLOR"], "GameFontHighlightLeft")
 		frame20.TooltipTextColorPick:SetPoint("left", frame20.TooltipTextColorLabel, "right", 2, 0)
+		frame20.TooltipTextColorLeftLabel:SetPoint("left", frame20.TooltipTextColorPick, "right", 2, 0)
+		frame20.TooltipTextColorPickRight:SetPoint("left", frame20.TooltipTextColorLeftLabel, "right", 6, 0)
+		frame20.TooltipTextColorRightLabel:SetPoint("left", frame20.TooltipTextColorPickRight, "right", 2, 0)
+		frame20.TooltipTextColorPickAnchor:SetPoint("left", frame20.TooltipTextColorRightLabel, "right", 6, 0)
+		frame20.TooltipTextColorAnchorLabel:SetPoint("left", frame20.TooltipTextColorPickAnchor, "right", 2, 0)
+
 		window:CreateLineBackground2(frame20, "TooltipTextColorPick", "TooltipTextColorLabel", Loc["STRING_OPTIONS_TOOLTIPS_FONTCOLOR_DESC"])
-			
+		window:CreateLineBackground2(frame20, "TooltipTextColorPickRight", "TooltipTextColorLabel", Loc["STRING_OPTIONS_TOOLTIPS_FONTCOLOR_DESC"])
+		window:CreateLineBackground2(frame20, "TooltipTextColorPickAnchor", "TooltipTextColorAnchorLabel", Loc["STRING_OPTIONS_TOOLTIPS_FONTCOLOR_DESC"])
+
 		-- text size
 		g:NewLabel(frame20, _, "$parentTooltipTextSizeLabel", "TooltipTextSizeLabel", Loc["STRING_OPTIONS_TOOLTIPS_FONTSIZE"], "GameFontHighlightLeft")
 		local s = g:NewSlider(frame20, _, "$parentTooltipTextSizeSlider", "TooltipTextSizeSlider", SLIDER_WIDTH, 20, 8, 32, 1, tonumber(_details.tooltip.fontsize))
@@ -1371,19 +1399,20 @@ function window:CreateFrame20()
 		
 		local left_side = {
 			{"TooltipsTextsAnchorLabel", 1, true},
-			{"TooltipTextColorLabel", 2},
+			{"TooltipShadowLabel", 2},
 			{"TooltipTextSizeLabel", 3},
-			{"TooltipFontLabel", 4},
-			{"TooltipShadowLabel", 5},
+			{"TooltipTextColorLabel", 4},
+			{"TooltipFontLabel", 5},
 			{"TooltipsAnchorLabel", 6, true},
 			{"TooltipBackgroundColorLabel", 7},
-			{"TooltipdpsAbbreviateLabel", 8},
+			{"TooltipShowAmountLabel", 8},
 			{"TooltipMaximizeLabel", 9},
-			{"TooltipShowAmountLabel", 10},
+			{"TooltipdpsAbbreviateLabel", 10},
+
 			{"TooltipsBorderAnchorLabel", 11, true},
-			{"BackdropBorderTextureLabel", 12},
+			{"BackdropColorLabel", 12},
 			{"BackdropSizeLabel", 13},
-			{"BackdropColorLabel", 14},
+			{"BackdropBorderTextureLabel", 14},
 		}
 		
 		window:arrange_menu(frame20, left_side, x, -90)
@@ -2041,7 +2070,32 @@ function window:CreateFrame18()
 		end
 		
 		window:CreateLineBackground2(frame18, "DisableResetSlider", "DisableResetLabel", Loc["STRING_OPTIONS_DISABLE_RESET_DESC"])
-	
+
+	--> Use Scroll Bar
+		g:NewLabel(frame18, _, "$parentUseScrollLabel", "scrollLabel", Loc["STRING_OPTIONS_SCROLLBAR"], "GameFontHighlightLeft")
+		--
+		g:NewSwitch(frame18, _, "$parentUseScrollSlider", "scrollSlider", 60, 20, _, _, _details.use_scroll)
+		frame18.scrollSlider:SetPoint("left", frame18.scrollLabel, "right", 2, 0)
+		frame18.scrollSlider.OnSwitch = function(self, _, value) --> slider, fixedValue, sliderValue
+			_details.use_scroll = value
+			if (not value) then
+				for index = 1, #_details.table_instances do
+					local instance = _details.table_instances[index]
+					if (instance.baseframe) then --fast check if instance already been initialized
+						instance:HideScrollBar(true, true)
+					end
+				end
+			end
+			--hard instances reset
+			_details:instanceCallFunction(_details.gump.Fade, "in", nil, "bars")
+			_details:instanceCallFunction(_details.UpdateSegments) -- update instance.showing for newly created tables
+			_details:instanceCallFunction(_details.UpdateSoloMode_AfertReset) -- verify if you need to reset the solo mode window table
+			_details:instanceCallFunction(_details.ResetGump) --details:ResetGump("of all instances")
+			_details:UpdateGumpMain(-1, true) -- update all instances
+		end
+
+		window:CreateLineBackground2 (frame18, "scrollSlider", "scrollLabel", Loc ["STRING_OPTIONS_SCROLLBAR_DESC"])
+
 	--> Report
 		g:NewLabel(frame18, _, "$parentReportHelpfulLinkLabel", "ReportHelpfulLinkLabel", Loc["STRING_OPTIONS_REPORT_HEALLINKS"], "GameFontHighlightLeft")
 		g:NewSwitch(frame18, _, "$parentReportHelpfulLinkSlider", "ReportHelpfulLinkSlider", 60, 20, _, _, _details.report_heal_links)
@@ -2052,7 +2106,33 @@ function window:CreateFrame18()
 		end
 		
 		window:CreateLineBackground2(frame18, "ReportHelpfulLinkSlider", "ReportHelpfulLinkLabel", Loc["STRING_OPTIONS_REPORT_HEALLINKS_DESC"])
-	
+
+		--report format
+
+		g:NewLabel(frame18, _, "$parentReportFormatLabel", "ReportFormatLabel", Loc["STRING_OPTIONS_REPORT_SCHEMA"], "GameFontHighlightLeft")
+
+		local onSelectReportFormatAlpha = function(_, _, value)
+			_detalhes.report_schema = value
+		end
+		local coords = {1, 0, 0, 1}
+		local ReportFormatOptions = {
+			{value = 1, label = Loc["STRING_OPTIONS_REPORT_SCHEMA1"], onclick = onSelectReportFormatAlpha, icon = [[Interface\Buttons\UI-GuildButton-MOTD-Disabled]], texcoord = coords, desc = "1. Jack .. 128.9k (29.9k, 23.33%)"},
+			{value = 2, label = Loc["STRING_OPTIONS_REPORT_SCHEMA2"], onclick = onSelectReportFormatAlpha, icon = [[Interface\Buttons\UI-GuildButton-MOTD-Disabled]], texcoord = coords, desc = "1. Jack .. 23.33% (29.9k, 128.9k)"},
+			{value = 3, label = Loc["STRING_OPTIONS_REPORT_SCHEMA3"], onclick = onSelectReportFormatAlpha, icon = [[Interface\Buttons\UI-GuildButton-MOTD-Disabled]], texcoord = coords, desc = "1. Jack .. 23.33% (128.9k 29.9k)"},
+		}
+		local BuildReportFormatOptions = function()
+			return ReportFormatOptions
+		end
+		local d = g:NewDropDown(frame18, _, "$parentReportFormatDropdown", "ReportFormatDropdown", 160, 20, BuildReportFormatOptions, nil)
+		d.onenter_backdrop = dropdown_backdrop_onenter
+		d.onleave_backdrop = dropdown_backdrop_onleave
+		d:SetBackdrop(dropdown_backdrop)
+		d:SetBackdropColor(unpack(dropdown_backdrop_onleave))
+
+		frame18.ReportFormatDropdown:SetPoint("left", frame18.ReportFormatLabel, "right", 2, 0)
+
+		window:CreateLineBackground2(frame18, "ReportFormatDropdown", "ReportFormatLabel", Loc["STRING_OPTIONS_REPORT_SCHEMA_DESC"])
+
 	--> Anchors
 		
 		g:NewLabel(frame18, _, "$parentInstancesMiscAnchor", "instancesMiscLabel", Loc["STRING_OPTIONS_INSTANCES"], "GameFontNormal")
@@ -2070,18 +2150,22 @@ function window:CreateFrame18()
 		
 		local left_side = {
 			{"switchesAnchorLabel", 1, true},
-			{"autoSwitchLabel", 8},
-			{"AutoSwitchWipeLabel", 9},
+
 			{dps_icon1, 2},
 			{healer_icon1, 3},
 			{tank_icon1, 4},
-			{dps_icon2, 5},
+
+			{dps_icon2, 5, true},
 			{healer_icon2, 6},
 			{tank_icon2, 7},
-			
+
+			{"autoSwitchLabel", 8, true},
+			{"AutoSwitchWipeLabel", 9},
+
 			{"autoCurrentLabel", 10},
 			{"reportAnchorLabel", 11, true},
 			{"ReportHelpfulLinkLabel", 12},
+			{"ReportFormatLabel", 13},
 		}
 		
 		window:arrange_menu(frame18, left_side, x, -90)
@@ -2092,11 +2176,12 @@ function window:CreateFrame18()
 			{"MenuTextSizeLabel", 3},
 			{"DisableGroupsLabel", 4},
 			{"DisableResetLabel", 5},
-			{"totalBarAnchorLabel", 6, true},
-			{"totalBarIconLabel", 7},
-			{"totalBarPickColorLabel", 8},
-			{"totalBarLabel", 9},
-			{"totalBarOnlyInGroupLabel", 10},
+			{"scrollLabel", 6},
+			{"totalBarAnchorLabel", 7, true},
+			{"totalBarIconLabel", 8},
+			{"totalBarPickColorLabel", 9},
+			{"totalBarLabel", 10},
+			{"totalBarOnlyInGroupLabel", 11},
 		}
 		
 		window:arrange_menu(frame18, right_side, window.right_start_at, -90)
@@ -3262,30 +3347,20 @@ function window:CreateFrame1()
 		
 		window:CreateLineBackground2(frame1, "SegmentsLockedSlider", "SegmentsLockedLabel", Loc["STRING_OPTIONS_LOCKSEGMENTS_DESC"])
 	
-	--> Use Scroll Bar
-		g:NewLabel(frame1, _, "$parentUseScrollLabel", "scrollLabel", Loc["STRING_OPTIONS_SCROLLBAR"], "GameFontHighlightLeft")
+	--> wheel speed
+		g:NewLabel(frame1, _, "$parentWheelSpeedLabel", "WheelSpeedLabel", Loc["STRING_OPTIONS_WHEEL_SPEED"], "GameFontHighlightLeft")
 		--
-		g:NewSwitch(frame1, _, "$parentUseScrollSlider", "scrollSlider", 60, 20, _, _, _details.use_scroll)
-		frame1.scrollSlider:SetPoint("left", frame1.scrollLabel, "right", 2, 0)
-		frame1.scrollSlider.OnSwitch = function(self, _, value) --> slider, fixedValue, sliderValue
-			_details.use_scroll = value
-			if (not value) then
-				for index = 1, #_details.table_instances do
-					local instance = _details.table_instances[index]
-					if (instance.baseframe) then --fast check if instance already been initialized
-						instance:HideScrollBar(true, true)
-					end
-				end
-			end
-			--hard instances reset
-			_details:instanceCallFunction(_details.gump.Fade, "in", nil, "bars")
-			_details:instanceCallFunction(_details.UpdateSegments) -- atualiza o instance.showing para as news tables criadas
-			_details:instanceCallFunction(_details.UpdateSoloMode_AfertReset) -- verifica se precisa zerar as table da window solo mode
-			_details:instanceCallFunction(_details.ResetGump) --_details:ResetGump("de todas as instances")
-			_details:UpdateGumpMain(-1, true) --atualiza todas as instances
-		end
-		
-		window:CreateLineBackground2(frame1, "scrollSlider", "scrollLabel", Loc["STRING_OPTIONS_SCROLLBAR_DESC"])
+		local s = g:NewSlider(frame1, _, "$parentWheelSpeedSlider", "WheelSpeedSlider", SLIDER_WIDTH, 20, 1, 3, 1, _details.scroll_speed)
+		s:SetBackdrop(slider_backdrop)
+		s:SetBackdropColor(unpack(slider_backdrop_color))
+		s:SetThumbSize(50)
+
+		frame1.WheelSpeedSlider:SetPoint("left", frame1.WheelSpeedLabel, "right", 2, -1)
+		frame1.WheelSpeedSlider:SetHook("OnValueChange", function(self, _, amount) --> slider, fixedValue, sliderValue
+			_details.scroll_speed = amount
+		end)
+
+		window:CreateLineBackground2 (frame1, "WheelSpeedSlider", "WheelSpeedLabel", Loc["STRING_OPTIONS_WHEEL_SPEED_DESC"])
 		
 	--> Max Instances
 		g:NewLabel(frame1, _, "$parentLabelMaxInstances", "maxInstancesLabel", Loc["STRING_OPTIONS_MAXINSTANCES"], "GameFontHighlightLeft")
@@ -3452,30 +3527,30 @@ function window:CreateFrame1()
 			
 		--erase data
 		
-				g:NewLabel(frame1, _, "$parentEraseDataLabel", "EraseDataLabel", Loc["STRING_OPTIONS_ED"], "GameFontHighlightLeft")
-				--
-				local OnSelectEraseData = function(_, _, EraseType)
-					_details.segments_auto_erase = EraseType
-				end
-				
-				local EraseDataOptions = {
-					{value = 1, label = Loc["STRING_OPTIONS_ED1"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
-					{value = 2, label = Loc["STRING_OPTIONS_ED2"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
-					{value = 3, label = Loc["STRING_OPTIONS_ED3"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
-				}
-				local BuildEraseDataMenu = function()
-					return EraseDataOptions
-				end
-				
-				local d = g:NewDropDown(frame1, _, "$parentEraseDataDropdown", "EraseDataDropdown", 160, 20, BuildEraseDataMenu, _details.segments_auto_erase)
-				d.onenter_backdrop = dropdown_backdrop_onenter
-				d.onleave_backdrop = dropdown_backdrop_onleave
-				d:SetBackdrop(dropdown_backdrop)
-				d:SetBackdropColor(unpack(dropdown_backdrop_onleave))
-				
-				frame1.EraseDataDropdown:SetPoint("left", frame1.EraseDataLabel, "right", 2, 0)		
+			g:NewLabel(frame1, _, "$parentEraseDataLabel", "EraseDataLabel", Loc["STRING_OPTIONS_ED"], "GameFontHighlightLeft")
+			--
+			local OnSelectEraseData = function(_, _, EraseType)
+				_details.segments_auto_erase = EraseType
+			end
 
-				window:CreateLineBackground2(frame1, "EraseDataDropdown", "EraseDataLabel", Loc["STRING_OPTIONS_ED_DESC"])
+			local EraseDataOptions = {
+				{value = 1, label = Loc["STRING_OPTIONS_ED1"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
+				{value = 2, label = Loc["STRING_OPTIONS_ED2"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
+				{value = 3, label = Loc["STRING_OPTIONS_ED3"], onclick = OnSelectEraseData, icon =[[Interface\Addons\Details\Images\reset_button2]]},
+			}
+			local BuildEraseDataMenu = function()
+				return EraseDataOptions
+			end
+
+			local d = g:NewDropDown(frame1, _, "$parentEraseDataDropdown", "EraseDataDropdown", 160, 20, BuildEraseDataMenu, _details.segments_auto_erase)
+			d.onenter_backdrop = dropdown_backdrop_onenter
+			d.onleave_backdrop = dropdown_backdrop_onleave
+			d:SetBackdrop(dropdown_backdrop)
+			d:SetBackdropColor(unpack(dropdown_backdrop_onleave))
+
+			frame1.EraseDataDropdown:SetPoint("left", frame1.EraseDataLabel, "right", 2, 0)
+
+			window:CreateLineBackground2(frame1, "EraseDataDropdown", "EraseDataLabel", Loc["STRING_OPTIONS_ED_DESC"])
 		
 		--config bookmarks
 			g:NewButton(frame1, _, "$parentBookmarkButton", "BookmarkButton", buttons_width, 18, _details.OpenBookmarkConfig, nil, nil, nil, Loc["STRING_OPTIONS_WC_BOOKMARK"], 1)
@@ -3528,15 +3603,17 @@ function window:CreateFrame1()
 			{"GeneralAnchorLabel", 1, true},
 			{"animateLabel", 2},
 			{"updatespeedLabel", 3},
-			{"segmentsLabel", 4},
-			{"scrollLabel", 6},
+			{"WheelSpeedLabel", 4},
+
+			{"SegmentsLockedLabel", 5},
+			{"segmentsLabel", 6},
+
 			{"maxInstancesLabel", 7},
 			{"dpsAbbreviateLabel", 8},
-			{"SegmentsLockedLabel", 5},
 			{"WindowControlsLabel", 9, true},
 			{"LockButton", 10},
-			{"BreakSnapButton", 12},
 			{"CloseButton", 11},
+			{"BreakSnapButton", 12},
 			{"CreateWindowButton", 14, true},
 			{"SetWindowColorButton", 13},
 			
@@ -3840,8 +3917,8 @@ function window:CreateFrame2()
 		local left_side = {
 			{"GeneralAnchorLabel", 1, true},
 			{"fragsPvpLabel", 2},
-			{"timetypeLabel", 3},
-			{"EraseChartDataLabel", 4},
+			{"EraseChartDataLabel", 3},
+			{"timetypeLabel", 4},
 			
 			{"OverallDataLabel", 5, true},
 			{"OverallDataRaidBossLabel", 6},
@@ -4934,9 +5011,9 @@ function window:CreateFrame4()
 		local left_side = {
 			--basic
 			{frame4.RowGeneralAnchorLabel, 1, true},
-			{frame4.rowHeightLabel, 2},
-			{frame4.barGrowDirectionLabel, 3},
-			{frame4.barSortDirectionLabel, 4},
+			{frame4.barGrowDirectionLabel, 2},
+			{frame4.barSortDirectionLabel, 3},
+			{frame4.rowHeightLabel, 4},
 			{frame4.BarSpacementLabel, 5},
 			--icon
 			{frame4.rowIconsLabel, 6, true},
@@ -4945,10 +5022,10 @@ function window:CreateFrame4()
 			{frame4.barStartLabel, 9},
 			--backdrop
 			{frame4.BackdropAnchorLabel, 10, true},
-			{frame4.BackdropEnabledLabel, 11},
-			{frame4.BackdropBorderTextureLabel, 12},
+			{frame4.BackdropColorLabel, 11},
+			{frame4.BackdropEnabledLabel, 12},
 			{frame4.BackdropSizeLabel, 13},
-			{frame4.BackdropColorLabel, 14},
+			{frame4.BackdropBorderTextureLabel, 14},
 		}
 		
 		local right_side = {
@@ -5586,6 +5663,7 @@ function window:CreateFrame6()
 
 		--general anchor
 		g:NewLabel(frame6, _, "$parentAdjustmentsAnchor", "AdjustmentsAnchorLabel", Loc["STRING_OPTIONS_WINDOW_ANCHOR"], "GameFontNormal")
+		g:NewLabel(frame6, _, "$parentAdjustments2Anchor", "AdjustmentsAnchor2Label", Loc["STRING_OPTIONS_WINDOW_ANCHOR_ANCHORS"], "GameFontNormal")
 		
 		local x = window.left_start_at
 		
@@ -5596,14 +5674,16 @@ function window:CreateFrame6()
 			{"AdjustmentsAnchorLabel", 1, true},
 			{"windowPickColorLabel", 2},
 			{"windowBackgroundPickColorLabel", 3},
-			{"instanceToolbarSideLabel", 4},
-			{"stretchAnchorLabel", 6},
-			{"instanceMicroDisplaysSideLabel", 5},
-			{"sideBarsLabel", 8},
-			{"stretchAlwaysOnTopLabel", 7},
-			{"backdropLabel", 9},
-			{"strataLabel", 10},
-			{"WindowScaleLabel", 11},
+			{"sideBarsLabel", 4, true},
+			{"backdropLabel", 5},
+			{"strataLabel", 6},
+			{"WindowScaleLabel", 7, true},
+
+			{"AdjustmentsAnchor2Label", 8, true},
+			{"instanceToolbarSideLabel", 9},
+			{"instanceMicroDisplaysSideLabel", 10},
+			{"stretchAnchorLabel", 11},
+			{"stretchAlwaysOnTopLabel", 12},
 		}
 		
 		window:arrange_menu(frame6, left_side, x, window.top_start_at)
@@ -5858,15 +5938,16 @@ function window:CreateFrame7()
 		
 		local left_side = {
 			{"LeftMenuAnchorLabel", 1, true},
-			{"menuAnchorXLabel", 2},
-			{"menuAnchorYLabel", 3},
-			{"menuAnchorSideLabel", 4},
-			{"desaturateMenuLabel", 5},
-			{"hideIconLabel", 6},
-			{"pluginIconsDirectionLabel", 7},
-			{label_icons, 8},
-			{"menuIconSizeLabel", 9},
-			{"autoHideLeftMenuLabel", 10},
+			{label_icons, 2},
+			{"menuIconSizeLabel", 3},
+			{"desaturateMenuLabel", 4},
+			{"menuAnchorXLabel", 5},
+			{"menuAnchorYLabel", 6},
+
+			{"hideIconLabel", 7, true},
+			{"autoHideLeftMenuLabel", 8},
+			{"menuAnchorSideLabel", 9},
+			{"pluginIconsDirectionLabel", 10},
 		}
 		
 		window:arrange_menu(frame7, left_side, x, -90)
@@ -6093,12 +6174,13 @@ function window:CreateFrame8()
 		
 		local left_side = {
 			{"RightMenuAnchorLabel", 1, true},
-			{"menuAnchorXLabel", 2},
-			{"menuAnchorYLabel", 3},
+			{"showButtonsLabel", 2},
+			{"menuIconSizeLabel", 3},
 			{"desaturateMenuLabel", 4},
-			{"showButtonsLabel", 5},
-			{"menuIconSizeLabel", 6},
-			{"autoHideRightMenuLabel", 7},
+			{"menuAnchorXLabel", 5},
+			{"menuAnchorYLabel", 6},
+
+			{"autoHideRightMenuLabel", 7, true},
 		}
 		
 		window:arrange_menu(frame8, left_side, x, -90)
@@ -6489,15 +6571,15 @@ function window:CreateFrame9()
 	--current settings
 		g:NewLabel(frame9, _, "$parentWallpaperCurrentAnchor", "wallpaperCurrentAnchorLabel", "Current:", "GameFontNormal")
 		
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel1", "wallpaperCurrentLabel1", Loc["STRING_OPTIONS_WALLPAPER_FILE"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel2", "wallpaperCurrentLabel2", Loc["STRING_OPTIONS_WALLPAPER_ALPHA"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel3", "wallpaperCurrentLabel3", Loc["STRING_OPTIONS_WALLPAPER_RED"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel4", "wallpaperCurrentLabel4", Loc["STRING_OPTIONS_WALLPAPER_GREEN"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel5", "wallpaperCurrentLabel5", Loc["STRING_OPTIONS_WALLPAPER_BLUE"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel6", "wallpaperCurrentLabel6", Loc["STRING_OPTIONS_WALLPAPER_CTOP"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel7", "wallpaperCurrentLabel7", Loc["STRING_OPTIONS_WALLPAPER_CBOTTOM"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel8", "wallpaperCurrentLabel8", Loc["STRING_OPTIONS_WALLPAPER_CLEFT"], "GameFontHighlightLeft")
-		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel9", "wallpaperCurrentLabel9", Loc["STRING_OPTIONS_WALLPAPER_CRIGHT"], "GameFontHighlightLeft")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel1", "wallpaperCurrentLabel1", Loc["STRING_OPTIONS_WALLPAPER_FILE"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel2", "wallpaperCurrentLabel2", Loc["STRING_OPTIONS_WALLPAPER_ALPHA"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel3", "wallpaperCurrentLabel3", Loc["STRING_OPTIONS_WALLPAPER_RED"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel4", "wallpaperCurrentLabel4", Loc["STRING_OPTIONS_WALLPAPER_GREEN"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel5", "wallpaperCurrentLabel5", Loc["STRING_OPTIONS_WALLPAPER_BLUE"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel6", "wallpaperCurrentLabel6", Loc["STRING_OPTIONS_WALLPAPER_CTOP"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel7", "wallpaperCurrentLabel7", Loc["STRING_OPTIONS_WALLPAPER_CBOTTOM"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel8", "wallpaperCurrentLabel8", Loc["STRING_OPTIONS_WALLPAPER_CLEFT"], "GameFontHighlightSmall")
+		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel9", "wallpaperCurrentLabel9", Loc["STRING_OPTIONS_WALLPAPER_CRIGHT"], "GameFontHighlightSmall")
 		
 		g:NewLabel(frame9, _, "$parentWallpaperCurrentLabel1text", "wallpaperCurrentLabel1text", "", "GameFontNormalSmall")
 		frame9.wallpaperCurrentLabel1text:SetPoint("left", frame9.wallpaperCurrentLabel1, "right", 2, 0)
@@ -6620,17 +6702,19 @@ function window:CreateFrame9()
 			{"anchorLabel", 5},
 			{"editImage", 6},
 			{"wallpaperCurrentAnchorLabel", 7, true},
-			{"wallpaperCurrentLabel1", 8},
-			{"wallpaperCurrentLabel2", 9, false},
-			{"wallpaperCurrentLabel3", 10, false},
-			{"wallpaperCurrentLabel4", 11, false},
-			{"wallpaperCurrentLabel5", 12, false},
-			{"wallpaperCurrentLabel6", 13, false},
-			{"wallpaperCurrentLabel7", 14, false},
-			{"wallpaperCurrentLabel8", 15, false},
-			{"wallpaperCurrentLabel9", 16, false},
 		}
-		
+
+		local downY = -5
+		frame9.wallpaperCurrentLabel1:SetPoint("topleft", frame9.wallpaperCurrentAnchorLabel, "bottomleft", 0, -10)
+		frame9.wallpaperCurrentLabel2:SetPoint("topleft", frame9.wallpaperCurrentLabel1, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel3:SetPoint("topleft", frame9.wallpaperCurrentLabel2, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel4:SetPoint("topleft", frame9.wallpaperCurrentLabel3, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel5:SetPoint("topleft", frame9.wallpaperCurrentLabel4, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel6:SetPoint("topleft", frame9.wallpaperCurrentLabel5, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel7:SetPoint("topleft", frame9.wallpaperCurrentLabel6, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel8:SetPoint("topleft", frame9.wallpaperCurrentLabel7, "bottomleft", 0, downY)
+		frame9.wallpaperCurrentLabel9:SetPoint("topleft", frame9.wallpaperCurrentLabel8, "bottomleft", 0, downY)
+
 		window:arrange_menu(frame9, left_side, x, -90)
 		
 		local right_side = {
@@ -7342,13 +7426,15 @@ function window:CreateFrame11()
 					for index, spellid in ipairs(_details:GetCooldownList()) do
 						local label = f.labels[index] or f:CreateLabel()
 						local name, _, icon = _GetSpellInfo(spellid)
-						label.icon.texture = icon
-						label.text.text = name .. ":"
-						label.switch:SetFixedParameter(spellid)
-						label.switch:SetValue(_details.announce_cooldowns.ignored_cooldowns[spellid])
-						label.icon:Show()
-						label.text:Show()
-						label.switch:Show()
+						if (name) then
+							label.icon.texture = icon
+							label.text.text = name .. ":"
+							label.switch:SetFixedParameter(spellid)
+							label.switch:SetValue(_details.announce_cooldowns.ignored_cooldowns[spellid])
+							label.icon:Show()
+							label.text:Show()
+							label.switch:Show()
+						end
 					end
 					
 					f:Show()
@@ -7528,7 +7614,7 @@ function window:CreateFrame12()
 				_details:CooltipPreset(2)
 				GameCooltip:AddLine(desc)
 				GameCooltip:SetType("tooltip")
-				GameCooltip:SetOwner(self, "bottomleft", "topleft", 0, -2)
+				GameCooltip:SetOwner(self, "bottomleft", "topleft", 150, -2)
 				GameCooltip:Show()
 			end
 		end
@@ -7881,9 +7967,8 @@ function window:update_all(editing_instance)
 	_G.DetailsOptionsWindow1RealmNameSlider.MyObject:SetValue(_details.remove_realm_from_name)
 	_G.DetailsOptionsWindow1Slider.MyObject:SetValue(_details.segments_amount) --segments
 	_G.DetailsOptionsWindow1SegmentsLockedSlider.MyObject:SetValue(_details.instances_segments_locked) --locked segments
-	
-	_G.DetailsOptionsWindow1UseScrollSlider.MyObject:SetValue(_details.use_scroll)
-	
+
+	_G.DetailsOptionsWindow1WheelSpeedSlider.MyObject:SetValue(_details.scroll_speed)
 	_G.DetailsOptionsWindow1SliderMaxInstances.MyObject:SetValue(_details.instances_amount)
 	_G.DetailsOptionsWindow1AbbreviateDropdown.MyObject:Select(_details.ps_abbreviation)
 	_G.DetailsOptionsWindow1SliderUpdateSpeed.MyObject:SetValue(_details.update_speed)
@@ -7921,7 +8006,7 @@ function window:update_all(editing_instance)
 		_G.DetailsOptionsWindow1CloseButton.MyObject:SetText(Loc["STRING_OPTIONS_WC_REOPEN"])
 		_G.DetailsOptionsWindow1CloseButton.MyObject:SetClickFunction(function() _details:Createinstance(_, editing_instance.mine_id) end)
 	end
-	
+
 	--> window 2
 	_G.DetailsOptionsWindow2FragsPvpSlider.MyObject:SetValue(_details.only_pvp_frags)
 	_G.DetailsOptionsWindow2TTDropdown.MyObject:Select(_details.time_type)
@@ -8181,10 +8266,12 @@ function window:update_all(editing_instance)
 	
 	--report
 	_G.DetailsOptionsWindow18ReportHelpfulLinkSlider.MyObject:SetValue(_details.report_heal_links)
+	_G.DetailsOptionsWindow18ReportFormatDropdown.MyObject:Select(_details.report_schema)
 	--disabled groups
 	_G.DetailsOptionsWindow18DisableGroupsSlider.MyObject:SetValue(_details.disable_window_groups)
 	--disable reset
 	_G.DetailsOptionsWindow18DisableResetSlider.MyObject:SetValue(_details.disable_reset_button)
+	_G.DetailsOptionsWindow18UseScrollSlider.MyObject:SetValue(_details.use_scroll)
 	
 	--auto switch
 	local switch_tank_in_combat = editing_instance.switch_tank_in_combat
@@ -8347,6 +8434,8 @@ function window:update_all(editing_instance)
 
 	--> window 20
 	_G.DetailsOptionsWindow20TooltipTextColorPick.MyObject:SetColor(unpack(_details.tooltip.fontcolor))
+	_G.DetailsOptionsWindow20TooltipTextColorPickRight.MyObject:SetColor(unpack(_details.tooltip.fontcolor_right))
+	_G.DetailsOptionsWindow20TooltipTextColorPickAnchor.MyObject:SetColor(unpack(_details.tooltip.header_text_color))
 	_G.DetailsOptionsWindow20TooltipTextSizeSlider.MyObject:SetValue(_details.tooltip.fontsize)
 	_G.DetailsOptionsWindow20TooltipFontDropdown.MyObject:Select(_details.tooltip.fontface)
 	_G.DetailsOptionsWindow20TooltipShadowSwitch.MyObject:SetValue(_details.tooltip.fontshadow)
@@ -8389,16 +8478,10 @@ function window:update_all(editing_instance)
 
 
 
-----------------------------------------------------------------	
-
-
-
+----------------------------------------------------------------
 	--instanceOverlayColorLabel
-
 	--closeOverlayColorLabel
-	
 
-	
 	_G.DetailsOptionsWindow4TextureDropdown.MyObject:SetFixedParameter(editing_instance)
 	_G.DetailsOptionsWindow4RowBackgroundTextureDropdown.MyObject:SetFixedParameter(editing_instance)
 	_G.DetailsOptionsWindow4TextureDropdown.MyObject:Select(editing_instance.row_info.texture)
@@ -8487,6 +8570,12 @@ function window:update_all(editing_instance)
 	
 	if (window.update_wallpaper_info) then
 		window:update_wallpaper_info()
+	end
+
+	if (section) then
+		local button = window.menu_buttons[section]
+		local mouse_up_hook = button.OnMouseUpHook
+		mouse_up_hook(button.widget)
 	end
 	
 end

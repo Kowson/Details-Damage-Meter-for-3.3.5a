@@ -2036,6 +2036,11 @@ function _details:SwitchTable(instance, segment, attribute, sub_attribute, start
 			_details.popup:Select(2, instance.sub_attribute, attribute)
 		end
 
+		if (not _details:GetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1") and not _details.initializing and not starting_instance) then
+			if (not _G["DetailsWelcomeWindow"] or not _G["DetailsWelcomeWindow"]:IsShown()) then
+				_details:TutorialBookmark(instance)
+			end
+		end
 		
 		if (_details.cloud_process) then
 			
@@ -2691,9 +2696,21 @@ function _details:prepare_report(this_report, custom)
 					if (_type(amount) == "number" and amount > 0) then
 						if (keyNameSec) then
 							local dps = GetDpsHps(_thisActor, keyNameSec)
-							report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
+							--report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
+							if (_details.report_schema == 1) then
+								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _details:ToKMin(_math_floor(amount) ) .. " (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _cstr("%.2f", amount/total*100) .. "%)"
+							elseif (_details.report_schema == 2) then
+								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _details:ToKMin(_math_floor(amount)) .. ")"
+							elseif (_details.report_schema == 3) then
+								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(amount)) .. ", " .. _details:ToKMin(_math_floor(dps)) .. ")"
+							end
 						else
-							report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount).."(".._cstr("%.1f", amount/total*100).."%)"
+							--report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount).."(".._cstr("%.1f", amount/total*100).."%)"
+							if (_details.report_schema == 1) then
+								report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount) .. " (" .. _cstr("%.1f", amount/total*100) .. "%)"
+							else
+								report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _cstr("%.1f", amount/total*100) .. "% (" .. _details:ToKReport(amount) .. ")"
+							end
 						end
 						
 					elseif (_type(amount) == "string") then
@@ -2804,9 +2821,21 @@ function _details:prepare_report(this_report, custom)
 						if (amount > 0) then 
 							if (keyNameSec) then
 								local dps = GetDpsHps(_thisActor, keyNameSec)
-								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
+								--report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
+								if (_details.report_schema == 1) then
+									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _details:ToKMin(_math_floor(amount) ) .. " (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _cstr("%.2f", amount/total*100) .. "%)"
+								elseif (_details.report_schema == 2) then
+									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _details:ToKMin(_math_floor(amount)) .. ")"
+								elseif (_details.report_schema == 3) then
+									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(amount)) .. ", " .. _details:ToKMin(_math_floor(dps)) .. ")"
+								end
 							else
-								report_lines[#report_lines+1] = i .. "." .. name .. "   " .. _details:comma_value( _math_floor(amount) ).."(".._cstr("%.1f", amount/total*100).."%)"
+								--report_lines[#report_lines+1] = i .. "." .. name .. "   " .. _details:comma_value( _math_floor(amount) ).."(".._cstr("%.1f", amount/total*100).."%)"
+								if (_details.report_schema == 1) then
+									report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount) .. " (" .. _cstr("%.1f", amount/total*100) .. "%)"
+								else
+									report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _cstr("%.1f", amount/total*100) .. "% (" .. _details:ToKReport(amount) .. ")"
+								end
 							end
 							
 							amount = amount + 1

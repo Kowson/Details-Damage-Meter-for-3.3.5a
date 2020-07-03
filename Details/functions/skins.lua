@@ -257,15 +257,17 @@ local _
 	
 	local dark_serenity = function()
 		local instance = _G.DetailsOptionsWindow.instance
-		--> black color
-		instance:InstanceColor(0, 0, 0, 1)
-		--> flip wallpaper
-		local wtexc = instance.wallpaper.texcoord
-		wtexc[1], wtexc[2], wtexc[3], wtexc[4] = 0.04800000, 0.29800001, 0.75599998, 0.63099998
-		--> reload skin
-		instance:ChangeSkin()
+		if (instance) then
+			--> black color
+			instance:InstanceColor(0, 0, 0, 1)
+			--> flip wallpaper
+			local wtexc = instance.wallpaper.texcoord
+			wtexc[1], wtexc[2], wtexc[3], wtexc[4] = 0.04800000, 0.29800001, 0.75599998, 0.63099998
+			--> reload skin
+			instance:ChangeSkin()
+		end
 	end
-	_details:InstallSkin("Serenity", { --
+	_details:InstallSkin("Serenity", {
 		file =[[Interface\AddOns\Details\images\skins\flat_skin]],
 		author = "Details!", 
 		version = "1.0", 

@@ -563,7 +563,10 @@
 	--> firendly fire
 
 		--if (_bit_band(src_flags, REACTION_FRIENDLY) ~= 0 and _bit_band(dst_flags, REACTION_FRIENDLY) ~= 0) then(old friendly check)
-		if (raid_members_cache[src_serial] and raid_members_cache[dst_serial]) then
+		if (
+		(_bit_band(src_flags, REACTION_FRIENDLY) ~= 0 and _bit_band(dst_flags, REACTION_FRIENDLY) ~= 0) or
+		(raid_members_cache[src_serial] and raid_members_cache[dst_serial])
+		) then
 
 			--> record death log
 			local t = last_events_cache[dst_name]
@@ -711,13 +714,13 @@
 					if (missType == "ABSORB") then --full absorb
 						overall["ALL"] = overall["ALL"] + 1 --> whichtype de hit ou absorb
 						overall["FULL_ABSORBED"] = overall["FULL_ABSORBED"] + 1 --amount
-						overall["ABSORB_AMT"] = overall["ABSORB_AMT"] + amountMissed
-						overall["FULL_ABSORB_AMT"] = overall["FULL_ABSORB_AMT"] + amountMissed
+						overall["ABSORB_AMT"] = overall["ABSORB_AMT"] + (amountMissed or 0)
+						overall["FULL_ABSORB_AMT"] = overall["FULL_ABSORB_AMT"] + (amountMissed or 0)
 						
 						mob["ALL"] = mob["ALL"] + 1  --> whichtype de hit ou absorb
 						mob["FULL_ABSORBED"] = mob["FULL_ABSORBED"] + 1 --amount
-						mob["ABSORB_AMT"] = mob["ABSORB_AMT"] + amountMissed
-						mob["FULL_ABSORB_AMT"] = mob["FULL_ABSORB_AMT"] + amountMissed
+						mob["ABSORB_AMT"] = mob["ABSORB_AMT"] + (amountMissed or 0)
+						mob["FULL_ABSORB_AMT"] = mob["FULL_ABSORB_AMT"] + (amountMissed or 0)
 					end
 					
 				end
@@ -966,6 +969,9 @@
 		local spell = this_player.spell_tables._ActorTable[spellid]
 		if (not spell) then
 			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			if (is_shield) then
+				spell.is_shield = true
+			end
 		end
 		
 		if (is_shield) then
@@ -1149,7 +1155,7 @@
 				end
 		
 			------------------------------------------------------------------------------------------------
-			if (absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
+			if (absorb_spell_list[spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
 				local absorb_source = { 
 					absorbed = 0,
 					serial = src_serial,
@@ -1159,15 +1165,15 @@
 					spellname = spellname,
 					time_applied = time
 				}
-				if (not shields [dst_name]) then -- this is probably from an out of combat re-application
-					shields [dst_name] = {}
-					shields [dst_name] [spellid] = {}
-					shields [dst_name] [spellid] [src_name] = absorb_source
-				elseif (not shields [dst_name] [spellid]) then 
-					shields [dst_name] [spellid] = {}
-					shields [dst_name] [spellid] [src_name] = absorb_source
+				if (not shields[dst_name]) then -- this is probably from an out of combat re-application
+					shields[dst_name] = {}
+					shields[dst_name][spellid] = {}
+					shields[dst_name][spellid][src_name] = absorb_source
+				elseif (not shields[dst_name][spellid]) then
+					shields[dst_name][spellid] = {}
+					shields[dst_name][spellid][src_name] = absorb_source
 				else
-					shields [dst_name] [spellid] [src_name] = absorb_source
+					shields[dst_name][spellid][src_name] = absorb_source
 				end
 			end
 			------------------------------------------------------------------------------------------------
@@ -1280,8 +1286,8 @@
 
 			------------------------------------------------------------------------------------------------
 			--> healing done (shields)
-			if (absorb_spell_list [spellid] and _recording_healing) then
-				if (shields [dst_name] and shields [dst_name][spellid] and shields [dst_name][spellid][src_name]) then
+			if (absorb_spell_list[spellid] and _recording_healing) then
+				if (shields[dst_name] and shields[dst_name][spellid] and shields[dst_name][spellid][src_name]) then
 					-- we cant track overhealing on shields in wotlk 
 					-- schedule removal for later since partial absorbs remove the buff first, then apply the absorbed damage.
 					_details:ScheduleTimer("unbuff_shield", 0.1, dst_name, spellid, src_name, shields[dst_name][spellid][src_name].time_applied)
@@ -2471,18 +2477,6 @@
 				end
 				
 				_current_combat.frags_need_refresh = true
-				
-			--> detect dungeon boss
-				--if (_details.zone_type == "party") then
-				--	local npcID = tonumber(dst_serial:sub(9, 12), 16)
-				--	local boss_ids = _details:GetBossIds(_details.zone_id)
-					
-				--	if (boss_ids) then
-				--		if (_details.zone_id[npcID]) then
-							
-				--		end
-				--	end
-				--end
 
 		--> player death
 		elseif (not _UnitIsFeignDeath(dst_name)) then
@@ -2596,58 +2590,6 @@
 				--heal.last_events_table =  _details:CreateActorLastEventTable()
 
 			end
-		end
-	end
-
-	local sort_dead = function(table1, table2)
-			if (not table1) then 
-				--print(1)
-				return false 
-				
-			elseif (not table2) then 
-				--print(2)
-				return false
-				
-			elseif (table1[4] == table2[4]) then --> os 2 tem o mesmo time
-				if (type(table1[1]) == "boolean" and table1[1] and type(table2[1]) == "boolean" and table2) then --> ambos sao damage
-					--print(3)
-					return table1[5] > table2[5] --> joga pra cima quem tem mais vida
-				elseif (type(table1[1]) == "boolean" and not table1[1] and type(table2[1]) == "boolean" and not table2) then --> ambos sao heal
-					--print(4)
-					return table1[5] < table2[5] --> joga pra cima quem tem menos vida
-				else
-					if (type(table1[1]) == "boolean" and table1 and type(table2[1]) == "boolean" and table2) then --> primeiro � damage e segundo � heal
-						--print(5)
-						return true --> passa o damage pra frente
-					elseif (type(table2[1]) == "boolean" and table2 and type(table1[1]) == "boolean" and table1) then --> primeiro � heal e o segundo � damage
-						--print(6)
-						return false --> passa o heal pra frente
-					else
-						--print(7)
-						return table1[5] < table2[5] --> passa quem tem menos vida
-					end
-				end
-			else
-				--print(8)
-				return table1[4] < table2[4]
-			end
-		end
-	
-	local function sort_error(error)
-		return error
-	end
-	
-	local death_table
-	function do_death_sort()
-		_table_sort(death_table, sort_dead)
-	end
-	
-	function parser:safe_sort_dead(t)
-		death_table = t
-		local status, error = xpcall(do_death_sort, sort_error)
-		if (not status) then
-			--_details:Msg("(debug) xpcall return false, sort got error.")
-			_table_sort(t, _details.Sort4Reverse)
 		end
 	end
 	

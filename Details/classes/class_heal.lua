@@ -12,6 +12,7 @@ local _cstr = string.format
 local _table_insert = table.insert
 local _bit_band = bit.band
 local _math_min = math.min
+local _math_ceil = math.ceil
 --api locals
 local GetSpellInfo = GetSpellInfo
 local _GetSpellInfo = _details.getspellinfo
@@ -58,6 +59,10 @@ local UsingCustomLeftText = false
 
 local FormatTooltipNumber = ToKFunctions[8]
 local TooltipMaximizedMethod = 1
+
+local headerColor = "yellow"
+local key_overlay = {1, 1, 1, .1}
+local key_overlay_press = {1, 1, 1, .2}
 
 local info = _details.window_info
 local keyName
@@ -905,7 +910,7 @@ function attribute_heal:RefreshBar(this_bar, instance, from_resize)
 	
 end
 
-function _details:CloseShields()
+function _details:CloseShields() --TODO: Check whats is the purpose of this function
 
 	if (GetNumRaidMembers() == 0) then
 		return
@@ -958,10 +963,7 @@ function attribute_heal:ToolTip(instance, number, bar, keydown)
 end
 --> tooltip locals
 local r, g, b
-local headerColor = "yellow"
 local barAlpha = .6
-local key_overlay = {1, 1, 1, .1}
-local key_overlay_press = {1, 1, 1, .2}
 
 ---------> HEALING TAKEN
 function attribute_heal:ToolTip_HealingTaken(instance, number, bar, keydown)
@@ -1877,6 +1879,14 @@ function attribute_heal:SetDetailsHealingTaken(name, bar)
 	end
 end
 
+local absorbed_table = {c = {180/255, 180/255, 180/255, 0.5}, p = 0}
+local overhealing_table = {c = {0.5, 0.1, 0.1, 0.9}, p = 0}
+local normal_table = {c = {255/255, 180/255, 0/255, 0.5}, p = 0}
+local critical_table = {c = {249/255, 74/255, 45/255, 0.5}, p = 0}
+
+local data_table = {}
+local t1, t2, t3, t4 = {}, {}, {}, {}
+
 function attribute_heal:SetDetailsHealingDone(spellid, bar)
 
 	local this_spell
@@ -1892,9 +1902,8 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 	
 	--> icon direito superior
 	local name, rank, icon = _GetSpellInfo(spellid)
-	local infospell = {name, rank, icon}
 
-	info.spell_icon:SetTexture(infospell[3])
+	info.spell_icon:SetTexture(icon)
 
 	local total = self.total
 	
@@ -1908,32 +1917,37 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 		mine_time = info.instance.showing:GetCombatTime()
 	end
 	
-	--local total_hits = this_spell.counter
+	--local total_hits = this_spell.counter -- with full overheals
 	local total_hits = this_spell.n_amt+this_spell.c_amt
 	
 	local index = 1
 	
-	local data = {}
+	local data = data_table
+	table.wipe(t1)
+	table.wipe(t2)
+	table.wipe(t3)
+	table.wipe(t4)
+	table.wipe(data)
 	
 	if (this_spell.total > 0) then
 	
 	--> GENERAL
 		local media = this_spell.total/total_hits
 		
-		local this_hps = nil
+		local this_hps
 		if (this_spell.counter > this_spell.c_amt) then
-			this_hps = Loc["STRING_HPS"]..": ".._cstr("%.1f", this_spell.total/mine_time) --> localiza-me
+			this_hps = Loc["STRING_HPS"] .. ": " .. _cstr("%.1f", this_spell.total/mine_time) --> localiza-me
 		else
-			this_hps = Loc["STRING_HPS"]..": "..Loc["STRING_SEE_BELOW"]
+			this_hps = Loc["STRING_HPS"] .. ": " .. Loc["STRING_SEE_BELOW"]
 		end
 		
-		gump:SetaDetailInfoText( index, 100, --> Localize-me
-			Loc["STRING_GENERAL"], --> localiza-me
-			Loc["STRING_HEAL"]..": ".._details:ToK(this_spell.total), --> localiza-me
-			Loc["STRING_PERCENTAGE"]..": ".._cstr("%.1f", this_spell.total/total*100) .. "%", --> localiza-me
-			Loc["STRING_MEDIA"]..": ".._cstr("%.1f", media), --> localiza-me
+		gump:SetaDetailInfoText(index, 100,
+			Loc["STRING_GENERAL"],
+			Loc["STRING_HEAL"] .. ": " .. _details:ToK(this_spell.total),
+			--Loc["STRING_PERCENTAGE"] .. ": " .. _cstr("%.1f", this_spell.total/total*100) .. "%", --> localiza-me
+			Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media),
 			this_hps,
-			Loc["STRING_HITS"]..": " .. total_hits) --> localiza-me
+			Loc["STRING_HITS"] .. ": " .. total_hits)
 	
 	--> NORMAL
 		local normal_hits = this_spell.n_amt
@@ -1944,6 +1958,18 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			local P = media/media_normal*100
 			T = P*T/100
 
+			normal_table.p = normal_hits/total_hits*100
+			data[#data+1] = t1
+			t1[1] = this_spell.n_amt
+			t1[2] = normal_table
+			t1[3] = Loc["STRING_HEAL"]
+			t1[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_min)
+			t1[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_max)
+			t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
+			t1[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value("%.1f", normal_healed/T)
+			t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
+
+			--[[ TODO: OLD- REMOVE
 			data[#data+1] = {
 				this_spell.n_amt, 
 				normal_hits/total_hits*100, 
@@ -1955,6 +1981,7 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 				Loc["STRING_HPS"] .. ": " .. _cstr("%.1f", normal_healed/T), --> localiza-me
 				normal_hits .. " / ".. _cstr("%.1f", normal_hits/total_hits*100).."%"
 				}
+			]]--
 		end
 
 	--> CRITICAL
@@ -1967,7 +1994,19 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			if (not crit_hps) then
 				crit_hps = 0
 			end
-			
+
+			data[#data+1] = t2
+			critical_table.p = this_spell.c_amt/total_hits*100
+			t2[1] = this_spell.c_amt
+			t2[2] = critical_table
+			t2[3] = Loc["STRING_HEAL_CRIT"]
+			t2[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.c_min)
+			t2[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.c_max)
+			t2[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_critical)
+			t2[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value(crit_hps)
+			t2[8] = this_spell.c_amt .. " / " .. _cstr("%.1f", this_spell.c_amt/total_hits*100) .. "%"
+
+			--[[ TODO: OLD - REMOVE
 			data[#data+1] = {
 				this_spell.c_amt,
 				this_spell.c_amt/total_hits*100, 
@@ -1979,18 +2018,30 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 				Loc["STRING_HPS"] .. ": " .. _cstr("%.1f", crit_hps), --> localiza-me
 				this_spell.c_amt .. " / ".._cstr("%.1f", this_spell.c_amt/total_hits*100).."%"
 				}
+			]]--
 		end
 		
 	end
 	
-	_table_sort(data, function(a, b) return a[1] > b[1] end)
+	_table_sort(data, _details.Sort1)
 
-	--> Aqui pode vir a heal absorvida
+	--> Absorbed healing
 
 		local absorbed = this_spell.absorbed
 
 		if (absorbed > 0) then
 			local percentage_absorbed = absorbed/this_spell.total*100
+			data[#data+1] = t3
+			absorbed_table.p = percentage_absorbed
+			t3[1] = absorbed
+			t3[2] = absorbed_table
+			t3[3] = Loc["STRING_HEAL_ABOSRBED"]
+			t3[4] = ""
+			t3[5] = ""
+			t3[6] = ""
+			t3[7] = ""
+			t3[8] = absorbed .. " / " .. _cstr("%.1f", percentage_absorbed) .. "%"
+			--[[ TODO: OLD - REMOVE
 			data[#data+1] = {
 				absorbed,
 				{["p"] = percentage_absorbed,["c"] = {117/255, 58/255, 0/255}},
@@ -2001,6 +2052,7 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 				"",
 				absorbed.." / ".._cstr("%.1f", percentage_absorbed).."%"
 				}
+			]]--
 		end
 
 	for i = #data+1, 3 do --> para o overheal aparecer na ultima bar
@@ -2011,6 +2063,18 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 
 		if (overheal > 0) then
 			local percentage_overheal = overheal/mine_total*100
+
+			data[4] = t4
+			overhealing_table.p = percentage_overheal
+			t4[1] = overheal
+			t4[2] = overhealing_table
+			t4[3] = Loc["STRING_OVERHEAL"]
+			t4[4] = ""
+			t4[5] = ""
+			t4[6] = ""
+			t4[7] = ""
+			t4[8] = _details:comma_value(overheal) .. " / " .. _cstr("%.1f", percentage_overheal) .. "%"
+			--[[ TODO: OLD - REMOVE
 			data[4] = { 
 				overheal,
 				{["p"] = percentage_overheal,["c"] = {0.5, 0.1, 0.1}},
@@ -2021,6 +2085,7 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 				"",
 				_details:comma_value(overheal).." / ".._cstr("%.1f", percentage_overheal).."%"
 				}
+			]]--
 		end
 	
 	for index = 1, 4 do
@@ -2067,6 +2132,7 @@ end
 			SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
 			FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
 			TooltipMaximizedMethod = _details.tooltip.maximize_method
+			headerColor = _details.tooltip.header_text_color
 		end
 
 	--> subtract total from a combat table

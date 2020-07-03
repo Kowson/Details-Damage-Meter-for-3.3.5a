@@ -163,7 +163,7 @@
 				if (_UnitExists("boss"..index)) then 
 					local guid = _UnitGUID("boss"..index)
 					if (guid) then
-						local serial = tonumber(guid:sub(9, 12), 16)
+						local serial = _details:GetNpcIdFromGuid(guid)
 						
 						if (serial) then
 						
@@ -237,7 +237,7 @@
 				if (ActorsContainer) then
 					for index, Actor in _ipairs(ActorsContainer) do 
 						if (not Actor.group) then
-							local serial = tonumber(Actor.serial:sub(9, 12), 16)
+							local serial = _details:GetNpcIdFromGuid(Actor.serial)
 							if (serial) then
 								BossIndex = BossIds[serial]
 								if (BossIndex) then
@@ -267,8 +267,8 @@
 			--> n�o tem history, addon foi resetado, a primeira table � descartada -- Erase first table is do es not have a firts segment history, this occour after reset or first run
 			if (not _details.table_history.tables[1]) then 
 				--> precisa zerar aqui a table overall
-				_table_wipe(_details.table_overall)
-				_table_wipe(_details.table_current)
+				--_table_wipe(_details.table_overall) -- TODO: check if it doesn't break anything!
+				--_table_wipe(_details.table_current)
 				--> aqui ele lost o self.showing das inst�ncias, precisa do com que elas atualizem
 				_details.table_overall = _details.combat:Newtable()
 				
@@ -449,7 +449,10 @@
 
 			--> lock timers
 			_details.table_current:LockTimes() 
-			
+
+			--> get waste shields
+			-- _details:CloseShields(_details.table_current) -- TODO: check what does it do
+
 			_details.table_current:seta_data(_details._details_props.DATA_TYPE_END) --> salva hora, minuto, segundo do end da fight
 			_details.table_overall:seta_data(_details._details_props.DATA_TYPE_END) --> salva hora, minuto, segundo do end da fight
 			_details.table_current:seta_time_elapsed() --> salva o end_time
@@ -500,7 +503,8 @@
 				end
 
 				if (_details:GetBossDetails(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
-					
+
+					_details.table_current.is_boss.index = _details.table_current.is_boss.index or 1
 					_details.table_current.enemy = _details.table_current.is_boss.encounter
 
 					if (_details.table_current.instance_type == "raid") then
@@ -519,7 +523,7 @@
 					end
 
 					--> encounter boss function
-					local bossFunction, bossFunctionType = _details:GetBossFunction(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)
+					local bossFunction, bossFunctionType = _details:GetBossFunction(_details.table_current.is_boss.mapid or 0, _details.table_current.is_boss.index or 0)
 					if (bossFunction) then
 						if (_bit_band(bossFunctionType, 0x2) ~= 0) then --end of combat
 							bossFunction()
@@ -559,15 +563,17 @@
 			end
 			
 			local time_of_combat = _details.table_current.end_time - _details.table_current.start_time
+			local invalid_combat
 			
-			--if ( time_of_combat >= _details.minimum_combat_time) then --> time minimo precisa ser 5 seconds pra acrecentar a table ao history
-			if ( time_of_combat >= 5 or not _details.table_history.tables[1]) then --> time minimo precisa ser 5 seconds pra acrecentar a table ao history
-				_details.table_history:adicionar(_details.table_current) --move a table atual para dentro do hist�rico
+			--if ( time_of_combat >= _details.minimum_combat_time) then --> minimum time has to be 5 seconds to add table to history
+			if ( time_of_combat >= 5 or not _details.table_history.tables[1]) then --> minimum time has to be 5 seconds to add table to history
+				_details.table_history:adicionar(_details.table_current) -- moves current table into the history
 			else
 				--> this is a little bit complicated, need a specific function for combat cancellation
 			
-				--_table_wipe(_details.table_current) --> descarta ela, n�o ser� mais usada
-				_details.table_current = _details.table_history.tables[1] --> pega a table do ultimo combat
+				--_table_wipe(_details.table_current) --> discard it, it will no longer be used
+				invalid_combat = _details.table_current
+				_details.table_current = _details.table_history.tables[1] --> take the table of the last combat
 
 				if (_details.table_current.start_time == 0) then
 					_details.table_current.start_time = _details._time
@@ -576,13 +582,13 @@
 				
 				_details.table_current.resincked = true
 				
-				--> table foi descartada, precisa atualizar os baseframes // precisa atualizer todos ou apenas o overall?
+				--> table has been dropped, need to update the baseframes // need to update all or just the overall??
 				_details:instanceCallFunction(_details.ActualizeWindow)
 				
 				if (_details.solo) then
 					local this_instance = _details.table_instances[_details.solo]
-					if (_details.SoloTables.CombatID == _details:NumeroCombate()) then --> significa que o solo mode validou o combat, como matar um bixo muito low level com uma s� porrada
-						if (_details.SoloTables.CombatIDLast and _details.SoloTables.CombatIDLast ~= 0) then --> volta os dados da fight previous
+					if (_details.SoloTables.CombatID == _details:NumeroCombate()) then --> means that solo mode validated combat, like killing a very low level bixo with a single beating
+						if (_details.SoloTables.CombatIDLast and _details.SoloTables.CombatIDLast ~= 0) then --> restore data from previous fight
 						
 							_details.SoloTables.CombatID = _details.SoloTables.CombatIDLast
 						
@@ -605,8 +611,8 @@
 				_details:CancelTimer(_details.cloud_process)
 			end
 			
-			_details.in_combat = false --sinaliza ao addon que n�o h� combat no momento
-			_details.leaving_combat = false --sinaliza que n�o this mais saindo do combat
+			_details.in_combat = false -- signal to the addon that there is no combat
+			_details.leaving_combat = false -- signal addon that this is not coming out of combat
 			
 			_table_wipe(_details.cache_damage_group)
 			_table_wipe(_details.cache_healing_group)
@@ -616,7 +622,7 @@
 			--> hide / alpha in combat
 			for index, instance in ipairs(_details.table_instances) do 
 				if (instance.active) then
-					--instance:SetCombatAlpha(nil, nil, true) --passado para o regen enabled
+					--instance:SetCombatAlpha(nil, nil, true) -- passed to regen enabled
 					if (instance.auto_switch_to_old) then
 						instance:CheckSwitchOnCombatEnd()
 					end
@@ -627,6 +633,12 @@
 			_table_wipe(_details.encounter_table)
 			
 			_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, _details.table_current)
+			if (invalid_combat) then
+				_details:SendEvent("COMBAT_INVALID")
+				_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, invalid_combat)
+			else
+				_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, _details.tabela_vigente)
+			end
 		end
 
 		function _details:GetPlayersInArena()
@@ -998,7 +1010,8 @@
 		local avatarPoint = {"bottomleft", "topleft", -3, -4}
 		local backgroundPoint = {{"bottomleft", "topleft", 0, -3}, {"bottomright", "topright", 0, -3}}
 		local textPoint = {"left", "right", -11, -5}
-		local avatarTexCoord = {0, 1, 0, 1}
+		local avatarTexCoord = {0, 1, 0, 1 }
+		local backgroundColor = {0, 0, 0, 0.6}
 		
 		function _details:AddTooltipBackgroundStatusbar()
 			GameCooltip:AddStatusBar(100, 1, unpack(_details.tooltip.background))
@@ -1021,14 +1034,15 @@
 			GameCooltip:SetOption("TextSize", _details.tooltip.fontsize)
 			GameCooltip:SetOption("TextFont",  _details.tooltip.fontface)
 			GameCooltip:SetOption("TextColor", _details.tooltip.fontcolor)
+			GameCooltip:SetOption("TextColorRight", _details.tooltip.fontcolor_right)
 			GameCooltip:SetOption("TextShadow", _details.tooltip.fontshadow and "OUTLINE")
 			
 			GameCooltip:SetOption("LeftBorderSize", -5)
 			GameCooltip:SetOption("RightBorderSize", 5)
-			GameCooltip:SetOption("MinWidth", _math_max(230, self.baseframe:GetWidth()*0.8))
+			GameCooltip:SetOption("MinWidth", _math_max(230, self.baseframe:GetWidth()*0.9))
 			GameCooltip:SetOption("StatusBarTexture",[[Interface\WorldStateFrame\WORLDSTATEFINALSCORE-HIGHLIGHT]]) --[[Interface\Addons\Details\images\bar_flat]]
 
-			GameCooltip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
+			GameCooltip:SetBackdrop(1, _details.tooltip_backdrop, backgroundColor, _details.tooltip_border_color)
 			
 			local myPoint = _details.tooltip.anchor_point
 			local anchorPoint = _details.tooltip.anchor_relative

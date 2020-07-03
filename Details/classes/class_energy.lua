@@ -65,6 +65,10 @@ local UsingCustomRightText = false
 local FormatTooltipNumber = ToKFunctions[8]
 local TooltipMaximizedMethod = 1
 
+local headerColor = "yellow"
+local key_overlay = {1, 1, 1, .1 }
+local key_overlay_press = {1, 1, 1, .2}
+
 local info = _details.window_info
 local keyName
 
@@ -790,11 +794,7 @@ function attribute_energy:ToolTip(instance, number, bar, keydown)
 end
 --> tooltip locals
 local r, g, b
-local headerColor = "yellow"
 local barAlpha = .6
-
-local key_overlay = {1, 1, 1, .1}
-local key_overlay_press = {1, 1, 1, .2}
 
 function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 	
@@ -1097,6 +1097,7 @@ end
 			SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
 			FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
 			TooltipMaximizedMethod = _details.tooltip.maximize_method
+			headerColor = _details.tooltip.header_text_color
 		end
 
 	--> subtract total from a combat table

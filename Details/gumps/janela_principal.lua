@@ -863,6 +863,10 @@ local BGFrame_scripts_onleave = function(self)
 end
 
 local BGFrame_scripts_onmousedown = function(self, button)
+	if (self.is_toolbar and self._instance.baseframe.isLocked and button == "LeftButton") then
+		return self._instance.baseframe.button_stretch:GetScript("OnMouseDown")(self._instance.baseframe.button_stretch, "LeftButton")
+	end
+
 	if (self._instance.baseframe.isMoving) then
 		move_window(self._instance.baseframe, false, self._instance)
 		self._instance:SaveMainWindowPosition()
@@ -886,6 +890,10 @@ local BGFrame_scripts_onmousedown = function(self, button)
 end
 
 local BGFrame_scripts_onmouseup = function(self, button)
+	if (self.is_toolbar and self._instance.baseframe.isLocked and button == "LeftButton") then
+		return self._instance.baseframe.button_stretch:GetScript("OnMouseUp")(self._instance.baseframe.button_stretch, "LeftButton")
+	end
+
 	if (self._instance.baseframe.isMoving) then
 		move_window(self._instance.baseframe, false, self._instance) --> novo movedor da window
 		self._instance:SaveMainWindowPosition()
@@ -2037,7 +2045,7 @@ local function button_up_scripts(main_frame, backgrounddisplay, instance, scroll
 		
 		local A = instance.barS[1]
 		if (A > 1) then
-			scrollbar:SetValue(scrollbar:GetValue() - instance.row_height)
+			scrollbar:SetValue(scrollbar:GetValue() - instance.row_height*2)
 		end
 		
 		self.precionado = true
@@ -2048,7 +2056,7 @@ local function button_up_scripts(main_frame, backgrounddisplay, instance, scroll
 				self.last_up = 0
 				A = instance.barS[1]
 				if (A > 1) then
-					scrollbar:SetValue(scrollbar:GetValue() - instance.row_height)
+					scrollbar:SetValue(scrollbar:GetValue() + instance.row_height*2)
 				else
 					self:Disable()
 				end
@@ -2131,7 +2139,7 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 			if (delta > 0) then --> rolou pra cima
 				local A = instance.barS[1]
 				if (A > 1) then
-					scrollbar:SetValue(scrollbar:GetValue() - instance.row_height*2)
+					scrollbar:SetValue(scrollbar:GetValue() - instance.row_height * _details.scroll_speed)
 				else
 					scrollbar:SetValue(0)
 					scrollbar.ultimo = 0
@@ -2142,7 +2150,7 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 				local B = instance.barS[2]
 			
 				if (B < instance.rows_showing) then
-					scrollbar:SetValue(scrollbar:GetValue() + instance.row_height*2)
+					scrollbar:SetValue(scrollbar:GetValue() + instance.row_height * _details.scroll_speed)
 				else
 					local _, maxValue = scrollbar:GetMinMaxValues()
 					scrollbar:SetValue(maxValue)
@@ -2195,10 +2203,10 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 			local B = instance.barS[2]
 			if (B < instance.rows_showing) then --> se o valor maximo não for o máximo de bars a serem mostradas	
 				
-				local precisa_passar =((B+2) * instance.row_height) -(instance.row_height*instance.rows_fit_in_window)
+				local precisa_passar =((B+1) * instance.row_height) - (instance.row_height*instance.rows_fit_in_window)
 				
-			--	if (mine_valor > precisa_passar) then --> o valor atual passou o valor que precisa passar pra locomover
-				if (true) then --> testing
+				-- if (mine_valor > precisa_passar) then --> the current value has passed the amount that needs to be spent to get around
+				if (true) then --> testing by pass row check
 					local diff = mine_valor - ultimo --> pega a diferença de H
 					diff = diff / instance.row_height --> calcula quantas bars ele pulou
 					diff = _math_ceil(diff) --> arredonda para cima
@@ -2217,7 +2225,7 @@ local function iterate_scroll_scripts(backgrounddisplay, backgroundframe, basefr
 			if (A > 1) then
 				local precisa_passar =(A-1) * instance.row_height
 				--if (mine_valor < precisa_passar) then
-				if (true) then --> testing
+				if (true) then --> testing by pass row check
 					--> calcula quantas bars passou
 					local diff = ultimo - mine_valor
 					diff = diff / instance.row_height
@@ -2871,7 +2879,7 @@ function gump:CreateWindowMain(ID, instance, criando)
 
 -- create toolbar ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	gump:CreateCabecalho(baseframe, instance)
+	gump:CreateHeader(baseframe, instance)
 	
 -- create statusbar ----------------------------------------------------------------------------------------------------------------------------------------------------------		
 
@@ -4437,20 +4445,18 @@ local build_mode_list = function(self, elapsed)
 		CoolTip:SetColor("main", "transparent")
 		
 		CoolTip:SetOption("TextSize", _details.font_sizes.menus)
-		CoolTip:SetOption("ButtonHeightModSub", -5)
+
+		CoolTip:SetOption("ButtonHeightModSub", -2)
 		CoolTip:SetOption("ButtonHeightMod", -5)
-		CoolTip:SetOption("ButtonsYModSub", -5)
+
+		CoolTip:SetOption("ButtonsYModSub", -3)
 		CoolTip:SetOption("ButtonsYMod", -5)
-		CoolTip:SetOption("YSpacingModSub", 1)
+
+		CoolTip:SetOption("YSpacingModSub", -3)
 		CoolTip:SetOption("YSpacingMod", 1)
+
 		CoolTip:SetOption("FixedHeight", 106)
 		CoolTip:SetOption("FixedWidthSub", 146)
-		
-		--CoolTip:SetOption("SubMenuIsTooltip", true)
-		
-		--if (_details.tutorial.logons > 9) then
-			--CoolTip:SetOption("IgnoreSubMenu", true)
-		--end
 		
 		CoolTip:AddLine(Loc["STRING_MODE_GROUP"])
 		CoolTip:AddMenu(1, instance.ChangeMode, 2, true)
@@ -4497,24 +4503,28 @@ local build_mode_list = function(self, elapsed)
 		--CoolTip:AddIcon([[Interface\TUTORIALFRAME\TutorialFrame-QuestionMark]], 2, 1, 16, 16, 8/64, 1 -(8/64), 8/64, 1 -(8/64))
 		
 		--build self plugins list
-		
+
+		--pega a list de plugins solo:
+		if (#_details.SoloTables.Menu > 0) then
+			for index, ptable in _ipairs(_details.SoloTables.Menu) do
+				if (ptable[3].__enabled) then
+					CoolTip:AddMenu(2, _details.SoloTables.EnableSoloMode, instance, ptable[4], true, ptable[1], ptable[2], true)
+				end
+			end
+
+			CoolTip:SetWallpaper(2, [[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
+		end
+
 		CoolTip:AddLine(Loc["STRING_OPTIONS_WINDOW"])
 		CoolTip:AddMenu(1, _details.OpenOptionsWindow)
 		CoolTip:AddIcon([[Interface\AddOns\Details\images\mode_icons]], 1, 1, 20, 20, 32/256*4, 32/256*5, 0, 1)
-		
-		--CoolTip:AddFromTable(parameters_table[4])
-		
-		if (instance.consolidate) then
-			CoolTip:SetOwner(self, "topleft", "topright", 3)
-		else
-			if (instance.toolbar_side == 1) then
-				CoolTip:SetOwner(self)
-			elseif (instance.toolbar_side == 2) then --> bottom
-				CoolTip:SetOwner(self, "bottom", "top", 0, 0) -- -7
-			end
+
+		if (instance.toolbar_side == 1) then
+			CoolTip:SetOwner(self)
+		elseif (instance.toolbar_side == 2) then --> bottom
+			CoolTip:SetOwner(self, "bottom", "top", 0, 0) -- -7
 		end
-		
-		--CoolTip:SetWallpaper(1,[[Interface\ACHIEVEMENTFRAME\UI-Achievement-Parchment-Horizontal-Desaturated]], nil, {1, 1, 1, 0.3})
+
 		CoolTip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
 		CoolTip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
 		
@@ -5065,7 +5075,7 @@ function _details:ChangeSkin(skin_name)
 		end
 		
 	--> set the scale
-	self:SetWindowScale()
+		self:SetWindowScale()
 		
 	if (not just_updating or _details.initializing) then
 		if (this_skin.callback) then
@@ -6263,7 +6273,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> build upper menu bar
 
-function gump:CreateCabecalho(baseframe, instance)
+function gump:CreateHeader(baseframe, instance)
 
 	baseframe.header = {}
 	
@@ -6826,7 +6836,7 @@ function gump:CreateCabecalho(baseframe, instance)
 		
 		if (ClosedInstances == 0) then
 			if (_details:GetNumInstancesAmount() == _details:GetMaxInstancesAmount()) then
-				CoolTip:AddMenu(1, _details.Createinstance, true, nil, nil, Loc["STRING_NOMORE_INSTANCES"], _, true)
+				CoolTip:AddMenu(1, _details.OpenOptionsWindow, true, 1, nil, Loc["STRING_NOMORE_INSTANCES"], _, true)
 				CoolTip:AddIcon([[Interface\Buttons\UI-PlusButton-Up]], 1, 1, 16, 16)
 			else
 				CoolTip:AddMenu(1, _details.Createinstance, true, nil, nil, Loc["STRING_NOCLOSED_INSTANCES"], _, true)

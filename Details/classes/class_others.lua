@@ -71,6 +71,8 @@ local TooltipMaximizedMethod = 1
 local info = _details.window_info
 local keyName
 
+local headerColor = "yellow"
+
 function _details.SortIfHaveKey(table1, table2)
 	if (table1[keyName] and table2[keyName]) then
 		return table1[keyName] > table2[keyName] 
@@ -976,7 +978,6 @@ end
 
 --> tooltip locals
 local r, g, b
-local headerColor = "yellow"
 local barAlpha = .6
 
 function attribute_misc:ToolTipDead(instance, number, bar)
@@ -1392,7 +1393,7 @@ function _details:CatchRaidBuffUptime(in_or_out)
 		end
 		
 		if (in_or_out == "BUFF_UPTIME_IN") then
-			local string_output = "pre-potion: "
+			local string_output = "Pre-potion: "
 			for playername, potspellid in _pairs(pot_usage) do
 				local name, _, icon = _GetSpellInfo(potspellid)
 				local _, class = UnitClass(playername)
@@ -2152,6 +2153,7 @@ end
 			SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
 			FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
 			TooltipMaximizedMethod = _details.tooltip.maximize_method
+			headerColor = _details.tooltip.header_text_color
 		end
 		
 

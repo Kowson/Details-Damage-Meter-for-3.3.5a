@@ -25,9 +25,12 @@
 	local _string_len = string.lenv
 	local _string_format = string.format --lua local
 	local loadstring = loadstring --lua local
+	local _select = select
+	local _tonumber = tonumber
+	local _strsplit = strsplit
 	
 	local _UnitClass = UnitClass --wow api local
-	local _IsInRaid = IsInRaid --wow api local
+	local _IsInRaid = IsInRaid --wow api local TODO: REMOVE ALL OCCURENCES of IsInRaid
 	local _IsInGroup = IsInGroup --wow api local
 	local _GetNumGroupMembers = GetNumGroupMembers --wow api local
 	local _UnitAffectingCombat = UnitAffectingCombat --wow api local
@@ -40,6 +43,15 @@
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> details api functions
+
+	--> get the npc id from guid
+	function _details:GetNpcIdFromGuid(guid)
+		if (guid) then
+			return _tonumber(guid:sub(9, 12), 16)
+		end
+		return 0
+	end
+
 
 	--> get the fractional number representing the alphabetical letter
 	function _details:GetOrderNumber(src_name)

@@ -21,6 +21,7 @@ local _pairs = pairs --> lua library local
 local _table_sort = table.sort --> lua library local
 local _table_insert = table.insert --> lua library local
 local _unpack = unpack --> lua library local
+local _bit_band = bit.band
 
 
 --> Create the plugin Object
@@ -786,18 +787,20 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			end
 		end
 	end
-	
+
+	--> the segment is a boss
+
 	boss_id = _combat_object.is_boss.index
 	map_id = _combat_object.is_boss.mapid
 	boss_info = _details:GetBossDetails(_combat_object.is_boss.mapid, _combat_object.is_boss.index)
 
-	if (not boss_info) then
+--[[	if (not boss_info) then
 		if (EncounterDetails.LastSegmentShown) then
 			_combat_object = EncounterDetails.LastSegmentShown
 		else
 			return EncounterDetails:Msg(Loc["STRING_BOSS_NOT_REGISTRED"])
 		end
-	end
+	end]]
 	
 	if (EncounterDetailsFrame.ShowType == "graph") then
 		EncounterDetails:BuildDpsGraphic()
@@ -811,13 +814,24 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 
 -------------- set portrait and background image --------------	
 	local L, R, T, B, Texture = EncounterDetails:GetBossIcon(_combat_object.is_boss.mapid, _combat_object.is_boss.index)
-	EncounterDetailsFrame.boss_icon:SetTexture(Texture)
-	EncounterDetailsFrame.boss_icon:SetTexCoord(L, R, T, B)
+	if (L) then
+		EncounterDetailsFrame.boss_icon:SetTexture(Texture)
+		EncounterDetailsFrame.boss_icon:SetTexCoord(L, R, T, B)
+	else
+		EncounterDetailsFrame.boss_icone:SetTexture([[Interface\CHARACTERFRAME\TempPortrait]]) -- TODO: CHECK IF IMAGE EXISTS
+		EncounterDetailsFrame.boss_icone:SetTexCoord (0, 1, 0, 1)
+	end
 	
 	local file, L, R, T, B = EncounterDetails:GetRaidBackground(_combat_object.is_boss.mapid)
-	EncounterDetailsFrame.raidbackground:SetTexture(file)
-	EncounterDetailsFrame.raidbackground:SetTexCoord(L, R, T, B)
-	EncounterDetailsFrame.raidbackground:SetAlpha(0.8)
+	if (file) then
+		EncounterDetailsFrame.raidbackground:SetTexture(file)
+		EncounterDetailsFrame.raidbackground:SetTexCoord(L, R, T, B)
+		EncounterDetailsFrame.raidbackground:SetAlpha(0.8)
+	else
+		EncounterDetailsFrame.raidbackground:SetTexture([[Interface\Glues\LOADINGSCREENS\LoadScreenDungeon]]) -- TODO: CHECK IF IMAGE EXISTS
+		EncounterDetailsFrame.raidbackground:SetTexCoord(0, 1, 120/512, 408/512)
+		EncounterDetailsFrame.raidbackground:SetAlpha(0.8)
+	end
 	
 -------------- set totals on down frame --------------
 --[[ data mine:
@@ -898,22 +912,21 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			end
 		end
 		
-	--> Fim do container Overall Damage Taken
+	--> End of container Overall Damage Taken
 	
-	--> Container Overall Spells Inimigas
+	--> Container Overall Spells Enemy
 		local abilities_poll = {}
 		
-		--> pega as spells contínuas presentes em todas as fases
-		if (boss_info.continuo) then
+		--> takes the continuous spells present in all phases
+		if (boss_info and boss_info.continuo) then
 			for index, spellid in _ipairs(boss_info.continuo) do 
 				abilities_poll[spellid] = true
 			end
 		end
 
-		--> pega as abilities que pertence especificamente a cada fase
-		local fases = boss_info.phases
-		if (fases) then
-			for fase_id, fase in _ipairs(fases) do 
+		--> takes the abilities that belong specifically to each stage
+		if (boss_info and boss_info.phases) then
+			for fase_id, fase in _ipairs(boss_info.phases) do
 				if (fase.spells) then
 					for index, spellid in _ipairs(fase.spells) do 
 						abilities_poll[spellid] = true
@@ -922,40 +935,89 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			end
 		end
 		
-		local abilities_usadas = {}
+		local abilities_used = {}
+		local have_pool = false
+		for spellid, _ in _pairs(abilities_poll) do
+			have_pool = true
+			break
+		end
 		
 		for index, player in _ipairs(DamageContainer._ActorTable) do
-			local abilities = player.spell_tables._ActorTable
-			for id, ability in _pairs(abilities) do
-				if (abilities_poll[id]) then
-					--> esse player usou uma ability do boss
-					local this_ability = abilities_usadas[id] --> table não numerica, pq diferentes monstros podem castar a mesma spell
-					if (not this_ability) then 
-						this_ability = {0, {}, {}, id} -->[1] total damage causado[2] players que foram targets[3] players que castaram essa spell[4] ID da spell
-						abilities_usadas[id] = this_ability
-					end
-					
-					--> adiciona ao[1] total de damage que this ability causou
-					this_ability[1] = this_ability[1] + ability.total
-					
-					 --> adiciona ao[3] total do player que castou
-					if (not this_ability[3][player.name]) then
-						this_ability[3][player.name] = 0
-					end
-					
-					this_ability[3][player.name] = this_ability[3][player.name] + ability.total
-					
-					--> pega os targets e adiciona ao[2]
-					local targets = ability.targets
-					for index, player in _ipairs(targets._ActorTable) do 
-					
-						--> ele tem o name do player, vamos ver se this dst é realmente um player verificando na table do combat
-						local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[player.name]]
-						if (table_damage_of_player and table_damage_of_player.group) then
-							if (not this_ability[2][player.name]) then 
-								this_ability[2][player.name] = {0, table_damage_of_player.class}
+			--> get all spells from neutral and hostile npcs
+			if (
+				_bit_band (player.flag_original, 0x00000060) ~= 0 and --is neutral or hostile
+				(not player.owner or (_bit_band (player.owner.flag_original, 0x00000060) ~= 0 and not player.owner.group and _bit_band (player.owner.flag_original, 0x00000400) == 0)) and --isn't a pet or the owner isn't a player
+				not player.group and
+				_bit_band(player.flag_original, 0x00000400) == 0
+			) then
+				local abilities = player.spell_tables._ActorTable
+				for id, ability in _pairs(abilities) do
+					--if (abilities_poll[id]) then
+						--> this player used a boss ability
+						local this_ability = abilities_used[id] --> table does not numerate, because different monsters can cast the same spell
+						if (not this_ability) then
+							this_ability = {0, {}, {}, id} -->[1] - total damage caused [2] - players who were targets [3] - players who cast this spell [4] - spell ID
+							abilities_used[id] = this_ability
+						end
+
+						--> adds to the [1] total damage this ability has caused
+						this_ability[1] = this_ability[1] + ability.total
+
+						 --> adds to the [3] total of the player who cast
+						if (not this_ability[3][player.name]) then
+							this_ability[3][player.name] = 0
+						end
+
+						this_ability[3][player.name] = this_ability[3][player.name] + ability.total
+
+						--> take targets and add to [2]
+						local targets = ability.targets
+						for index, player in _ipairs(targets._ActorTable) do
+
+							--> it has the name of the player, let's see if this dst is really a player checking the combat table
+							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[player.name]]
+							if (table_damage_of_player and table_damage_of_player.group) then
+								if (not this_ability[2][player.name]) then
+									this_ability[2][player.name] = {0, table_damage_of_player.class}
+								end
+								this_ability[2][player.name][1] = this_ability[2][player.name][1] + player.total
 							end
-							this_ability[2][player.name][1] = this_ability[2][player.name][1] + player.total
+						end
+					--end
+				end
+			elseif (have_pool) then
+				--> check if the sepll id is in the spell poll
+				local abilities = player.spell_tables._ActorTable
+				for id, ability in _pairs(abilities) do
+					if (abilities_poll[id]) then
+						--> this player used a boss ability
+						local this_ability = abilities_used[id] --> table does not numerate, because different monsters can cast the same spell
+						if (not this_ability) then
+							this_ability = {0, {}, {}, id} -->[1] - total damage caused [2] - players who were targets [3] - players who cast this spell [4] - spell ID
+							abilities_used[id] = this_ability
+						end
+
+						--> adds to the [1] total damage this ability has caused
+						this_ability[1] = this_ability[1] + ability.total
+
+						 --> adds to the [3] total of the player who cast
+						if (not this_ability[3][player.name]) then
+							this_ability[3][player.name] = 0
+						end
+
+						this_ability[3][player.name] = this_ability[3][player.name] + ability.total
+
+						--> take targets and add to [2]
+						local targets = ability.targets
+						for index, player in _ipairs(targets._ActorTable) do
+							--> it has the name of the player, let's see if this dst is really a player checking the combat table
+							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[player.name]]
+							if (table_damage_of_player and table_damage_of_player.group) then
+								if (not this_ability[2][player.name]) then
+									this_ability[2][player.name] = {0, table_damage_of_player.class}
+								end
+								this_ability[2][player.name][1] = this_ability[2][player.name][1] + player.total
+							end
 						end
 					end
 				end
@@ -963,19 +1025,19 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		end
 		
 		--> por em ordem
-		local table_em_ordem = {}
-		for id, tab in _pairs(abilities_usadas) do 
-			table_em_ordem[#table_em_ordem+1] = tab
+		local table_in_order = {}
+		for id, tab in _pairs(abilities_used) do
+			table_in_order[#table_in_order+1] = tab
 		end
 		
-		_table_sort(table_em_ordem, function(a, b) return a[1] > b[1] end)
+		_table_sort(table_in_order, function(a, b) return a[1] > b[1] end)
 
 		container = frame.overall_abilities.gump
 		amount = 0
 		damage_of_primeiro = 0
 		
 		--> mostra o resultado nas bars
-		for index, ability in _ipairs(table_em_ordem) do
+		for index, ability in _ipairs(table_in_order) do
 			--> ta em ordem das abilities que deram mais damage
 			
 			if (ability[1] > 0) then
@@ -1028,15 +1090,15 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			end
 		end
 	
-	--> Fim do container Over Spells Inimigas
+	--> End of container Over Spells Enemy
 	
-	--> Identificar os ADDs da fight:
+	--> Identify the ADDs of the fight:
 	
-		--> declara a pool onde serão armazenados os adds existentas na fight
+		--> declares the pool where the existing adds will be stored in the fight
 		local adds_pool = {}
 	
-		--> pega as abilities que pertence especificamente a cada fase
-		if (boss_info.phases) then
+		--> takes the abilities that belong specifically to each phase
+		if (boss_info and boss_info.phases) then
 			for fase_id, fase in _ipairs(boss_info.phases) do 
 				if (fase.adds) then
 					for index, addId in _ipairs(fase.adds) do 
@@ -1054,9 +1116,14 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		
 		for index, player in _ipairs(DamageContainer._ActorTable) do
 		
-			--> só estou interessado nos adds, conferir pelo name
-			--if (adds_pool[tonumber(player.serial:sub(9, 12), 16)] or(player.flag_original and bit.band(player.flag_original, 0x00000060) ~= 0)) then --> é um enemy ou neutro
-			if (adds_pool[tonumber(player.serial:sub(9, 12), 16)]) then
+			--> I'm only interested in adds, check by name
+			if (adds_pool[_details:GetNpcIdFromGuid(player.serial)] or (
+				player.flag_original and
+				_bit_band(player.flag_original, 0x00000060) ~= 0 and
+				(not player.owner or (_bit_band(player.owner.flag_original, 0x00000060) ~= 0 and not player.owner.group and _bit_band(player.owner.flag_original, 0x00000400) == 0)) and --isn't a pet or the owner isn't a player
+				not player.group and
+				_bit_band(player.flag_original, 0x00000400) == 0
+			)) then --> is an enemy or neutral
 				local name = player.name
 				local tab = {name = name, total = 0, damage_em = {}, damage_em_total = 0, damage_from = {}, damage_from_total = 0}
 			
@@ -1317,15 +1384,15 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		end
 		
 		--> por em ordem
-		table_em_ordem = {}
+		table_in_order = {}
 		for spellid, tab in _pairs(abilities_interrompidas) do 
-			table_em_ordem[#table_em_ordem+1] = tab
+			table_in_order[#table_in_order+1] = tab
 		end
-		_table_sort(table_em_ordem, function(a, b) return a[2] > b[2] end)
+		_table_sort(table_in_order, _details.Sort1)
 
 		index = 1
 		
-		for _, tab in _ipairs(table_em_ordem) do
+		for _, tab in _ipairs(table_in_order) do
 		
 			local bar = container.bars[index]
 			if (not bar) then
@@ -1431,15 +1498,15 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		end
 		
 		--> por em ordem
-		table_em_ordem = {}
+		table_in_order = {}
 		for spellid, tab in _pairs(abilities_dispeladas) do 
-			table_em_ordem[#table_em_ordem+1] = tab
+			table_in_order[#table_in_order+1] = tab
 		end
-		_table_sort(table_em_ordem, function(a, b) return a[2] > b[2] end)
+		_table_sort(table_in_order, function(a, b) return a[2] > b[2] end)
 
 		index = 1
 		
-		for _, tab in _ipairs(table_em_ordem) do
+		for _, tab in _ipairs(table_in_order) do
 		
 			local bar = container.bars[index]
 			if (not bar) then
@@ -1497,7 +1564,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		-- boss_info.spell_tables_info o erro de lua do boss é a ability dele que não foi declarada ainda
 	
 		local deaths = _combat_object.last_events_tables
-		local abilities_info = boss_info.spell_mechanics or {} --bar.extra pega esse cara aqui --> então esse erro é das abilities que não tao
+		local abilities_info = boss_info and boss_info.spell_mechanics or {} --bar.extra pega esse cara aqui --> então esse erro é das abilities que não tao
 	
 		for index, tab in _ipairs(deaths) do
 			--> {this_death, time, this_player.name, this_player.class, _UnitHealthMax(dst_name), minutes.."m "..seconds.."s", ["dead"] = true}

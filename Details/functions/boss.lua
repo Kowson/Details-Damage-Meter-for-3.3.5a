@@ -125,10 +125,12 @@ do
 			end
 		end
 		local fases = encounter.phases
-		for fase_id, fase in _ipairs(fases) do 
-			if (fase.spells) then
-				for index, spellid in _ipairs(fase.spells) do 
-					abilities_poll[spellid] = true
+		if (fases) then
+			for fase_id, fase in _ipairs(fases) do
+				if (fase.spells) then
+					for index, spellid in _ipairs(fase.spells) do
+						abilities_poll[spellid] = true
+					end
 				end
 			end
 		end
