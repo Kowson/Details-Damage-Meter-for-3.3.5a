@@ -1966,7 +1966,7 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			t1[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_min)
 			t1[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_max)
 			t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
-			t1[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value("%.1f", normal_healed/T)
+			t1[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value(normal_healed/T)
 			t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
 
 			--[[ TODO: OLD- REMOVE
