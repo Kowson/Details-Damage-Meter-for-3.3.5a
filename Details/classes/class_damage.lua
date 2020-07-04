@@ -2916,7 +2916,7 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 		
 		local this_dps
 		if (this_spell.counter > this_spell.c_amt) then
-			this_dps = Loc["STRING_DPS"] .. ": " .. _details:comma_value("%.1f", this_spell.total/mine_time)
+			this_dps = Loc["STRING_DPS"] .. ": " .. _details:comma_value(this_spell.total/mine_time)
 		else
 			this_dps = Loc["STRING_DPS"] .. ": " .. Loc["STRING_SEE_BELOW"]
 		end
