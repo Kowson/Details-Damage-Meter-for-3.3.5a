@@ -637,7 +637,7 @@
 				_details:SendEvent("COMBAT_INVALID")
 				_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, invalid_combat)
 			else
-				_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, _details.tabela_vigente)
+				_details:SendEvent("COMBAT_PLAYER_LEAVE", nil, _details.table_current)
 			end
 		end
 
