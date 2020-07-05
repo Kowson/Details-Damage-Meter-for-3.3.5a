@@ -15,6 +15,7 @@ SLASH_DETAILS1, SLASH_DETAILS2, SLASH_DETAILS3 = "/details", "/dt", "/de"
 function SlashCmdList.DETAILS(msg, editbox)
 
 	local command, rest = msg:match("^(%S*)%s*(.-)$")
+	command = string.lower(command)
 	
 	if (command == Loc["STRING_SLASH_NEW"] or command == "new") then
 		_details:Createinstance(nil, true)
@@ -646,14 +647,14 @@ function SlashCmdList.DETAILS(msg, editbox)
 		if (pass_guid == "-") then
 			local guid = UnitGUID("target")
 			if (guid) then 
-				print(guid.. " -> " .. tonumber(guid:sub(9, 12), 16))
-				_details.id_frame.text:SetText(""..tonumber(guid:sub(9, 12), 16))
+				print(guid.. " -> " .. _details:GetNpcIdFromGuid(guid))
+				_details.id_frame.text:SetText("".._details:GetNpcIdFromGuid(guid))
 				_details.id_frame.text:HighlightText()
 			end
 		
 		else
-			print(pass_guid.. " -> " .. tonumber(pass_guid:sub(9, 12), 16))
-			_details.id_frame.text:SetText(""..tonumber(pass_guid:sub(9, 12), 16))
+			print(pass_guid.. " -> " .. _details:GetNpcIdFromGuid(pass_guid))
+			_details.id_frame.text:SetText("".._details:GetNpcIdFromGuid(pass_guid))
 			_details.id_frame.text:HighlightText()
 		end
 		
@@ -772,9 +773,9 @@ function SlashCmdList.DETAILS(msg, editbox)
 		local one, two = rest:match("^(%S*)%s*(.-)$")
 		if (one ~= "") then
 			print("NPC ID:", one:sub(9, 12), 16)
-			print("NPC ID:", tonumber((one):sub(9, 12), 16))
+			print("NPC ID:", _details:GetNpcIdFromGuid(one))
 		else
-			print("NPC ID:", tonumber((UnitGUID("target")):sub(9, 12), 16) )
+			print("NPC ID:", _details:GetNpcIdFromGuid(UnitGUID("target")))
 		end
 
 	--> debug

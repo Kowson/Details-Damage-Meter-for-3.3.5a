@@ -1,4 +1,4 @@
-local _details = 		_G._details
+local _details = _G._details
 local Loc = LibStub("AceLocale-3.0"):GetLocale( "Details" )
 local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 
@@ -155,7 +155,6 @@ function _details:OpenWelcomeWindow()
 			instance.baseframe:SetPoint("left", DetailsWelcomeWindow, "right", 10, 0)
 		end
 		_details:ScheduleTimer("WelcomeSetLoc", 12)
-		--_details:WelcomeSetLoc()
 
 --/script local f=CreateFrame("frame");local g=false;f:SetScript("OnUpdate",function(s,e)if not g then local r=math.random for i=1,2500000 do local a=r(1,1000000);a=a+1 end g=true else print(string.format("cpu: %.3f",e));f:SetScript("OnUpdate",nil)end end)
 	
@@ -232,15 +231,23 @@ function _details:OpenWelcomeWindow()
 	
 	local frame_alert = CreateFrame("frame", nil, window)
 	frame_alert:SetPoint("topright", window)
-	function _details:StopPlayStretchAlert()
-		frame_alert.alert.animIn:Stop()
-		frame_alert.alert.animOut:Play()
-		_details.stopwelcomealert = nil
-	end
-	frame_alert.alert = CreateFrame("frame", "DetailsWelcomeWindowAlert", UIParent)--, "ActionBarButtonSpellActivationAlert")
+
+	frame_alert.alert = CreateFrame("frame", "DetailsWelcomeWindowAlert", UIParent, "ActionBarButtonSpellActivationAlert")
 	frame_alert.alert:SetFrameStrata("FULLSCREEN")
-	frame_alert.alert:Hide()	
-	
+	frame_alert.alert:Hide()
+
+	function _details:DisableGlowing()
+		local frameWidth, frameHeight = frame_alert.alert:GetSize();
+		frame_alert.alert.spark:SetAlpha(0);
+		frame_alert.alert.innerGlow:SetAlpha(0);
+		frame_alert.alert.innerGlow:SetSize(frameWidth, frameHeight);
+		frame_alert.alert.innerGlowOver:SetAlpha(0.0);
+		frame_alert.alert.outerGlow:SetSize(frameWidth, frameHeight);
+		frame_alert.alert.outerGlowOver:SetAlpha(0.0);
+		frame_alert.alert.outerGlowOver:SetSize(frameWidth, frameHeight);
+		frame_alert.alert.ants:SetAlpha(1.0);
+	end
+
 local window_openned_at = time()
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -989,12 +996,15 @@ local window_openned_at = time()
 			
 			frame_alert.alert.animOut:Stop()
 			frame_alert.alert.animIn:Play()
-			if (_details.stopwelcomealert) then
-				_details:CancelTimer(_details.stopwelcomealert)
+			if (_details.disableglowing) then
+				_details:CancelTimer(_details.disableglowing)
 			end
-			_details.stopwelcomealert = _details:ScheduleTimer("StopPlayStretchAlert", 5)
+			_details.disableglowing = _details:ScheduleTimer("DisableGlowing", 1)
 		end)
-
+		stretch_frame_alert:SetScript("OnHide", function()
+			frame_alert.alert.animIn:Stop()
+			frame_alert.alert:Hide()
+		end)
 		
 		pages[#pages+1] = {bg6, text5, stretch_image, text_stretch, stretch_frame_alert}
 		
@@ -1037,17 +1047,20 @@ local window_openned_at = time()
 		instance_frame_alert:SetScript("OnShow", function()
 			local instance = _details:GetInstance(1)
 
-			frame_alert.alert:SetPoint("topleft", instance.baseframe.header.novo, "topleft", -8, 6)
-			frame_alert.alert:SetPoint("bottomright", instance.baseframe.header.novo, "bottomright", 8, -6)
+			frame_alert.alert:SetPoint("topleft", instance.baseframe.header.mode_selecao.widget, "topleft", -8, 6)
+			frame_alert.alert:SetPoint("bottomright", instance.baseframe.header.mode_selecao.widget, "bottomright", 8, -6)
 			
 			frame_alert.alert.animOut:Stop()
 			frame_alert.alert.animIn:Play()
-			if (_details.stopwelcomealert) then
-				_details:CancelTimer(_details.stopwelcomealert)
+			if (_details.disableglowing) then
+				_details:CancelTimer(_details.disableglowing)
 			end
-			_details.stopwelcomealert = _details:ScheduleTimer("StopPlayStretchAlert", 5)
+			_details.disableglowing = _details:ScheduleTimer("DisableGlowing", 1)
 		end)
-		
+		instance_frame_alert:SetScript("OnHide", function()
+			frame_alert.alert.animIn:Stop()
+			frame_alert.alert:Hide()
+		end)
 		pages[#pages+1] = {bg6, text6, instance_button_image, text_instance_button, instance_frame_alert}
 		
 		for _, widget in ipairs(pages[#pages]) do 

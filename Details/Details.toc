@@ -11,9 +11,6 @@
 framework\backportedframes.xml
 framework\backportedframes.lua
 
-Frames\frames.xml
-Frames\frames.lua
-
 #@no-lib-strip@
 Libs\libs.xml
 #@end-no-lib-strip@

@@ -309,11 +309,26 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 				if (instance_limit < index) then
 					break
 				end
-				
+
+				--> fix for the old flat skin
 				if (skin.skin == "Flat Color") then
 					skin.skin = "Serenity"
 				end
-				
+
+				--> fix for old left and right menus
+				if (skin.menu_icons and type (skin.menu_icons[5]) ~= "boolean") then
+					skin.menu_icons[5] = true
+					skin.menu_icons[6] = true
+
+					local skin_profile = _details.skins[skin.skin] and _details.skins[skin.skin].instance_cprops
+					if (skin_profile) then
+						skin.menu_icons_size = skin_profile.menu_icons_size
+						skin.menu_anchor = table_deepcopy(skin_profile.menu_anchor)
+						--print (skin.menu_anchor[1], skin.menu_anchor[2], skin.menu_anchor.side)
+						skin.menu_anchor_down = table_deepcopy(skin_profile.menu_anchor_down)
+					end
+				end
+
 				--> get the instance
 				local instance = _details:GetInstance(index)
 				if (not instance) then
@@ -746,6 +761,7 @@ local default_profile = {
 		use_row_animations = false,
 		animate_scroll = false,
 		use_scroll = false,
+		scroll_speed = 2,
 		update_speed = 1,
 		time_type = 2,
 		memory_threshold = 3,
@@ -761,6 +777,7 @@ local default_profile = {
 		report_lines = 5,
 		report_to_who = "",
 		report_heal_links = false,
+		report_schema = 1,
 		
 	--> colors
 		default_bg_color = 0.0941,
@@ -800,13 +817,15 @@ local default_profile = {
 		tooltip = {
 			fontface = "Friz Quadrata TT", 
 			fontsize = 10, 
-			fontcolor = {1, 1, 1, 1}, 
+			fontcolor = {1, 1, 1, 1},
+			fontcolor_right = {1, 0.7, 0, 1}, --{1, 0.9254, 0.6078, 1}
 			fontshadow = false, 
-			background = {.45, .45, .45, .28}, 
-			abbreviation = 5, --ToK I Lower -- was 8
+			background = {0.1411, 0.1411, 0.1411, 0.8763},
+			abbreviation = 2, -- 2 = ToK I Upper 5 = ToK I Lower -- was 8
 			maximize_method = 1, 
 			show_amount = false, 
 			commands = {},
+			header_text_color = {1, 0.9176, 0, 1}, --{1, 0.7, 0, 1}
 			
 			anchored_to = 1,
 			anchor_screen_pos = {507.700, -350.500},

@@ -141,6 +141,20 @@
 		end
 	end
 
+	function _details.SoloTables:EnableSoloMode(instance, plugin_name, from_cooltip)
+		--> check if came from cooltip
+		if (from_cooltip) then
+			self = _details.SoloTables
+			instance = plugin_name
+			plugin_name = from_cooltip
+		end
+
+		instance:SoloMode(true)
+
+		_details.SoloTables:switch(nil, plugin_name)
+
+	end
+
 	--> Build Solo Mode Tables and Functions
 	function gump:PrepareSoloMode(instance)
 

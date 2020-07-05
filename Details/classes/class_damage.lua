@@ -60,7 +60,7 @@
 
 	local key_overlay = {1, 1, 1, .1}
 	local key_overlay_press = {1, 1, 1, .2}
-	local headerColor = "yellow"
+	local headerColor = {1, 0.9, 0.0, 1}
 
 	local info = _details.window_info
 	local keyName
@@ -2799,10 +2799,18 @@ function attribute_damage:SetDetailsDamageTaken(name, bar)
 	
 end
 
------- Detail Info Damage Done e Dps
+------ Detail Info Damage Done and Dps
+local defenses_table = {c = {117/255, 58/255, 0/255}, p = 0}
+local normal_table = {c = {255/255, 180/255, 0/255, 0.5}, p = 0}
+local misses_table = {c = {223/255, 249/255, 45/255, 0.5}, p = 0}
+local critical_table = {c = {249/255, 74/255, 45/255, 0.5}, p = 0}
+
+local data_table = {}
+local t1, t2, t3, t4 = {}, {}, {}, {}
+
 function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 
-	if (_type(spellid) == "string") then 
+	if (_type(spellid) == "string") then --TODO: can it be deleted?
 	
 		local _bar = info.groups_details[1]
 		
@@ -2879,9 +2887,8 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 	
 	--> icon direito superior
 	local name, rank, icon = _GetSpellInfo(spellid)
-	local infospell = {name, rank, icon}
 
-	_details.window_info.spell_icon:SetTexture(infospell[3])
+	_details.window_info.spell_icon:SetTexture(icon)
 
 	local total = self.total
 	
@@ -2896,27 +2903,32 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 	
 	local index = 1
 	
-	local data = {}
-	
-	--print(debugstack())
+	local data = data_table
+
+	table.wipe(t1)
+	table.wipe(t2)
+	table.wipe(t3)
+	table.wipe(t4)
+	table.wipe(data)
 	
 	--> GENERAL
 		local media = this_spell.total/total_hits
 		
-		local this_dps = nil
+		local this_dps
 		if (this_spell.counter > this_spell.c_amt) then
-			this_dps = Loc["STRING_DPS"]..": ".._cstr("%.1f", this_spell.total/mine_time)
+			this_dps = Loc["STRING_DPS"] .. ": " .. _details:comma_value(this_spell.total/mine_time)
 		else
-			this_dps = Loc["STRING_DPS"]..": "..Loc["STRING_SEE_BELOW"]
+			this_dps = Loc["STRING_DPS"] .. ": " .. Loc["STRING_SEE_BELOW"]
 		end
 		
-		gump:SetaDetailInfoText( index, 100,
+		gump:SetaDetailInfoText(index, 100,
 			Loc["STRING_GENERAL"],
-			Loc["STRING_DAMAGE"]..": ".._details:ToK(this_spell.total), 
-			Loc["STRING_PERCENTAGE"]..": ".._cstr("%.1f", this_spell.total/total*100) .. "%", 
-			Loc["STRING_MEDIA"]..": " .. _cstr("%.1f", media), 
+			Loc["STRING_DAMAGE"] .. ": " .. _details:ToK(this_spell.total),
+			--Loc["STRING_PERCENTAGE"] .. ": " .. _cstr("%.1f", this_spell.total/total*100) .. "%",
+			--Loc["STRING_MEDIA"] .. ": " .. _cstr("%.1f", media),
+			Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media),
 			this_dps,
-			Loc["STRING_HITS"]..": " .. total_hits)
+			Loc["STRING_HITS"] .. ": " .. total_hits)
 	
 	--> NORMAL
 		local normal_hits = this_spell.n_amt
@@ -2927,6 +2939,19 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			local P = media/media_normal*100
 			T = P*T/100
 
+			normal_table.p = normal_hits/total_hits*100
+
+			data[#data+1] = t1
+
+		t1[1] = this_spell.n_amt
+		t1[2] = normal_table
+		t1[3] = Loc["STRING_NORMAL_HITS"]
+		t1[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_min)
+		t1[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_max)
+		t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
+		t1[7] = Loc["STRING_DPS"] .. ": " .. _details:comma_value(normal_dmg/T)
+		t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
+			--[[ TODO: OLD
 			data[#data+1] = {
 				this_spell.n_amt, 
 				normal_hits/total_hits*100, 
@@ -2937,6 +2962,7 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 				Loc["STRING_DPS"]..": ".._cstr("%.1f", normal_dmg/T), 
 				normal_hits.. " / ".._cstr("%.1f", normal_hits/total_hits*100).."%"
 				}
+			]]--
 		end
 
 	--> CRITICAL
@@ -2949,7 +2975,20 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			if (not crit_dps) then
 				crit_dps = 0
 			end
-			
+
+			critical_table.p = this_spell.c_amt/total_hits*100
+
+			data[#data+1] = t2
+
+			t2[1] = this_spell.c_amt
+			t2[2] = critical_table
+			t2[3] = Loc ["STRING_CRITICAL_HITS"]
+			t2[4] = Loc ["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value (this_spell.c_min)
+			t2[5] = Loc ["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value (this_spell.c_max)
+			t2[6] = Loc ["STRING_AVERAGE"] .. ": " .. _details:comma_value (media_critical)
+			t2[7] = Loc ["STRING_DPS"] .. ": " .. _details:comma_value (crit_dps)
+			t2[8] = this_spell.c_amt .. " / " .. _cstr ("%.1f", this_spell.c_amt/total_hits*100) .. "%"
+			--[[ TODO: OLD - REMOVE
 			data[#data+1] = {
 				this_spell.c_amt,
 				this_spell.c_amt/total_hits*100, 
@@ -2960,6 +2999,7 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 				Loc["STRING_DPS"]..": ".._cstr("%.1f", crit_dps),
 				this_spell.c_amt.. " / ".._cstr("%.1f", this_spell.c_amt/total_hits*100).."%"
 				}
+			]]--
 		end
 		
 	--> Outros misses: GLACING, resisted, blocked, absorbed
@@ -2967,6 +3007,20 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 		
 		if (others_deviations > 0) then
 			local percentage_defenses = others_deviations/total_hits*100
+
+			data[#data+1] = t3
+			defenses_table.p = percentage_defenses
+			t3[1] = others_deviations
+			t3[2] = defenses_table
+			t3[3] = Loc["STRING_DEFENSES"]
+			t3[4] = Loc["STRING_GLANCING"] .. ": " .. this_spell.g_amt .. " / " .. _math_floor(this_spell.g_amt/this_spell.counter*100) .. "%"
+			t3[5] = Loc["STRING_RESISTED"] .. ": " .. this_spell.r_dmg --this_spell.resisted.amt.." / "..
+			t3[6] = Loc["STRING_ABSORBED"] .. ": " .. this_spell.a_dmg --this_spell.absorbed.amt.." / "..
+			t3[7] = Loc["STRING_BLOCKED"] .. ": " .. this_spell.b_amt .. " / " .. this_spell.b_dmg
+			t3[8] = others_deviations .. " / " .. _cstr("%.1f", percentage_defenses) .. "%"
+
+
+			--[[ TODO: OLD - REMOVE
 			data[#data+1] = {
 				others_deviations,
 				{["p"] = percentage_defenses,["c"] = {117/255, 58/255, 0/255}},
@@ -2977,6 +3031,7 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 				Loc["STRING_BLOCKED"]..": "..this_spell.b_amt.." / "..this_spell.b_dmg,
 				others_deviations.." / ".._cstr("%.1f", percentage_defenses).."%"
 				}
+			]]--
 		end
 		
 	--> Erros de Ataque	--ability.missType  -- {"ABSORB", "BLOCK", "DEFLECT", "DODGE", "EVADE", "IMMUNE", "MISS", "PARRY", "REFLECT", "RESIST"}
@@ -2987,6 +3042,18 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 		
 		if (misses > 0) then
 			local percentage_misses = misses/total_hits*100
+			data[#data+1] = t4
+			misses_table.p = percentage_misses
+
+			t3[1] = misses
+			t3[2] = misses_table
+			t3[3] = Loc["STRING_FAIL_ATTACKS"]
+			t3[4] = Loc["STRING_MISS"] .. ": " .. miss
+			t3[5] = Loc["STRING_PARRY"] .. ": " .. parry
+			t3[6] = Loc["STRING_DODGE"] .. ": " .. dodge
+			t3[7] = ""
+			t3[8] = misses .. " / " .. _cstr("%.1f", percentage_misses) .. "%"
+			--[[ TODO: OLD - REMOVE
 			data[#data+1] = { 
 				misses,
 				{["p"] = percentage_misses,["c"] = {0.5, 0.1, 0.1}},
@@ -2997,9 +3064,10 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 				"",
 				misses.." / ".._cstr("%.1f", percentage_misses).."%"
 				}
+			]]--
 		end
 
-	table.sort(data, function(a, b) return a[1] > b[1] end)
+	table.sort(data, _details.Sort1)
 	
 	for index, table in _ipairs(data) do
 		gump:SetaDetailInfoText(index+1, table[2], table[3], table[4], table[5], table[6], table[7], table[8])
@@ -3167,6 +3235,7 @@ end
 			SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
 			FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
 			TooltipMaximizedMethod = _details.tooltip.maximize_method
+			headerColor = _details.tooltip.header_text_color
 		end
 
 	--> diminui o total das tables do combat

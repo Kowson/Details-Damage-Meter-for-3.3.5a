@@ -84,7 +84,7 @@ function _G._details:Start()
 			self.custom = self.custom or {}
 			
 		--> micro button alert
-			self.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent)--, "MicroButtonAlertTemplate")
+			self.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent, "MicroButtonAlertTemplate")
 			self.MicroButtonAlert:Hide()
 			
 		--> actor details window
@@ -100,7 +100,6 @@ function _G._details:Start()
 			self:Createinstance()
 		end
 		self:GetLowerInstanceNumber()
-		self:CheckConsolidates()
 		
 	--> start time machine
 		self.timeMachine:Ligar()
@@ -166,8 +165,8 @@ function _G._details:Start()
 						self.move_window_func(instance.baseframe, true, instance)
 						self.move_window_func(instance.baseframe, false, instance)
 					end
-					self.CheckWallpaperAfterStartup = nil
 				end
+				self.CheckWallpaperAfterStartup = nil
 			end
 			_details:ScheduleTimer("CheckWallpaperAfterStartup", 5)
 			
@@ -307,7 +306,18 @@ function _G._details:Start()
 			
 			_details:FillUserCustomSpells()
 			_details:AddDefaultCustomDisplays()
-			
+
+			if (_details_database.last_realversion and _details_database.last_realversion < 31 and enable_reset_warning) then
+				for index, custom in ipairs(_details.custom) do
+					if (custom.name == Loc["STRING_CUSTOM_POT_DEFAULT"]) then
+						-- only on 14/11/2014
+						--_detalhes.atributo_custom:RemoveCustom (index)
+						break
+					end
+				end
+				_details:AddDefaultCustomDisplays()
+			end
+
 			if (_details_database.last_realversion and _details_database.last_realversion < 20 and enable_reset_warning) then
 				table.wipe(self.custom)
 				_details:AddDefaultCustomDisplays()
@@ -444,24 +454,7 @@ function _G._details:Start()
 	end
 	
 	_details:BrokerTick()
-	
-	--test realtime dps
-	--[[
-	local real_time_frame = CreateFrame("frame", nil, UIParent)
-	local instance = _details:GetInstance(1)
-	real_time_frame:SetScript("OnUpdate", function(self, elapsed)
-		if (_details.in_combat and instance.attribute == 1 and instance.sub_attribute == 1) then
-			for i = 1, instance:GetNumRows() do
-				local row = instance:GetRow(index)
-				if (row:IsShown()) then
-					local actor = row.my_table
-					local right_text = row.text_right
-				end
-			end
-		end
-	end)
-	--]]
-	
+
 	-- test dbm callbacks
 	
 	if (_G.DBM) then
@@ -505,5 +498,23 @@ function _G._details:Start()
 		DBM:RegisterCallback("DBM_Announce", dbm_callback_phase)
 		DBM:RegisterCallback("pull", dbm_callback_pull)
 	end
+
+
+	--test realtime dps
+	--[[
+	local real_time_frame = CreateFrame("frame", nil, UIParent)
+	local instance = _details:GetInstance(1)
+	real_time_frame:SetScript("OnUpdate", function(self, elapsed)
+		if (_details.in_combat and instance.attribute == 1 and instance.sub_attribute == 1) then
+			for i = 1, instance:GetNumRows() do
+				local row = instance:GetRow(index)
+				if (row:IsShown()) then
+					local actor = row.my_table
+					local right_text = row.text_right
+				end
+			end
+		end
+	end)
+	--]]
 end
 

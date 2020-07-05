@@ -173,11 +173,11 @@
 		
 		--> get sizes
 		local baseframe_width = self.baseframe:GetWidth()
-		local baseframe_height = self.baseframe:GetHeight()
 		if (not baseframe_width) then
 			return _details:ScheduleTimer("SaveMainWindowPosition", 1, self)
 		end
-		
+		local baseframe_height = self.baseframe:GetHeight()
+
 		--> calc position
 		local _x, _y = self:GetPositionOnScreen()
 		if (not _x) then
@@ -199,7 +199,7 @@
 		
 		local statusbar_y_mod = 0
 		if (not self.show_statusbar) then
-			statusbar_y_mod = 14
+			statusbar_y_mod = 14 * self.baseframe:GetScale()
 		end
 		
 		if (not self.ponto1) then
@@ -715,49 +715,51 @@
 
 --> tutorial bookmark
 	function _details:TutorialBookmark(instance)
-	
+
 		_details:SetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1", true)
-		
+
 		local func = function()
-			local f = CreateFrame("frame", nil, instance.baseframe)
+			local f = CreateFrame("button", nil, instance.baseframe)
 			f:SetAllPoints();
 			f:SetFrameStrata("FULLSCREEN")
 			f:SetBackdrop({bgFile =[[Interface\AddOns\Details\images\background]], tile = true, tileSize = 16})
 			f:SetBackdropColor(0, 0, 0, 0.8)
-			
-			f.alert = CreateFrame("frame", "DetailsTutorialBookmarkAlert", UIParent)--, "ActionBarButtonSpellActivationAlert")
+
+			f.alert = CreateFrame("frame", "DetailsTutorialBookmarkAlert", UIParent, "ActionBarButtonSpellActivationAlert")
 			f.alert:SetPoint("topleft", f, "topleft")
 			f.alert:SetPoint("bottomright", f, "bottomright")
-			--f.alert.animOut:Stop()
-			--f.alert.animIn:Play()
-			
+			f.alert.animOut:Stop()
+			f.alert.animIn:Play()
+
 			f.text = f:CreateFontString(nil, "overlay", "GameFontNormal")
 			f.text:SetText(Loc["STRING_MINITUTORIAL_BOOKMARK1"])
 			f.text:SetWidth(f:GetWidth()-15)
 			f.text:SetPoint("center", f)
 			f.text:SetJustifyH("center")
-			
+
 			f.bg = f:CreateTexture(nil, "border")
 			f.bg:SetTexture([[Interface\ACHIEVEMENTFRAME\UI-Achievement-Parchment-Horizontal-Desaturated]])
 			f.bg:SetAllPoints()
 			f.bg:SetAlpha(0.8)
-			
+
 			f.textbg = f:CreateTexture(nil, "artwork")
 			f.textbg:SetTexture([[Interface\ACHIEVEMENTFRAME\UI-Achievement-RecentHeader]])
 			f.textbg:SetPoint("center", f)
 			f.textbg:SetAlpha(0.4)
 			f.textbg:SetTexCoord(0, 1, 0, 24/32)
 
-			f:SetScript("OnMouseDown", function(self, button)
+			f:RegisterForClicks("RightButtonDown")
+			f:SetScript("OnClick", function(self, button)
 				if (button == "RightButton") then
 					f.alert.animIn:Stop()
-					f.alert.animOut:Play()
-					_details.switch:ShowMe(instance)
+					f.alert.animOut:Stop()
+					f.alert:Hide()
 					f:Hide()
+					_details.switch:ShowMe(instance)
 				end
 			end)
 		end
-		
+
 		_details:GetFramework():ShowTutorialAlertFrame("How to Use Bookmarks", "switch fast between displays", func)
 	end
 
@@ -989,7 +991,7 @@
 				if (lower_instance) then
 				local instance = _details:GetInstance(lower_instance)
 			
-				_details.times_of_tutorial = _details.times_of_tutorial + 1
+				_details.times_of_tutorial = (_details.times_of_tutorial or 0) + 1
 				if (_details.times_of_tutorial > 20) then
 					return
 				end
