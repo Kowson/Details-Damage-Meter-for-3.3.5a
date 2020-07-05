@@ -771,7 +771,6 @@
 		<Scripts>
 			<OnLoad function="MicroButtonAlert_OnLoad"/>
 			<OnShow>
-				print("DUPSKO");
 				self:SetHeight(self.Text:GetHeight()+42);
 			</OnShow>
 		</Scripts>
