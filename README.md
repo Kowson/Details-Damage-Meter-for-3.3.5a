@@ -8,9 +8,9 @@ Icecrown Citadel needs also to be done (See Details_RaidInfo-ToC). I've never do
 # Installation
 
 1. Download **[Latest Version](https://github.com/Kowson/Details-Damage-Meter-for-3.3.5a/releases/latest)**
-2. Unpack the Zip file
+2. Unpack the ZIP file
 3. Open the folder "Details-Damage-Meter-for-3.3.5a-(#.#.##)"
-4. Copy (or drag and drop all folders) into your WoW-Directory\Interface\AddOns
+4. Copy (or drag and drop) all folders into your WoW-Directory\Interface\AddOns
 5. Restart WoW
 
 DBM directories are needed for plugin Encounter Details to work.
