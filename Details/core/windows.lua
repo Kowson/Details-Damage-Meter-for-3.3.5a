@@ -991,7 +991,7 @@
 				if (lower_instance) then
 				local instance = _details:GetInstance(lower_instance)
 			
-				_details.times_of_tutorial = _details.times_of_tutorial + 1
+				_details.times_of_tutorial = (_details.times_of_tutorial or 0) + 1
 				if (_details.times_of_tutorial > 20) then
 					return
 				end

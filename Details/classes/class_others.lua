@@ -1703,8 +1703,7 @@ function attribute_misc:ToolTipRess(instance, number, bar)
 	_table_sort(targets, _details.Sort2)
 	
 	_details:AddTooltipSpellHeaderText(Loc["STRING_TARGETS"], headerColor, r, g, b, #targets)
-	--GameCooltip:AddIcon([[Interface\AddOns\Details\images\Ability_DeathKnight_IcyGrip]], 1, 1, 14, 14, 0.9375, 0.078125, 0.953125, 0.078125)
-	
+
 	GameCooltip:AddIcon([[Interface\AddOns\Details\images\Ability_Priest_Cascade]], 1, 1, 14, 14, 0.9375, 0.0625, 0.0625, 0.9375)
 	GameCooltip:AddStatusBar(100, 1, r, g, b, barAlpha)
 	

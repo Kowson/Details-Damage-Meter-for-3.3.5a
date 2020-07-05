@@ -1471,6 +1471,7 @@ L["STRING_WELCOME_58"] = "Predefini\195\167\195\181es de configura\195\167\195\1
 L["STRING_WELCOME_59"] = "Ativar o papel de parece no fundo da janela." -- Needs review
 L["STRING_WELCOME_6"] = "o tempo do jogador e posto em pausa quando sua atividade e interrompida voltando a contar seu tempo quando voltar a atividade, m\195\169todo mais comum."
 L["STRING_WELCOME_7"] = "usado em rankings, este m\195\169todo usa o tempo total da luta para medir o Dps e Hps de todos os membros da raide."
+-- L["STRING_WINDOW1ATACH_DESC"] = ""
 L["STRING_YES"] = "Sim"
 
 

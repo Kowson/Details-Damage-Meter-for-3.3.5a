@@ -103,6 +103,7 @@ function DetailsCreateCoolTip()
 			["LeftBorderSize"] = true,
 			["RightBorderSize"] = true,
 			["HeighMod"] = true,
+			["HeighModSub"] = true,
 			["IconBlendMode"] = true,
 			["IconBlendModeHover"] = true,
 			["SubFollowButton"] = true,
@@ -453,7 +454,7 @@ function DetailsCreateCoolTip()
 							if (CoolTip.OptionsTable.SubMenuIsTooltip) then
 								return CoolTip:Close()
 							end
-							if (CoolTip.Type ~= 1 and CoolTip.Type ~= 2) then
+							if (CoolTip.Type ~= 1 and CoolTip.Type ~= 2 and not button.isDiv) then
 								CoolTip.active = true
 								CoolTip.mouseOver = true
 								
@@ -985,6 +986,13 @@ function DetailsCreateCoolTip()
 		local fontSize = _details:GetFontSize(mainButton.leftText)
 		
 		local GotChecked = false
+
+		local IsTooltip = CoolTip.OptionsTable.SubMenuIsTooltip
+		if (IsTooltip) then
+			frame2:EnableMouse(false)
+		else
+			frame2:EnableMouse(true)
+		end
 		
 		for i = 1, CoolTip.IndexesSub[index] do
 		
@@ -997,6 +1005,12 @@ function DetailsCreateCoolTip()
 			local checked = CoolTip:SetupSecondaryButton(button, i, index)
 			if (checked) then
 				GotChecked = true
+			end
+
+			if (IsTooltip) then
+				button:EnableMouse(false)
+			else
+				button:EnableMouse(true)
 			end
 		end
 		
@@ -1014,16 +1028,57 @@ function DetailsCreateCoolTip()
 		for i = CoolTip.IndexesSub[index] + 1, #frame2.Lines do 
 			gump:Fade(frame2.Lines[i], 1)
 		end
-		
-		--[
-			local spacing = 0
-			if (CoolTip.OptionsTable.YSpacingModSub) then
-				spacing = CoolTip.OptionsTable.YSpacingModSub
-			end
+
+		local spacing = 0
+		if (CoolTip.OptionsTable.YSpacingModSub) then
+			spacing = CoolTip.OptionsTable.YSpacingModSub
+		end
 			
-			--> normalize height of all rows
-			for i = 1, CoolTip.IndexesSub[index] do
-				local menuButton = frame2.Lines[i]
+		--> normalize height of all rows
+		for i = 1, CoolTip.IndexesSub[index] do
+			local menuButton = frame2.Lines[i]
+
+			if (menuButton.leftText:GetText() == "$div") then
+				--> height
+				menuButton:SetHeight(4)
+
+				--> points
+				menuButton:ClearAllPoints()
+
+				menuButton:SetPoint("center", frame2, "center")
+				menuButton:SetPoint("left", frame2, "left")
+				menuButton:SetPoint("right", frame2, "right")
+
+				menuButton.rightText:SetText("")
+				local div_size_up = tonumber(CoolTip.RightTextTableSub[index][i][2])
+				if (not div_size_up) then
+					div_size_up = 0
+				end
+				local div_size_down = tonumber(CoolTip.RightTextTableSub[index][i][3])
+				if (not div_size_down) then
+					div_size_down = 0
+				end
+
+				menuButton:SetPoint("top", frame2, "top", 0, (((i-1) * frame2.hHeight) * -1) - 4 + (CoolTip.OptionsTable.ButtonsYModSub or 0) + spacing + (2 + (div_size_up or 0)))
+
+				if (CoolTip.OptionsTable.YSpacingModSub) then
+					spacing = spacing + CoolTip.OptionsTable.YSpacingModSub
+				end
+
+				spacing = spacing + 17 + (div_size_down or 0)
+
+				menuButton.leftText:SetText("")
+				menuButton.isDiv = true
+
+				if (not menuButton.divbar) then
+					CoolTip:CreateDivBar(menuButton)
+				else
+					menuButton.divbar:Show()
+				end
+
+				menuButton.divbar:SetPoint("left", menuButton, "left", frame1:GetWidth()*0.10, 0)
+				menuButton.divbar:SetPoint("right", menuButton, "right", -frame1:GetWidth()*0.10, 0)
+			else
 				--> height
 				menuButton:SetHeight(frame2.hHeight +(CoolTip.OptionsTable.ButtonHeightModSub or 0))
 				--> points
@@ -1035,10 +1090,15 @@ function DetailsCreateCoolTip()
 				end
 				menuButton:SetPoint("left", frame2, "left")
 				menuButton:SetPoint("right", frame2, "right")
+				if (menuButton.divbar) then
+						menuButton.divbar:Hide()
+						menuButton.isDiv = false
+					end
+				end
 			end
-		--]]
 		
-		frame2:SetHeight((frame2.hHeight * CoolTip.IndexesSub[index]) + 12 +(-spacing))
+		local mod = CoolTip.OptionsTable.HeighModSub or 0
+		frame2:SetHeight((frame2.hHeight * CoolTip.IndexesSub[index]) + 12 + (-spacing) + mod)
 		
 		if (CoolTip.TopIconTableSub[index]) then
 			local upperImageTable = CoolTip.TopIconTableSub[index]
@@ -1062,6 +1122,8 @@ function DetailsCreateCoolTip()
 		end
 		
 		gump:Fade(frame2, 0)
+
+		CoolTip:CheckOverlap()
 		
 		if (CoolTip.OptionsTable.SubFollowButton and not CoolTip.frame2_leftside) then
 		
@@ -1249,9 +1311,11 @@ function DetailsCreateCoolTip()
 
 	function CoolTip:CreateDivBar(button)
 		button.divbar = button:CreateTexture(nil, "overlay")
-		button.divbar:SetTexture("Interface\\AddOns\\Details\\images\\talent-main")
-		button.divbar:SetTexCoord(0, 0.7890625, 0.248046875, 0.264625)
+		button.divbar:SetTexture ([[Interface\AddOns\Details\images\AutoQuest-Parts]])
+		button.divbar:SetTexCoord (238/512, 445/512, 0/64, 4/64)
+
 		button.divbar:SetHeight(3)
+		button.divbar:SetAlpha(0.2)
 		button.divbar:SetDesaturated(true)
 	end
 	
@@ -1348,21 +1412,32 @@ function DetailsCreateCoolTip()
 		--> normalize height of all rows
 		for i = 1, CoolTip.Indexes do 
 			local menuButton = frame1.Lines[i]
-			--> height
-			menuButton:SetHeight(frame1.hHeight +(CoolTip.OptionsTable.ButtonHeightMod or 0))
-			--> points
-			menuButton:ClearAllPoints()
-			menuButton:SetPoint("center", frame1, "center")
-			menuButton:SetPoint("top", frame1, "top", 0,(((i-1) * frame1.hHeight) * -1) - 4 +(CoolTip.OptionsTable.ButtonsYMod or 0) + spacing)
-			if (CoolTip.OptionsTable.YSpacingMod) then
-				spacing = spacing + CoolTip.OptionsTable.YSpacingMod
-			end
-			menuButton:SetPoint("left", frame1, "left")
-			menuButton:SetPoint("right", frame1, "right")
-			
 			menuButton:EnableMouse(true)
 			
 			if (menuButton.leftText:GetText() == "$div") then
+				--> height
+				menuButton:SetHeight (4)
+				--> points
+				menuButton:ClearAllPoints()
+				menuButton:SetPoint("left", frame1, "left")
+				menuButton:SetPoint("right", frame1, "right")
+				menuButton:SetPoint("center", frame1, "center")
+
+				local div_size_up = tonumber(CoolTip.LeftTextTable[i][2])
+				if (not div_size_up) then
+					div_size_up = 0
+				end
+				local div_size_down = tonumber(CoolTip.LeftTextTable[i][3])
+				if (not div_size_down) then
+					div_size_down = 0
+				end
+
+				menuButton:SetPoint("top", frame1, "top", 0, (((i-1) * frame1.hHeight) * -1) - 4 + (CoolTip.OptionsTable.ButtonsYMod or 0) + spacing - 4 + div_size_up)
+				if (CoolTip.OptionsTable.YSpacingMod) then
+					spacing = spacing + CoolTip.OptionsTable.YSpacingMod
+				end
+
+				spacing = spacing + 4 + div_size_down
 			
 				menuButton.leftText:SetText("")
 				menuButton.isDiv = true
@@ -1375,15 +1450,23 @@ function DetailsCreateCoolTip()
 				
 				menuButton.divbar:SetPoint("left", menuButton, "left", frame1:GetWidth()*0.10, 0)
 				menuButton.divbar:SetPoint("right", menuButton, "right", -frame1:GetWidth()*0.10, 0)
-				
 			else
+				--> height
+				menuButton:SetHeight(frame1.hHeight + (CoolTip.OptionsTable.ButtonHeightMod or 0))
+				--> points
+				menuButton:ClearAllPoints()
+				menuButton:SetPoint("center", frame1, "center")
+				menuButton:SetPoint("top", frame1, "top", 0, (((i-1) * frame1.hHeight) * -1) - 4 + (CoolTip.OptionsTable.ButtonsYMod or 0) + spacing)
+				if (CoolTip.OptionsTable.YSpacingMod) then
+					spacing = spacing + CoolTip.OptionsTable.YSpacingMod
+				end
+				menuButton:SetPoint("left", frame1, "left")
+				menuButton:SetPoint("right", frame1, "right")
 				if (menuButton.divbar) then
 					menuButton.divbar:Hide()
 					menuButton.isDiv = false
 				end
 			end
-			
-			
 		end
 
 		if (CoolTip.OptionsTable.FixedHeight) then
@@ -1505,7 +1588,7 @@ function DetailsCreateCoolTip()
 						frame2:ClearAllPoints()
 						frame2:SetPoint("bottomright", frame1, "bottomleft")
 						CoolTip.frame2_leftside = true
-						--+ diff
+						--> diff
 						return CoolTip:SetMyPoint(host, CoolTip.internal_x_mod , CoolTip.internal_y_mod)
 					end
 				
@@ -1515,7 +1598,32 @@ function DetailsCreateCoolTip()
 		end
 		
 	end
-	
+
+	function CoolTip:CheckOverlap()
+		if (frame2:IsShown()) then
+			local frame_2_center_x = frame2:GetCenter()
+			if (frame_2_center_x) then
+				local frame_2_half_x = frame2:GetWidth() / 2
+
+				local frame_1_center_x = frame1:GetCenter()
+				if (frame_1_center_x) then
+					local frame_1_half_x = frame1:GetWidth() / 2
+
+					local f1_end_point = frame_1_center_x + frame_1_half_x - 3
+					local f2_start_point = frame_2_center_x - frame_2_half_x
+
+					if (f2_start_point < f1_end_point) then
+						local diff = f2_start_point - f1_end_point
+
+						frame2:ClearAllPoints()
+						frame2:SetPoint("bottomright", frame1, "bottomleft")
+						CoolTip.frame2_leftside = true
+					end
+				end
+			end
+		end
+	end
+
 	function CoolTip:GetText(buttonIndex)
 		local button1 = frame1.Lines[buttonIndex]
 		if (not button1) then
@@ -1749,6 +1857,7 @@ function DetailsCreateCoolTip()
 			
 			CoolTip.internal_x_mod = 0
 			CoolTip.internal_y_mod = 0
+			CoolTip.current_anchor = nil
 			CoolTip.overlap_checked = false
 			
 			CoolTip.frame2_leftside = nil

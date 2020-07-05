@@ -482,155 +482,221 @@ local update_line = function(self, target_frame)
 
 end
 
-local time_movendo, precisa_activer, instance_dst, time_fades, nao_anexados, flash_bounce, start_draw_lines
-local movement_onupdate = function(self, elapsed) 
+local show_instance_ids = function()
+	for id, instance in _details:ListInstances() do
+		if (instance:IsEnabled()) then
+			local id_texture1 = instance.baseframe.id_texture1
+			if (not id_texture1) then
+				instance.baseframe.id_texture1 = instance.baseframe:CreateTexture(nil, "overlay")
+				instance.baseframe.id_texture2 = instance.baseframe:CreateTexture(nil, "overlay")
+				instance.baseframe.id_texture1:SetTexture([[Interface\Timer\BigTimerNumbers]])
+				instance.baseframe.id_texture2:SetTexture([[Interface\Timer\BigTimerNumbers]])
+			end
 
-				if (start_draw_lines and start_draw_lines > 0.95) then
-					update_line(self, instance_dst.baseframe)
-				elseif (start_draw_lines) then
-					start_draw_lines = start_draw_lines + elapsed
-				end
+			local h = instance.baseframe:GetHeight() * 0.80
+			instance.baseframe.id_texture1:SetSize(h, h)
+			instance.baseframe.id_texture2:SetSize(h, h)
 
-				if (time_movendo and time_movendo < 0) then
+			local id = instance:GetId()
 
-					if (precisa_activer) then --> se a instância estiver closeda
-						gump:Fade(instance_dst.baseframe, "ALPHA", 0.2)
-						gump:Fade(instance_dst.baseframe.header.ball, "ALPHA", 0.2)
-						gump:Fade(instance_dst.baseframe.header.attribute_icon, "ALPHA", 0.2)
-						instance_dst:SaveMainWindowPosition()
-						instance_dst:RestoreMainWindowPosition()
-						precisa_activer = false
+			local first, second = _math_floor(id/10), _math_floor(id%10)
+
+			if (id >= 10) then
+				instance.baseframe.id_texture1:SetPoint("center", instance.baseframe, "center", -h/2/2, 0)
+				instance.baseframe.id_texture2:SetPoint("left", instance.baseframe.id_texture1, "right", -h/2, 0)
+
+				first = first + 1
+				local line = _math_ceil(first / 4)
+				local x = (first - ((line-1) * 4)) / 4
+				local l, r, t, b = x-0.25, x, 0.33 * (line-1), 0.33 * line
+				instance.baseframe.id_texture1:SetTexCoord(l, r, t, b)
+
+				second = second + 1
+				local line = _math_ceil(second / 4)
+				local x = (second - ((line-1) * 4)) / 4
+				local l, r, t, b = x-0.25, x, 0.33 * (line-1), 0.33 * line
+				instance.baseframe.id_texture2:SetTexCoord(l, r, t, b)
+
+				instance.baseframe.id_texture1:Show()
+				instance.baseframe.id_texture2:Show()
+			else
+				instance.baseframe.id_texture1:SetPoint("center", instance.baseframe, "center")
+
+				second = second + 1
+				local line = _math_ceil(second / 4)
+				local x = (second - ((line-1) * 4)) / 4
+				local l, r, t, b = x-0.25, x, 0.33 * (line-1), 0.33 * line
+				instance.baseframe.id_texture1:SetTexCoord(l, r, t, b)
+
+				instance.baseframe.id_texture1:Show()
+				instance.baseframe.id_texture2:Hide()
+			end
+
+		end
+	end
+
+end
+
+local time_move, need_activate, instance_dst, time_fades, not_attached, flash_bounce, start_draw_lines, instance_ids_shown, need_show_group_guide
+local movement_onupdate = function(self, elapsed)
+	if (start_draw_lines and start_draw_lines > 0.95) then
+		update_line(self, instance_dst.baseframe)
+	elseif (start_draw_lines) then
+		start_draw_lines = start_draw_lines + elapsed
+	end
+
+	if (instance_ids_shown and instance_ids_shown > 0.95) then
+		show_instance_ids()
+		instance_ids_shown = nil
+
+		if (need_show_group_guide) then
+			_details.MicroButtonAlert.Text:SetText (Loc["STRING_WINDOW1ATACH_DESC"])
+			_details.MicroButtonAlert:SetPoint("bottom", need_show_group_guide.baseframe, "top", 0, 30)
+			_details.MicroButtonAlert:SetHeight(320)
+			_details.MicroButtonAlert:Show()
+
+			need_show_group_guide = nil
+		end
+	elseif (instance_ids_shown) then
+		instance_ids_shown = instance_ids_shown + elapsed
+	end
+
+	if (time_move and time_move < 0) then
+		if (need_activate) then --> if the instance is closed
+			gump:Fade(instance_dst.baseframe, "ALPHA", 0.2)
+			gump:Fade(instance_dst.baseframe.header.ball, "ALPHA", 0.2)
+			gump:Fade(instance_dst.baseframe.header.attribute_icon, "ALPHA", 0.2)
+			instance_dst:SaveMainWindowPosition()
+			instance_dst:RestoreMainWindowPosition()
+			need_activate = false
+		elseif (time_fades) then
+			if (flash_bounce == 0) then
+				flash_bounce = 1
+
+				local has_free = false -- has free? space?
 						
-					elseif (time_fades) then
-					
-						if (flash_bounce == 0) then
-						
-							flash_bounce = 1
+				for side, free in _ipairs(not_attached) do
+					if (free) then
+						if (side == 1) then
 
-							local has_livre = false
+							local texture = instance_dst.h_left.texture
+							texture:ClearAllPoints()
 							
-							for side, livre in _ipairs(nao_anexados) do
-								if (livre) then
-									if (side == 1) then
-
-										local texture = instance_dst.h_left.texture
-										texture:ClearAllPoints()
-										
-										if (instance_dst.toolbar_side == 1) then
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 20)
-												texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -14)
-											else
-												texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 20)
-												texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, 0)
-											end
-										else
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 0)
-												texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -34)
-											else
-												texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 0)
-												texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -20)
-											end
-										end
-									
-										instance_dst.h_left:Flash(1, 1, 2.0, false, 0, 0)
-										has_livre = true
-										
-									elseif (side == 2) then
-									
-										local texture = instance_dst.h_baixo.texture
-										texture:ClearAllPoints()
-									
-										if (instance_dst.toolbar_side == 1) then
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -14)
-												texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -14)
-											else
-												texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, 0)
-												texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, 0)
-											end
-										else
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -34)
-												texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -34)
-											else
-												texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -20)
-												texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -20)
-											end
-										end
-									
-										instance_dst.h_baixo:Flash(1, 1, 2.0, false, 0, 0)
-										has_livre = true
-										
-									elseif (side == 3) then
-									
-										local texture = instance_dst.h_right.texture
-										texture:ClearAllPoints()
-										
-										if (instance_dst.toolbar_side == 1) then
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 20)
-												texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -14)
-											else
-												texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 20)
-												texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, 0)
-											end
-										else
-											if (instance_dst.show_statusbar) then
-												texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 0)
-												texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -34)
-											else
-												texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 0)
-												texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -20)
-											end
-										end
-									
-										instance_dst.h_right:Flash(1, 1, 2.0, false, 0, 0)
-										has_livre = true
-										
-									elseif (side == 4) then
-										
-										local texture = instance_dst.h_cima.texture
-										texture:ClearAllPoints()
-										
-										if (instance_dst.toolbar_side == 1) then
-											texture:SetPoint("bottomleft", instance_dst.baseframe, "topleft", 0, 20)
-											texture:SetPoint("bottomright", instance_dst.baseframe, "topright", 0, 20)
-										else
-											texture:SetPoint("bottomleft", instance_dst.baseframe, "topleft", 0, 0)
-											texture:SetPoint("bottomright", instance_dst.baseframe, "topright", 0, 0)
-										end
-										
-										instance_dst.h_cima:Flash(1, 1, 2.0, false, 0, 0)
-										has_livre = true
-									end
+							if (instance_dst.toolbar_side == 1) then
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 20)
+									texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -14)
+								else
+									texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 20)
+									texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, 0)
+								end
+							else
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 0)
+									texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -34)
+								else
+									texture:SetPoint("topright", instance_dst.baseframe, "topleft", 0, 0)
+									texture:SetPoint("bottomright", instance_dst.baseframe, "bottomleft", 0, -20)
 								end
 							end
-							
-							if (has_livre) then
-								if (not _details.snap_alert.playing) then
-									instance_dst:SnapAlert()
-									_details.snap_alert.playing = true
+								
+							instance_dst.h_left:Flash(1, 1, 2.0, false, 0, 0)
+							has_free = true
 									
-									_details.MicroButtonAlert.Text:SetText(string.format(Loc["STRING_ATACH_DESC"], self.instance.mine_id, instance_dst.mine_id))
-									_details.MicroButtonAlert:SetPoint("bottom", instance_dst.baseframe.header.novo, "top", 0, 18)
-									_details.MicroButtonAlert:SetHeight(200)
-									_details.MicroButtonAlert:Show()
+						elseif (side == 2) then
+						
+							local texture = instance_dst.h_baixo.texture
+							texture:ClearAllPoints()
+						
+							if (instance_dst.toolbar_side == 1) then
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -14)
+									texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -14)
+								else
+									texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, 0)
+									texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, 0)
+								end
+							else
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -34)
+									texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -34)
+								else
+									texture:SetPoint("topleft", instance_dst.baseframe, "bottomleft", 0, -20)
+									texture:SetPoint("topright", instance_dst.baseframe, "bottomright", 0, -20)
 								end
 							end
+								
+							instance_dst.h_baixo:Flash(1, 1, 2.0, false, 0, 0)
+							has_free = true
+									
+						elseif (side == 3) then
+						
+							local texture = instance_dst.h_right.texture
+							texture:ClearAllPoints()
+							
+							if (instance_dst.toolbar_side == 1) then
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 20)
+									texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -14)
+								else
+									texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 20)
+									texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, 0)
+								end
+							else
+								if (instance_dst.show_statusbar) then
+									texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 0)
+									texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -34)
+								else
+									texture:SetPoint("topleft", instance_dst.baseframe, "topright", 0, 0)
+									texture:SetPoint("bottomleft", instance_dst.baseframe, "bottomright", 0, -20)
+								end
+							end
+						
+							instance_dst.h_right:Flash(1, 1, 2.0, false, 0, 0)
+							has_free = true
+									
+						elseif (side == 4) then
+							
+							local texture = instance_dst.h_cima.texture
+							texture:ClearAllPoints()
+							
+							if (instance_dst.toolbar_side == 1) then
+								texture:SetPoint("bottomleft", instance_dst.baseframe, "topleft", 0, 20)
+								texture:SetPoint("bottomright", instance_dst.baseframe, "topright", 0, 20)
+							else
+								texture:SetPoint("bottomleft", instance_dst.baseframe, "topleft", 0, 0)
+								texture:SetPoint("bottomright", instance_dst.baseframe, "topright", 0, 0)
+							end
+							
+							instance_dst.h_cima:Flash(1, 1, 2.0, false, 0, 0)
+							has_free = true
 						end
-						
-						time_movendo = 1
-					else
-						self:SetScript("OnUpdate", nil)
-						time_movendo = 1
 					end
-					
-				else
-					time_movendo = time_movendo - elapsed
+				end
+						
+				if (has_free) then
+					if (not _details.snap_alert.playing) then
+						instance_dst:SnapAlert()
+						_details.snap_alert.playing = true
+						
+						_details.MicroButtonAlert.Text:SetText(string.format(Loc["STRING_ATACH_DESC"], self.instance.mine_id, instance_dst.mine_id))
+						_details.MicroButtonAlert:SetPoint("bottom", instance_dst.baseframe.header.mode_selecao.widget, "top", 0, 18)
+						_details.MicroButtonAlert:SetHeight(200)
+						_details.MicroButtonAlert:Show()
+					end
 				end
 			end
+					
+			time_move = 1
+		else
+			self:SetScript("OnUpdate", nil)
+			time_move = 1
+		end
+				
+	elseif (time_move) then
+		time_move = time_move - elapsed
+	end
+end
 
 local function move_window(baseframe, starting, instance)
 
@@ -642,7 +708,7 @@ local function move_window(baseframe, starting, instance)
 	if (starting) then
 	
 		if (baseframe.isMoving) then
-			--> ja this em movimento
+			--> is already moving
 			return
 		end
 	
@@ -664,11 +730,13 @@ local function move_window(baseframe, starting, instance)
 		if (instance_dst) then
 		
 			time_fades = 1.0
-			nao_anexados = {true, true, true, true}
-			time_movendo = 1
+			not_attached = {true, true, true, true}
+			time_move = 1
 			flash_bounce = 0
-
+			instance_ids_shown = 0
 			start_draw_lines = 0
+			need_show_group_guide = nil
+
 			for side, snap_to in _pairs(instance_dst.snap) do
 				if (snap_to == instance.mine_id) then
 					start_draw_lines = false
@@ -681,28 +749,28 @@ local function move_window(baseframe, starting, instance)
 						time_fades = nil
 						break
 					end
-					nao_anexados[side] = false
+					not_attached[side] = false
 				end
 			end
 			
 			for side = 1, 4 do
 				if (instance_dst.horizontalSnap and instance.verticalSnap) then
-					nao_anexados[side] = false
+					not_attached[side] = false
 				elseif (instance_dst.horizontalSnap and side == 2) then
-					nao_anexados[side] = false
+					not_attached[side] = false
 				elseif (instance_dst.horizontalSnap and side == 4) then
-					nao_anexados[side] = false
+					not_attached[side] = false
 				elseif (instance_dst.verticalSnap and side == 1) then
-					nao_anexados[side] = false
+					not_attached[side] = false
 				elseif (instance_dst.verticalSnap and side == 3) then
-					nao_anexados[side] = false
+					not_attached[side] = false
 				end
 			end
 
 			local need_start = not instance_dst.initiated
-			precisa_activer = not instance_dst.active
+			need_activate = not instance_dst.active
 			
-			if (need_start) then --> se a instância não tiver sido aberta ainda
+			if (need_start) then --> if the instance has not yet been opened
 
 				instance_dst:RestoreWindow(instance_dst.mine_id, true)
 				if (instance_dst:IsSoloMode()) then
@@ -720,7 +788,24 @@ local function move_window(baseframe, starting, instance)
 				
 				need_start = false
 			end
+			baseframe:SetScript ("OnUpdate", movement_onupdate)
+		else
+			--> is the instance 1
+			local got_snap
+			for side, instance_id in _pairs (instance.snap) do
+				if (instance_id) then
+					got_snap = true
+				end
+			end
+			need_show_group_guide = nil
 
+			if (not got_snap) then
+				need_show_group_guide = instance
+			end
+
+			time_move = nil
+			start_draw_lines = nil
+			instance_ids_shown = 0
 			baseframe:SetScript("OnUpdate", movement_onupdate)
 		end
 		
@@ -739,6 +824,10 @@ local function move_window(baseframe, starting, instance)
 		for _, ins in _details:ListInstances() do
 			if (ins.baseframe) then
 				ins.baseframe:SetUserPlaced(false)
+				if (ins.baseframe.id_texture1) then
+					ins.baseframe.id_texture1:Hide()
+					ins.baseframe.id_texture2:Hide()
+				end
 			end
 		end
 		
@@ -2491,8 +2580,8 @@ _details.snap_alert:SetFrameStrata("FULLSCREEN")
 
 function _details:SnapAlert()
 	_details.snap_alert:ClearAllPoints()
-	_details.snap_alert:SetPoint("topleft", self.baseframe.header.novo, "topleft", -8, 6)
-	_details.snap_alert:SetPoint("bottomright", self.baseframe.header.novo, "bottomright", 8, -6)
+	_details.snap_alert:SetPoint("topleft", self.baseframe.header.mode_selecao.widget, "topleft", -8, 6)
+	_details.snap_alert:SetPoint("bottomright", self.baseframe.header.mode_selecao.widget, "bottomright", 8, -6)
 	--_details.snap_alert.animOut:Stop()
 	--_details.snap_alert.animIn:Play()
 end
@@ -3753,7 +3842,7 @@ function _details:InstanceButtonsColors(red, green, blue, alpha, no_save, only_l
 
 	if (only_left) then
 	
-		local icons = {baseToolbar.mode_selecao, baseToolbar.segment, baseToolbar.attribute, baseToolbar.report}
+		local icons = {baseToolbar.mode_selecao, baseToolbar.segment, baseToolbar.attribute, baseToolbar.report, baseToolbar.close, baseToolbar.reset, baseToolbar.close}
 		
 		for _, button in _ipairs(icons) do 
 			button:SetAlpha(alpha)
@@ -4012,40 +4101,6 @@ function gump:CreateRodape(baseframe, instance)
 	BGFrame_scripts(baseframe.DOWNFrame, baseframe, instance)
 end
 
-function _details:CheckConsolidates()
-	for mine_id, instance in ipairs(_details.table_instances) do 
-		if (instance.consolidate and mine_id ~= _details.lower_instance) then
-			instance:UnConsolidateIcons()
-		end
-	end
-end
-
-function _details:ConsolidateIcons()
-
-	self.consolidate = true
-	
-	self.consolidateButton:Show()
-	
-	self:ToolbarMenuButtons()
-	
-	return self:MenuAnchor()
-end
-
-function _details:UnConsolidateIcons()
-
-	self.consolidate = false
-	
-	if (not self.consolidateButton) then
-		return self:ToolbarMenuButtons()
-	end
-	
-	self.consolidateButton:Hide()
-	
-	self:ToolbarMenuButtons()
-	
-	return self:MenuAnchor()
-end
-
 function _details:GetMenuAnchorPoint()
 	local toolbar_side = self.toolbar_side
 	local menu_side = self.menu_anchor.side
@@ -4064,25 +4119,12 @@ function _details:GetMenuAnchorPoint()
 		end
 	end
 end
-function _details:GetMenu2AnchorPoint()
-	local toolbar_side = self.toolbar_side
-	if (toolbar_side == 1) then --top
-		return self.menu2_points[1], "topright", "bottomleft"
-	elseif (toolbar_side == 2) then --bottom
-		return self.menu2_points[1], "topleft", "topleft"
-	end
-end
 
 --> search key: ~icon
 function _details:ToolbarMenuButtonsSize(size)
 	size = size or self.menu_icons_size
 	self.menu_icons_size = size
 	return self:ToolbarMenuButtons()
-end
-function _details:ToolbarMenu2ButtonsSize(size)
-	size = size or self.menu2_icons_size
-	self.menu2_icons_size = size
-	return self:ToolbarMenu2Buttons()
 end
 
 local SetIconAlphaCacheButtonsTable = {}
@@ -4109,28 +4151,11 @@ function _details:SetIconAlpha(alpha, hide, no_animations)
 	SetIconAlphaCacheButtonsTable[2] = self.baseframe.header.segment
 	SetIconAlphaCacheButtonsTable[3] = self.baseframe.header.attribute
 	SetIconAlphaCacheButtonsTable[4] = self.baseframe.header.report
+	SetIconAlphaCacheButtonsTable[5] = self.baseframe.header.reset
+	SetIconAlphaCacheButtonsTable[6] = self.baseframe.header.close
 
 	for index, button in _ipairs(SetIconAlphaCacheButtonsTable) do
 		if (self.menu_icons[index]) then
-			if (hide) then
-				gump:Fade(button, _unpack(_details.windows_fade_in))	
-			else
-				if (no_animations) then
-					button:SetAlpha(alpha)
-				else
-					gump:Fade(button, "ALPHAANIM", alpha)
-				end
-			end
-		end
-	end
-	
-	table.wipe(SetIconAlphaCacheButtonsTable)
-	SetIconAlphaCacheButtonsTable[1] = self.baseframe.header.close
-	SetIconAlphaCacheButtonsTable[2] = self.baseframe.header.novo
-	SetIconAlphaCacheButtonsTable[3] = self.baseframe.header.reset
-	
-	for index, button in _ipairs(SetIconAlphaCacheButtonsTable) do
-		if (self.menu2_icons[index]) then
 			if (hide) then
 				gump:Fade(button, _unpack(_details.windows_fade_in))	
 			else
@@ -4160,7 +4185,8 @@ function _details:SetIconAlpha(alpha, hide, no_animations)
 	end
 end
 
-function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
+local tbuttons = {}
+function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _reset, _close)
 
 	if (_mode == nil) then
 		_mode = self.menu_icons[1]
@@ -4173,15 +4199,30 @@ function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
 	end
 	if (_report == nil) then
 		_report = self.menu_icons[4]
-	end	
+	end
+	if (_reset == nil) then
+		_reset = self.menu_icons[5]
+	end
+	if (_close == nil) then
+		_close = self.menu_icons[6]
+	end
 
 	self.menu_icons[1] = _mode
 	self.menu_icons[2] = _segment
 	self.menu_icons[3] = _attributes
 	self.menu_icons[4] = _report
+	self.menu_icons[5] = _reset
+	self.menu_icons[6] = _close
 	
-	local buttons = {self.baseframe.header.mode_selecao, self.baseframe.header.segment, self.baseframe.header.attribute, self.baseframe.header.report}
-	
+	table.wipe(tbuttons)
+
+	tbuttons[1] = self.baseframe.header.mode_selecao
+	tbuttons[2] = self.baseframe.header.segment
+	tbuttons[3] = self.baseframe.header.attribute
+	tbuttons[4] = self.baseframe.header.report
+	tbuttons[5] = self.baseframe.header.reset
+	tbuttons[6] = self.baseframe.header.close
+
 	local anchor_frame, point1, point2 = self:GetMenuAnchorPoint()
 	local got_anchor = false
 	self.lastIcon = nil
@@ -4189,27 +4230,47 @@ function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
 	local size = self.menu_icons_size
 	
 	--> normal buttons
-	for index, button in _ipairs(buttons) do
-		if (self.menu_icons[index]) then
-			button:ClearAllPoints()
-			if (got_anchor) then
-				button:SetPoint("left", self.lastIcon, "right")
-			else
-				button:SetPoint(point1, anchor_frame, point2)
-				got_anchor = button
-			end
-			self.lastIcon = button
-			button:SetParent(self.baseframe)
-			button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
-			button:Show()
-			
-			if (buttons[4] == button) then
-				button:SetSize(8*size, 16*size)
-			else
+	if (self.menu_anchor.side == 1) then
+		for index, button in _ipairs(tbuttons) do
+			if (self.menu_icons[index]) then
+				button:ClearAllPoints()
+				if (got_anchor) then
+					button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", -3, 0)
+				else
+					button:SetPoint(point1, anchor_frame, point2)
+					got_anchor = button
+				end
+				self.lastIcon = button
+				button:SetParent(self.baseframe)
+				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
+				button:Show()
+
 				button:SetSize(16*size, 16*size)
+			else
+				button:Hide()
 			end
-		else
-			button:Hide()
+		end
+
+	elseif (self.menu_anchor.side == 2) then
+		for index = #tbuttons, 1, -1 do
+			local button = tbuttons[index]
+			if (self.menu_icons[index]) then
+				button:ClearAllPoints()
+				if (got_anchor) then
+					button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left", 3, 0)
+				else
+					button:SetPoint(point1, anchor_frame, point2)
+					got_anchor = button
+				end
+				self.lastIcon = button
+				button:SetParent(self.baseframe)
+				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
+				button:Show()
+
+				button:SetSize(16*size, 16*size)
+			else
+				button:Hide()
+			end
 		end
 	end
 	
@@ -4249,172 +4310,95 @@ function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
 	return true
 end
 
-function _details:ToolbarMenu2Buttons(_close, _instance, _reset)
-	if (_close == nil) then
-		_close = self.menu2_icons[1]
+function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
+	if (true) then -- TODO: ?????
+		return self:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report)
 	end
-	if (_instance == nil) then
-		_instance = self.menu2_icons[2]
+	if (_mode == nil) then
+		_mode = self.menu_icons[1]
 	end
-	if (_reset == nil) then
-		_reset = self.menu2_icons[3]
+	if (_segment == nil) then
+		_segment = self.menu_icons[2]
+	end
+	if (_attributes == nil) then
+		_attributes = self.menu_icons[3]
+	end
+	if (_report == nil) then
+		_report = self.menu_icons[4]
 	end
 	
-	self.menu2_icons[1] = _close
-	self.menu2_icons[2] = _instance
-	self.menu2_icons[3] = _reset
+	self.menu_icons[1] = _mode
+	self.menu_icons[2] = _segment
+	self.menu_icons[3] = _attributes
+	self.menu_icons[4] = _report
 	
-	local buttons = {self.baseframe.header.close, self.baseframe.header.novo, self.baseframe.header.reset}
-	local config = {self.closebutton_config, self.instancebutton_config, self.resetbutton_config}
+	local buttons = {self.baseframe.header.mode_selecao, self.baseframe.header.segment, self.baseframe.header.attribute,  self.baseframe.header.report}
 	
-	local anchor_frame, point1, point2 = self:GetMenu2AnchorPoint() -- self.menu2_points[1], "topleft", "bottomleft"
+	local anchor_frame, point1, point2 = self:GetMenuAnchorPoint()
 	local got_anchor = false
-	local lastIcon = nil
-	
-	local size = self.menu2_icons_size
-	local default_texcoord = {0, 1, 0, 1}
-	local default_vertexcolor = {1, 1, 1, 1}
-	--> normal buttons
-	for index, button in ipairs(buttons) do
-		if (self.menu2_icons[index]) then
+	self.lastIcon = nil
 
-			local button_config = config[index]
+	local size = self.menu_icons_size
+
+	--> normal buttons
+	for index, button in _ipairs(buttons) do
+		if (self.menu_icons[index]) then
 			button:ClearAllPoints()
-			
 			if (got_anchor) then
-				button:SetPoint("right", lastIcon, "left", button_config.anchor[1], button_config.anchor[2])
+				button:SetPoint("left", self.lastIcon, "right")
 			else
-				button:SetPoint(point1, anchor_frame, point2, button_config.anchor[1], button_config.anchor[2])
+				button:SetPoint(point1, anchor_frame, point2)
 				got_anchor = button
 			end
-			
-			button:SetSize(button_config.size[1] * size, button_config.size[2] * size)
-			
-			local normal_texture = button:GetNormalTexture()
-			local highlight_texture = button:GetHighlightTexture()
-			local pushed_texture = button:GetPushedTexture()
-			
-			if normal_texture then
-				normal_texture:SetTexture(button_config.normal_texture)
-			else
-				button:SetNormalTexture(button_config.normal_texture)
-			end
-			
-			if highlight_texture then
-				highlight_texture:SetTexture(button_config.highlight_texture)
-			else
-				button:SetHighlightTexture(button_config.normal_texture)
-			end
-			
-			if pushed_texture then
-				pushed_texture:SetTexture(button_config.pushed_texture or button_config.normal_texture)
-			else
-				button:SetPushedTexture(button_config.pushed_texture)
-			end
-			local normal_texture = button:GetNormalTexture()
-			local highlight_texture = button:GetHighlightTexture()
-			local pushed_texture = button:GetPushedTexture()
-			
-			if (button_config.normal_texcoord) then
-				normal_texture:SetTexCoord(unpack(button_config.normal_texcoord))
-			else
-				normal_texture:SetTexCoord(unpack(default_texcoord))
-			end
 
-			if (button_config.highlight_texcoord) then
-				highlight_texture:SetTexCoord(unpack(button_config.highlight_texcoord))
-			else
-				if (button_config.normal_texcoord and button_config.normal_texture == button_config.highlight_texture) then
-					highlight_texture:SetTexCoord(unpack(button_config.normal_texcoord))
-				else
-					highlight_texture:SetTexCoord(unpack(default_texcoord))
-				end
-			end
-			
-			if (button_config.pushed_texcoord) then
-				pushed_texture:SetTexCoord(unpack(button_config.pushed_texcoord))
-			else
-				if (button_config.normal_texcoord and(not button_config.pushed_texture or button_config.normal_texture == button_config.pushed_texture)) then
-					pushed_texture:SetTexCoord(unpack(button_config.normal_texcoord))
-				else
-					pushed_texture:SetTexCoord(unpack(default_texcoord))
-				end
-			end
-			
-			if (button_config.normal_vertexcolor) then
-				normal_texture:SetVertexColor(unpack(button_config.normal_vertexcolor))
-			else
-				normal_texture:SetVertexColor(unpack(default_vertexcolor))
-			end
-			
-			if (button_config.highlight_vertexcolor) then
-				highlight_texture:SetVertexColor(unpack(button_config.highlight_vertexcolor))
-			else
-				if (button_config.normal_vertexcolor and button_config.normal_texture == button_config.highlight_texture) then
-					highlight_texture:SetVertexColor(unpack(button_config.normal_vertexcolor))
-				else
-					highlight_texture:SetVertexColor(unpack(default_vertexcolor))
-				end
-			end
-			
-			if (button_config.pushed_vertexcolor) then
-				pushed_texture:SetVertexColor(unpack(button_config.pushed_vertexcolor))
-			else
-				if (button_config.normal_vertexcolor and button_config.normal_texture == button_config.pushed_texture) then
-					pushed_texture:SetVertexColor(unpack(button_config.normal_vertexcolor))
-				else
-					pushed_texture:SetVertexColor(unpack(default_vertexcolor))
-				end
-			end
-
-			if (button_config.alpha) then
-				button:GetNormalTexture():SetAlpha(button_config.alpha)
-				button:GetHighlightTexture():SetAlpha(button_config.alpha)
-				button:GetPushedTexture():SetAlpha(button_config.alpha)
-			end
-			
-			lastIcon = button
+			self.lastIcon = button
 			button:SetParent(self.baseframe)
 			button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
 			button:Show()
+
+			if (buttons[4] == button) then
+				button:SetSize(8*size, 16*size)
+			else
+				button:SetSize(16*size, 16*size)
+			end
 			
 		else
 			button:Hide()
 		end
 	end
-	
-	self:ToolbarMenu2InstanceButtonSettings()
-	
+	--> plugins buttons
+	if (self:IsLowerInstance()) then
+		if (#_details.ToolBar.Shown > 0) then
+			for index, button in _ipairs(_details.ToolBar.Shown) do
+				button:ClearAllPoints()
+				if (got_anchor) then
+					if (self.plugins_grow_direction == 2) then --right (default)
+						if (self.lastIcon == buttons[4]) then
+							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", 2, 0) --, button.x, button.y
+						else
+							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right") --, button.x, button.y
+						end
+					elseif (self.plugins_grow_direction == 1) then --left
+						if (index == 1) then
+							button:SetPoint("right", got_anchor.widget or got_anchor, "left") --, button.x, button.y
+						else
+							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left") --, button.x, button.y
+						end
+					end
+				else
+					button:SetPoint (point1, anchor_frame, point2)
+					got_anchor = button
+				end
+				self.lastIcon = button
+				button:SetParent(self.baseframe)
+				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
+				button:Show()
+
+				button:SetSize(16*size, 16*size)
+			end
+		end
+	end
 	return true
-end
-
-function _details:ToolbarMenu2InstanceButtonSettings(color, font, size, shadow)
-	
-	if (not color) then
-		color = self.instancebutton_config.textcolor
-	end
-	if (not font) then
-		font = self.instancebutton_config.textfont
-	end
-	if (not size) then
-		size = self.instancebutton_config.textsize
-	end
-	if (shadow == nil) then
-		shadow = self.instancebutton_config.textshadow
-	end
-	
-	self.instancebutton_config.textcolor = color
-	self.instancebutton_config.textfont = font
-	self.instancebutton_config.textsize = size
-	self.instancebutton_config.textshadow = shadow
-	
-	local fontstring = self.baseframe.header.novo:GetFontString()
-	
-	_details:SetFontSize(fontstring, size)
-	_details:SetFontFace(fontstring, SharedMedia:Fetch("font", font))
-	_details:SetFontColor(fontstring, color)
-	_details:SetFontOutline(fontstring, shadow)
-
 end
 
 local parameters_table = {}
@@ -4427,6 +4411,11 @@ local on_leave_menu = function(self, elapsed)
 		end
 		self:SetScript("OnUpdate", nil)
 	end
+end
+
+local OnClickNewMenu = function(_, _, id, instance)
+	_details.CreateInstance(_, _, id)
+	instance.baseframe.header.mode_selecao:GetScript("OnEnter")(instance.baseframe.header.mode_selecao)
 end
 
 local build_mode_list = function(self, elapsed)
@@ -4450,13 +4439,14 @@ local build_mode_list = function(self, elapsed)
 		CoolTip:SetOption("ButtonHeightMod", -5)
 
 		CoolTip:SetOption("ButtonsYModSub", -3)
-		CoolTip:SetOption("ButtonsYMod", -5)
+		CoolTip:SetOption("ButtonsYMod", -10)
 
 		CoolTip:SetOption("YSpacingModSub", -3)
 		CoolTip:SetOption("YSpacingMod", 1)
 
-		CoolTip:SetOption("FixedHeight", 106)
-		CoolTip:SetOption("FixedWidthSub", 146)
+		CoolTip:SetOption("HeighMod", 10)
+		--CoolTip:SetOption("FixedHeight", 106)
+		--CoolTip:SetOption("FixedWidthSub", 146)
 		
 		CoolTip:AddLine(Loc["STRING_MODE_GROUP"])
 		CoolTip:AddMenu(1, instance.ChangeMode, 2, true)
@@ -4514,6 +4504,94 @@ local build_mode_list = function(self, elapsed)
 
 			CoolTip:SetWallpaper(2, [[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
 		end
+
+		--> window control
+		GameCooltip:AddLine("$div")
+		CoolTip:AddLine("Window Control")
+		CoolTip:AddIcon([[Interface\AddOns\Details\images\mode_icons]], 1, 1, 20, 20, 32/256*5, 32/256*6, 0, 1)
+
+		--CoolTip:AddMenu (2, _detalhes.OpenOptionsWindow, true, 1, nil, "Cant Create Window", _, true)
+		--CoolTip:AddIcon ([[Interface\Buttons\UI-PlusButton-Up]], 2, 1, 16, 16)
+
+		if (_details:GetNumInstancesAmount() < _details:GetMaxInstancesAmount()) then
+			CoolTip:AddMenu(2, OnClickNewMenu, true, instance, nil, "Create Window", _, true)
+			CoolTip:AddIcon([[Interface\Buttons\UI-AttributeButton-Encourage-Up]], 2, 1, 16, 16)
+			GameCooltip:AddLine("$div", nil, 2)
+		end
+
+		local ClosedInstances = 0
+
+		for index = 1, math.min(#_details.table_instances, _details.instances_amount), 1 do
+
+			local _this_instance = _details.table_instances[index]
+
+			if (not _this_instance.active) then --> only reopens if it is active
+
+				--> get what it's showing
+				local attribute = _this_instance.attribute
+				local sub_attribute = _this_instance.sub_attribute
+				ClosedInstances = ClosedInstances + 1
+
+				if (attribute == 5) then --> custom
+
+					local CustomObject = _details.custom[sub_attribute]
+
+					if (not CustomObject) then
+						_this_instance:ResetAttribute()
+						attribute = _this_instance.attribute
+						sub_attribute = _this_instance.sub_attribute
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.lista[attribute] .. " - " .. _details.sub_attributes[attribute].lista[sub_attribute], _, true)
+						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 2, 1, 20, 20, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
+					else
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.lista[attribute] .. " - " .. CustomObject:GetName(), _, true)
+						CoolTip:AddIcon(CustomObject.icon, 2, 1, 20, 20, 0, 1, 0, 1)
+					end
+
+				else
+					local mode = _this_instance.mode
+
+					if (mode == 1) then --alone
+
+						attribute = _details.SoloTables.Mode or 1
+						local SoloInfo = _details.SoloTables.Menu[attribute]
+						if (SoloInfo) then
+							CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. SoloInfo[1], _, true)
+							CoolTip:AddIcon(SoloInfo [2], 2, 1, 20, 20, 0, 1, 0, 1)
+						else
+							CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " Unknown Plugin", _, true)
+						end
+
+					elseif (mode == 4) then --raid
+
+						local plugin_name = _this_instance.current_raid_plugin or _this_instance.last_raid_plugin
+						if (plugin_name) then
+							local plugin_object = _details:GetPlugin(plugin_name)
+							if (plugin_object) then
+								CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. plugin_object.__name, _, true)
+								CoolTip:AddIcon(plugin_object.__icon, 2, 1, 20, 20, 0, 1, 0, 1)
+							else
+								CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " Unknown Plugin", _, true)
+							end
+						else
+							CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " Unknown Plugin", _, true)
+						end
+
+					else
+
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.lista[attribute] .. " - " .. _detalhes.sub_attributes[attribute].lista[sub_attribute], _, true)
+						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 2, 1, 20, 20, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
+
+					end
+				end
+
+				CoolTip:SetOption("TextSize", _details.font_sizes.menus)
+			end
+		end
+
+		CoolTip:SetWallpaper(2, [[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
+
+		--> options
+		GameCooltip:AddLine("$div")
 
 		CoolTip:AddLine(Loc["STRING_OPTIONS_WINDOW"])
 		CoolTip:AddMenu(1, _details.OpenOptionsWindow)
@@ -4677,7 +4755,7 @@ local build_segment_list = function(self, elapsed)
 				if (menuIndex) then
 					menuIndex = menuIndex + 1
 					if (instance.segment == i) then
-						CoolTip:SetLastSelected("main", menuIndex); 
+						CoolTip:SetLastSelected("main", menuIndex)
 						menuIndex = nil
 					end
 				end
@@ -4685,7 +4763,8 @@ local build_segment_list = function(self, elapsed)
 			end
 			
 		end
-		
+		GameCooltip:AddLine("$div")
+
 		----------- current
 		CoolTip:AddLine(segments.current_standard, _, 1, "white")
 		CoolTip:AddMenu(1, instance.SwitchTable, 0)
@@ -4735,14 +4814,14 @@ local build_segment_list = function(self, elapsed)
 			CoolTip:AddLine(Loc["STRING_SEGMENT_START"] .. ":", _details.table_current.data_start, 2, "white", "white")
 			CoolTip:AddLine(Loc["STRING_SEGMENT_END"] .. ":", _details.table_current.data_end or "in progress", 2, "white", "white") 
 		
-			--> fill é a amount de menu que this sendo mostrada
+			--> fill the amount of menu that is being shown
 			if (instance.segment == 0) then
 				if (fill - 2 == menuIndex) then
-					CoolTip:SetLastSelected("main", fill - 1)
+					CoolTip:SetLastSelected("main", fill + 0)
 				elseif (fill - 1 == menuIndex) then
-					CoolTip:SetLastSelected("main", fill)
-				else
 					CoolTip:SetLastSelected("main", fill + 1)
+				else
+					CoolTip:SetLastSelected("main", fill + 2)
 				end
 
 				menuIndex = nil
@@ -4790,14 +4869,14 @@ local build_segment_list = function(self, elapsed)
 			end
 			CoolTip:AddLine(Loc["STRING_SEGMENT_END"] .. ":", lastFight, 2, "white", "white")
 			
-			--> fill é a amount de menu que this sendo mostrada
+			--> fill the amount of menu that is being shown
 			if (instance.segment == -1) then
 				if (fill - 2 == menuIndex) then
-					CoolTip:SetLastSelected("main", fill)
+					CoolTip:SetLastSelected("main", fill + 1)
 				elseif (fill - 1 == menuIndex) then
-					CoolTip:SetLastSelected("main", fill+1)
-				else
 					CoolTip:SetLastSelected("main", fill + 2)
+				else
+					CoolTip:SetLastSelected("main", fill + 3)
 				end
 				menuIndex = nil
 			end
@@ -4818,12 +4897,14 @@ local build_segment_list = function(self, elapsed)
 		CoolTip:SetOption("SubMenuIsTooltip", true)
 		
 		CoolTip:SetOption("ButtonHeightMod", -4)
-		CoolTip:SetOption("ButtonsYMod", -4)
+		CoolTip:SetOption("ButtonsYMod", -10)
 		CoolTip:SetOption("YSpacingMod", 4)
 		
 		CoolTip:SetOption("ButtonHeightModSub", 4)
 		CoolTip:SetOption("ButtonsYModSub", 0)
 		CoolTip:SetOption("YSpacingModSub", -4)
+
+		CoolTip:SetOption("HeighMod", 12)
 		
 		--CoolTip:SetWallpaper(1,[[Interface\ACHIEVEMENTFRAME\UI-Achievement-Parchment-Horizontal-Desaturated]], nil, {1, 1, 1, 0.3})
 		CoolTip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
@@ -5039,7 +5120,6 @@ function _details:ChangeSkin(skin_name)
 
 	--> update menu saturation
 		self:DesaturateMenu()
-		self:DesaturateMenu2()
 	
 	--> update statusbar color
 		self:StatusBarColor()
@@ -5049,7 +5129,6 @@ function _details:ChangeSkin(skin_name)
 	
 	--> update top menus
 		self:LeftMenuAnchorSide()
-		self:Menu2Anchor()
 		
 	--> update window strata level
 		self:SetFrameStrata()
@@ -5703,7 +5782,6 @@ function _details:ToolbarSide(side)
 	
 	--> update top menus
 		self:LeftMenuAnchorSide()
-		self:Menu2Anchor()
 	
 	self:StretchButtonAnchor()
 	
@@ -5834,44 +5912,6 @@ function _details:MenuAnchor(x, y)
 	
 end
 
-function _details:Menu2Anchor(x, y)
-
-	if (self.toolbar_side == 1) then --top
-		if (not x) then
-			x = self.menu2_anchor[1]
-		end
-		if (not y) then
-			y = self.menu2_anchor[2]
-		end
-		self.menu2_anchor[1] = x
-		self.menu2_anchor[2] = y
-		
-	elseif (self.toolbar_side== 2) then --bottom
-		if (not x) then
-			x = self.menu2_anchor_down[1]
-		end
-		if (not y) then
-			y = self.menu2_anchor_down[2]
-		end
-		self.menu2_anchor_down[1] = x
-		self.menu2_anchor_down[2] = y
-	end
-	
-	local anchor = self.menu2_points[1]
-	anchor:ClearAllPoints()
-	
-	if (self.toolbar_side == 1) then --> top
-		anchor:SetPoint("topleft", self.baseframe.header.ball_r, "bottomleft", x, y+16)
-		
-	else --> bottom
-		anchor:SetPoint("topleft", self.baseframe.header.ball_r, "topleft", x-17,(y*-1) + 1)
-
-	end
-	
-	self:ToolbarMenu2Buttons()
-	
-end
-
 function _details:HideMainIcon(value)
 
 	if (type(value) ~= "boolean") then
@@ -5931,7 +5971,9 @@ function _details:DesaturateMenu(value)
 		self.baseframe.header.segment:GetNormalTexture():SetDesaturated(true)
 		self.baseframe.header.attribute:GetNormalTexture():SetDesaturated(true)
 		self.baseframe.header.report:GetNormalTexture():SetDesaturated(true)
-		
+		self.baseframe.header.reset:GetNormalTexture():SetDesaturated(true)
+		self.baseframe.header.close:GetNormalTexture():SetDesaturated(true)
+
 		if (self.mine_id == _details:GetLowerInstanceNumber()) then
 			for _, button in _ipairs(_details.ToolBar.AllButtons) do
 				button:GetNormalTexture():SetDesaturated(true)
@@ -5945,7 +5987,9 @@ function _details:DesaturateMenu(value)
 		self.baseframe.header.segment:GetNormalTexture():SetDesaturated(false)
 		self.baseframe.header.attribute:GetNormalTexture():SetDesaturated(false)
 		self.baseframe.header.report:GetNormalTexture():SetDesaturated(false)
-		
+		self.baseframe.header.reset:GetNormalTexture():SetDesaturated(false)
+		self.baseframe.header.close:GetNormalTexture():SetDesaturated(false)
+
 		if (self.mine_id == _details:GetLowerInstanceNumber()) then
 			for _, button in _ipairs(_details.ToolBar.AllButtons) do
 				button:GetNormalTexture():SetDesaturated(false)
@@ -5955,24 +5999,6 @@ function _details:DesaturateMenu(value)
 	end
 end
 
-function _details:DesaturateMenu2(value)
-
-	if (value == nil) then
-		value = self.desaturated_menu2
-	end
-
-	if (value) then
-		self.desaturated_menu2 = true
-		self.baseframe.header.close:GetNormalTexture():SetDesaturated(true)
-		self.baseframe.header.novo:GetNormalTexture():SetDesaturated(true)
-		self.baseframe.header.reset:GetNormalTexture():SetDesaturated(true)
-	else
-		self.desaturated_menu2 = false
-		self.baseframe.header.close:GetNormalTexture():SetDesaturated(false)
-		self.baseframe.header.novo:GetNormalTexture():SetDesaturated(false)
-		self.baseframe.header.reset:GetNormalTexture():SetDesaturated(false)
-	end
-end
 
 function _details:ShowSideBars(instance)
 	if (instance) then
@@ -6160,6 +6186,8 @@ end
 		GameCooltip:SetOption("YSpacingMod", 0)
 		GameCooltip:SetOption("TextHeightMod", 0)
 		GameCooltip:SetOption("IgnoreButtonAutoHeight", false)
+		GameCooltip:SetOption("ButtonsYMod", -7)
+		GameCooltip:SetOption("HeighMod", 8)
 		
 		local font = SharedMedia:Fetch("font", "Friz Quadrata TT")
 		
@@ -6220,7 +6248,7 @@ end
 		self.instance.baseframe.header.button_mouse_over = true
 		
 		GameCooltip:Reset()
-		GameCooltip:SetOption("ButtonsYMod", -4)
+		GameCooltip:SetOption("ButtonsYMod", -7)
 		GameCooltip:SetOption("ButtonsYModSub", -2)
 		GameCooltip:SetOption("YSpacingMod", 0)
 		GameCooltip:SetOption("YSpacingModSub", -3)
@@ -6230,8 +6258,9 @@ end
 		GameCooltip:SetOption("IgnoreButtonAutoHeightSub", false)
 		GameCooltip:SetOption("SubMenuIsTooltip", true)
 		GameCooltip:SetOption("FixedWidthSub", 180)
-		GameCooltip:SetOption("FixedHeight", 30)
-		
+		--GameCooltip:SetOption("FixedHeight", 30)
+		GameCooltip:SetOption("HeighMod", 9)
+
 		local font = SharedMedia:Fetch("font", "Friz Quadrata TT")
 		GameCooltip:AddLine(Loc["STRING_MENU_CLOSE_INSTANCE"], nil, 1, "white", nil, _details.font_sizes.menus, font)
 		GameCooltip:AddIcon([[Interface\Buttons\UI-Panel-MinimizeButton-Up]], 1, 1, 14, 14, 0.2, 0.8, 0.2, 0.8)
@@ -6283,12 +6312,14 @@ function gump:CreateHeader(baseframe, instance)
 	baseframe.header.close:SetHeight(18)
 	baseframe.header.close:SetFrameLevel(5) --> altura mais alta que os demais frames
 	baseframe.header.close:SetPoint("bottomright", baseframe, "topright", 5, -6) --> seta o ponto dele fixando no base frame
+
+	baseframe.header.close:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	baseframe.header.close:GetNormalTexture():SetTexCoord(160/256, 192/256, 0, 1)
+	baseframe.header.close:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	baseframe.header.close:GetHighlightTexture():SetTexCoord(160/256, 192/256, 0, 1)
+	baseframe.header.close:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	baseframe.header.close:GetPushedTexture():SetTexCoord(160/256, 192/256, 0, 1)
 	
-	baseframe.header.close:SetNormalTexture([[Interface\Buttons\UI-Panel-MinimizeButton-Up]])
-	baseframe.header.close:SetHighlightTexture([[Interface\Buttons\UI-Panel-MinimizeButton-Highlight]])
-	baseframe.header.close:SetPushedTexture([[Interface\Buttons\UI-Panel-MinimizeButton-Down]])
-	
-	baseframe.header.close.instance = instance
 	baseframe.header.close.instance = instance
 	
 	baseframe.header.close:SetScript("OnEnter", close_button_onenter)
@@ -6321,7 +6352,7 @@ function gump:CreateHeader(baseframe, instance)
 	baseframe.header.ball:SetTexture(DEFAULT_SKIN)
 	baseframe.header.ball:SetTexCoord(unpack(COORDS_LEFT_BALL))
 
-	--> emenda
+	--> amendment
 	baseframe.header.emenda = baseframe:CreateTexture(nil, "background")
 	baseframe.header.emenda:SetPoint("bottomleft", baseframe.header.ball, "bottomright")
 	baseframe.header.emenda:SetWidth(8)
@@ -6428,37 +6459,13 @@ function gump:CreateHeader(baseframe, instance)
 	baseframe.header.mode_selecao:SetPoint("bottomleft", baseframe.header.ball, "bottomright", instance.menu_anchor[1], instance.menu_anchor[2])
 	baseframe.header.mode_selecao:SetFrameLevel(baseframe:GetFrameLevel()+5)
 
-	--> Generating Cooltip menu from table template
-	local modeMenuTable = {
-	
-		{text = Loc["STRING_MODE_GROUP"]},
-		{func = instance.ChangeMode, param1 = 2},
-		{icon =[[Interface\AddOns\Details\images\mode_icons]], l = 32/256, r = 32/256*2, t = 0, b = 1, width = 20, height = 20},
-		{text = Loc["STRING_HELP_MODEGROUP"], type = 2},
-		{icon =[[Interface\TUTORIALFRAME\TutorialFrame-QuestionMark]], type = 2, width = 16, height = 16, l = 8/64, r = 1 -(8/64), t = 8/64, b = 1 -(8/64)},
-
-		{text = Loc["STRING_MODE_ALL"]},
-		{func = instance.ChangeMode, param1 = 3},
-		{icon =[[Interface\AddOns\Details\images\mode_icons]], l = 32/256*2, r = 32/256*3, t = 0, b = 1, width = 20, height = 20},
-		{text = Loc["STRING_HELP_MODEALL"], type = 2},
-		{icon =[[Interface\TUTORIALFRAME\TutorialFrame-QuestionMark]], type = 2, width = 16, height = 16, l = 8/64, r = 1 -(8/64), t = 8/64, b = 1 -(8/64)},		
-
-		{text = Loc["STRING_MODE_RAID"]}, -- .. "(|cffa0a0a0" .. Loc["STRING_MODE_PLUGINS"] .. "|r)"
-		{func = instance.ChangeMode, param1 = 4},
-		{icon =[[Interface\AddOns\Details\images\mode_icons]], l = 32/256*3, r = 32/256*4, t = 0, b = 1, width = 20, height = 20},
-		{text = Loc["STRING_HELP_MODERAID"], type = 2},
-		{icon =[[Interface\TUTORIALFRAME\TutorialFrame-QuestionMark]], type = 2, width = 16, height = 16, l = 8/64, r = 1 -(8/64), t = 8/64, b = 1 -(8/64)},
-		
-		{text = Loc["STRING_MODE_SELF"]}, -- .. "(|cffa0a0a0" .. Loc["STRING_MODE_PLUGINS"] .. "|r)"
-		{func = instance.ChangeMode, param1 = 1},
-		{icon =[[Interface\AddOns\Details\images\mode_icons]], l = 0, r = 32/256, t = 0, b = 1, width = 20, height = 20},
-		{text = Loc["STRING_HELP_MODESELF"], type = 2},
-		{icon =[[Interface\TUTORIALFRAME\TutorialFrame-QuestionMark]], type = 2, width = 16, height = 16, l = 8/64, r = 1 -(8/64), t = 8/64, b = 1 -(8/64)},
-
-		{text = Loc["STRING_OPTIONS_WINDOW"]},
-		{func = _details.OpenOptionsWindow},
-		{icon =[[Interface\AddOns\Details\images\mode_icons]], l = 32/256*4, r = 32/256*5, t = 0, b = 1, width = 20, height = 20},
-	}
+	local b = baseframe.header.mode_selecao.widget
+	b:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetNormalTexture():SetTexCoord(0/256, 32/256, 0, 1)
+	b:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetHighlightTexture():SetTexCoord(0/256, 32/256, 0, 1)
+	b:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetPushedTexture():SetTexCoord(0/256, 32/256, 0, 1)
 	
 	--> Cooltip raw method for enter/leave show/hide
 	baseframe.header.mode_selecao:SetScript("OnEnter", function(self)
@@ -6492,7 +6499,6 @@ function gump:CreateHeader(baseframe, instance)
 		parameters_table[1] = instance
 		parameters_table[2] = passou
 		parameters_table[3] = checked
-		parameters_table[4] = modeMenuTable
 		
 		self:SetScript("OnUpdate", build_mode_list)
 	end)
@@ -6520,6 +6526,14 @@ function gump:CreateHeader(baseframe, instance)
 	--> SELECIONAR O SEGMENTO  ----------------------------------------------------------------------------------------------------------------------------------------------------
 	baseframe.header.segment = gump:NewButton(baseframe, nil, "DetailsSegmentButton"..instance.mine_id, nil, 16, 16, _details.empty_function, nil, nil,[[Interface\AddOns\Details\images\segments_icon]])
 	baseframe.header.segment:SetFrameLevel(baseframe.UPFrame:GetFrameLevel()+1)
+
+	local b = baseframe.header.segment.widget
+	b:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetNormalTexture():SetTexCoord(32/256, 64/256, 0, 1)
+	b:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetHighlightTexture():SetTexCoord(32/256, 64/256, 0, 1)
+	b:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetPushedTexture():SetTexCoord(32/256, 64/256, 0, 1)
 
 	baseframe.header.segment:SetHook("OnMouseUp", function(button, buttontype)
 
@@ -6614,11 +6628,19 @@ function gump:CreateHeader(baseframe, instance)
 		end
 	end)	
 
-	--> SELECIONAR O ATRIBUTO  ----------------------------------------------------------------------------------------------------------------------------------------------------
+	--> SELECIONAR O attribute  ----------------------------------------------------------------------------------------------------------------------------------------------------
 	baseframe.header.attribute = gump:NewButton(baseframe, nil, "DetailsAttributeButton"..instance.mine_id, nil, 16, 16, instance.SwitchTable, instance, -3,[[Interface\AddOns\Details\images\sword]])
 	--baseframe.header.attribute = gump:NewDetailsButton(baseframe, _, instance, instance.SwitchTable, instance, -3, 16, 16,[[Interface\AddOns\Details\images\sword]])
 	baseframe.header.attribute:SetFrameLevel(baseframe.UPFrame:GetFrameLevel()+1)
 	baseframe.header.attribute:SetPoint("left", baseframe.header.segment.widget, "right", 0, 0)
+
+	local b = baseframe.header.attribute.widget
+	b:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetNormalTexture():SetTexCoord(66/256, 93/256, 0, 1)
+	b:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetHighlightTexture():SetTexCoord(68/256, 93/256, 0, 1)
+	b:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetPushedTexture():SetTexCoord(68/256, 93/256, 0, 1)
 
 	--> Cooltip automatic method through Injection
 	
@@ -6689,6 +6711,15 @@ function gump:CreateHeader(baseframe, instance)
 			--baseframe.header.report = gump:NewDetailsButton(baseframe, _, instance, _details.Report, instance, nil, 16, 16,[[Interface\COMMON\VOICECHAT-ON]])
 			baseframe.header.report:SetPoint("left", baseframe.header.attribute, "right", -6, 0)
 			baseframe.header.report:SetFrameLevel(baseframe.UPFrame:GetFrameLevel()+1)
+
+			local b = baseframe.header.report.widget
+			b:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+			b:GetNormalTexture():SetTexCoord(96/256, 128/256, 0, 1)
+			b:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+			b:GetHighlightTexture():SetTexCoord(96/256, 128/256, 0, 1)
+			b:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+			b:GetPushedTexture():SetTexCoord(96/256, 128/256, 0, 1)
+
 			baseframe.header.report:SetScript("OnEnter", function(self)
 				OnEnterMainWindow(instance, self, 3)
 				if (instance.desaturated_menu) then
@@ -6703,6 +6734,9 @@ function gump:CreateHeader(baseframe, instance)
 				GameCooltip:SetOption("YSpacingMod", 0)
 				GameCooltip:SetOption("TextHeightMod", 0)
 				GameCooltip:SetOption("IgnoreButtonAutoHeight", false)
+
+				GameCooltip:SetOption ("ButtonsYMod", -7)
+				GameCooltip:SetOption ("HeighMod", 8)
 				
 				GameCooltip:AddLine("Report Results", nil, 1, "white", nil, _details.font_sizes.menus, SharedMedia:Fetch("font", "Friz Quadrata TT"))
 				GameCooltip:AddIcon([[Interface\Addons\Details\Images\report_button]], 1, 1, 12, 19)
@@ -6737,147 +6771,6 @@ function gump:CreateHeader(baseframe, instance)
 				end
 
 			end)
-
-	--> NOVA instance ----------------------------------------------------------------------------------------------------------------------------------------------------
-	baseframe.header.novo = CreateFrame("button", "DetailsInstanceButton"..instance.mine_id, baseframe) --, "OptionsButtonTemplate"
-	baseframe.header.novo:SetFrameLevel(baseframe.UPFrame:GetFrameLevel()+1)
-	
-	baseframe.header.novo:SetNormalTexture([[Interface\AddOns\Details\images\skins\default_skin]])
-	baseframe.header.novo:SetHighlightTexture([[Interface\Buttons\UI-Panel-MinimizeButton-Highlight]])
-	baseframe.header.novo:SetPushedTexture([[Interface\AddOns\Details\images\skins\default_skin]])
-	
-	baseframe.header.novo:SetWidth(20)
-	baseframe.header.novo:SetHeight(16)
-
-	baseframe.header.novo:SetPoint("bottomright", baseframe, "topright", instance.instance_button_anchor[1], instance.instance_button_anchor[2])
-	
-	baseframe.header.novo:SetScript("OnClick", function() _details:Createinstance(_, true); _G.GameCooltip:ShowMe(false) end)
-	baseframe.header.novo:SetText("#"..instance.mine_id)
-	baseframe.header.novo:SetNormalFontObject("GameFontNormalSmall")
-
-	--> cooltip through inject
-	--> OnClick Function[1] caller[2] fixed param[3] param1[4] param2
-	local OnClickNewMenu = function(_, _, id)
-		_details.Createinstance(_, _, id)
-		_G.GameCooltip:ExecFunc(baseframe.header.novo)
-	end
-	
-	--> Build Menu Function
-	local BuildClosedInstanceMenu = function() 
-	
-		local ClosedInstances = 0
-		
-		for index = 1, math.min(#_details.table_instances, _details.instances_amount), 1 do 
-		
-			local _this_instance = _details.table_instances[index]
-			
-			if (not _this_instance.active) then --> só reopen se ela estiver active
-			
-				--> pegar o que ela ta showing
-				local attribute = _this_instance.attribute
-				local sub_attribute = _this_instance.sub_attribute
-				ClosedInstances = ClosedInstances + 1
-				
-				if (attribute == 5) then --> custom
-				
-					local CustomObject = _details.custom[sub_attribute]
-					
-					if (not CustomObject) then
-						_this_instance:ResetAttribute()
-						attribute = _this_instance.attribute
-						sub_attribute = _this_instance.sub_attribute
-						CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " " .. _details.attributes.list[attribute] .. " - " .. _details.sub_attributes[attribute].list[sub_attribute], _, true)
-						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 1, 1, 20, 20, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
-					else
-						CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " " .. _details.attributes.list[attribute] .. " - " .. CustomObject:GetName(), _, true)
-						CoolTip:AddIcon(CustomObject.icon, 1, 1, 20, 20, 0, 1, 0, 1)
-					end
-
-				else
-					local mode = _this_instance.mode
-					
-					if (mode == 1) then --alone
-					
-						attribute = _details.SoloTables.Mode or 1
-						local SoloInfo = _details.SoloTables.Menu[attribute]
-						if (SoloInfo) then
-							CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " " .. SoloInfo[1], _, true)
-							CoolTip:AddIcon(SoloInfo[2], 1, 1, 20, 20, 0, 1, 0, 1)
-						else
-							CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " Unknown Plugin", _, true)
-						end
-						
-					elseif (mode == 4) then --raid
-					
-						local plugin_name = _this_instance.current_raid_plugin or _this_instance.last_raid_plugin
-						if (plugin_name) then
-							local plugin_object = _details:GetPlugin(plugin_name)
-							if (plugin_object) then
-								CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " " .. plugin_object.__name, _, true)
-								CoolTip:AddIcon(plugin_object.__icon, 1, 1, 20, 20, 0, 1, 0, 1)	
-							else
-								CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " Unknown Plugin", _, true)
-							end
-						else
-							CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " Unknown Plugin", _, true)
-						end
-						
-					else
-					
-						CoolTip:AddMenu(1, OnClickNewMenu, index, nil, nil, "#".. index .. " " .. _details.attributes.list[attribute] .. " - " .. _details.sub_attributes[attribute].list[sub_attribute], _, true)
-						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 1, 1, 20, 20, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
-						
-					end
-				end
-
-				CoolTip:SetOption("TextSize", _details.font_sizes.menus)
-			end
-		end
-		
-		if (ClosedInstances == 0) then
-			if (_details:GetNumInstancesAmount() == _details:GetMaxInstancesAmount()) then
-				CoolTip:AddMenu(1, _details.OpenOptionsWindow, true, 1, nil, Loc["STRING_NOMORE_INSTANCES"], _, true)
-				CoolTip:AddIcon([[Interface\Buttons\UI-PlusButton-Up]], 1, 1, 16, 16)
-			else
-				CoolTip:AddMenu(1, _details.Createinstance, true, nil, nil, Loc["STRING_NOCLOSED_INSTANCES"], _, true)
-				CoolTip:AddIcon([[Interface\Buttons\UI-AttributeButton-Encourage-Up]], 1, 1, 16, 16)
-			end
-		end
-		
-		GameCooltip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0, 0.64453125}, {1, 1, 1, 0.1}, true)
-		GameCooltip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
-		GameCooltip:SetBackdrop(2, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
-		
-		return ClosedInstances
-	end
-	
-	--> Inject Options Table
-	baseframe.header.novo.CoolTip = { 
-		--> cooltip type "menu" "tooltip" "tooltipbars"
-		Type = "menu",
-		--> how much time wait with mouse over the frame until cooltip show up
-		ShowSpeed = 0.15,
-		--> will call for build menu
-		BuildFunc = BuildClosedInstanceMenu, 
-		--> a hook for OnEnterScript
-		OnEnterFunc = function() OnEnterMainWindow(instance, baseframe.header.novo, 3) end,
-		--> a hook for OnLeaveScript
-		OnLeaveFunc = function() OnLeaveMainWindow(instance, baseframe.header.novo, 3) end,
-		--> default message if there is no option avaliable
-		Default = Loc["STRING_NOCLOSED_INSTANCES"],
-		--> instance is the first parameter sent after click, before parameters
-		FixedValue = instance,
-		Options = function()
-			if (instance.toolbar_side == 1) then --top
-				return {TextSize = 10, NoLastSelectedBar = true, ButtonsYMod = -2}
-			elseif (instance.toolbar_side == 2) then --bottom
-				return {HeightAnchorMod = -7, TextSize = 10, NoLastSelectedBar = true}
-			end
-		end
-	}
-	
-	--> Inject
-	_G.GameCooltip:CoolTipInject(baseframe.header.novo)
 	
 -- ~delete ~erase
 --> reset history ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -6897,9 +6790,13 @@ function gump:CreateHeader(baseframe, instance)
 	baseframe.header.reset:SetScript("OnEnter", reset_button_onenter)
 	baseframe.header.reset:SetScript("OnLeave", reset_button_onleave)
 	
-	baseframe.header.reset:SetNormalTexture([[Interface\Addons\Details\Images\reset_button2]])
-	baseframe.header.reset:SetHighlightTexture([[Interface\Addons\Details\Images\reset_button2]])
-	baseframe.header.reset:SetPushedTexture([[Interface\Addons\Details\Images\reset_button2]])
+	local b = baseframe.header.reset
+	b:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetNormalTexture():SetTexCoord(128/256, 160/256, 0, 1)
+	b:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetHighlightTexture():SetTexCoord(128/256, 160/256, 0, 1)
+	b:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+	b:GetPushedTexture():SetTexCoord(128/256, 160/256, 0, 1)
 	
 --> end botão reset
 

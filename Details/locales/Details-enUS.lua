@@ -226,7 +226,7 @@ L["STRING_MAXIMUM_SHORT"] = "Max"
 L["STRING_MEDIA"] = "Media"
 L["STRING_MELEE"] = "Melee"
 L["STRING_MENU_CLOSE_INSTANCE"] = "Close this window"
-L["STRING_MENU_CLOSE_INSTANCE_DESC"] = "A closed window is considered inactive and can be reopened at any time using the # window button."
+L["STRING_MENU_CLOSE_INSTANCE_DESC"] = "A closed window is considered inactive and can be reopened at any time using the window control menu."
 L["STRING_MENU_CLOSE_INSTANCE_DESC2"] = "For fully destroy a window check out miscellaneous section over options panel."
 L["STRING_MIDDLECLICK_DAMAGETAKEN"] = "|cFFFFCC00middle button|r: player detail window"
 L["STRING_MINIMAPMENU_LOCK"] = "Lock"
@@ -635,9 +635,7 @@ L["STRING_OPTIONS_LOCKSEGMENTS_DESC"] = "When enabled, changing a segment in any
 L["STRING_OPTIONS_MAXINSTANCES"] = "Max Window Amount"
 L["STRING_OPTIONS_MAXINSTANCES_DESC"] = [=[Limit the amount of windows which can be created.
 
-Clicking on the window button (#1) opens a new window.
-
-Hold hover it to show a menu with closed window which can be reopened.]=]
+Manage window through Window Control menu.]=]
 L["STRING_OPTIONS_MAXSEGMENTS"] = "Max Segments"
 L["STRING_OPTIONS_MAXSEGMENTS_DESC"] = [=[This option control how many segments you want to maintain.
 
@@ -1225,7 +1223,7 @@ L["STRING_OPTIONS_WC_BOOKMARK_DESC"] = "Open config panel for bookmarks."
 L["STRING_OPTIONS_WC_CLOSE"] = "Close"
 L["STRING_OPTIONS_WC_CLOSE_DESC"] = [=[Close this window.
 
-When closed, the window is considered inactive and can be reopened at any time using the # window button.
+When closed, the window is considered inactive and can be reopened at any time using the Window Control menu.
 
 For completely remove a window go to miscellaneous section.]=]
 L["STRING_OPTIONS_WC_CREATE"] = "Create Window"
@@ -1444,14 +1442,13 @@ L["STRING_WELCOME_22"] = [=[Recommended values based on memory amount:
 
 |cFFFFFF00Important:|r memory usage by addons doesn't affect your framerate.]=]
 L["STRING_WELCOME_26"] = "Using the Interface: Stretch"
-L["STRING_WELCOME_27"] = [=[- When you have the mouse over a Details! window, a |cFFFFFF00small hook|r will appear over the window button. |cFFFFFF00Click, hold and pull|r up to |cFFFFFF00stretch|r the window, releasing the mouse click, the window |cFFFFFF00back to original|r size.
+L["STRING_WELCOME_27"] = [=[- When you have the mouse over a Details! window, a |cFFFFFF00small hook|r will appear on the top right corner. |cFFFFFF00Click, hold and pull|r up to |cFFFFFF00stretch|r the window, releasing the mouse click, the window |cFFFFFF00back to original|r size.
 
 - If you miss a |cFFFFBB00scroll bar|r, you can active it on the options panel.]=]
-L["STRING_WELCOME_28"] = "Using the Interface: Window Button"
-L["STRING_WELCOME_29"] = [=[Window button basically do three things:
+L["STRING_WELCOME_28"] = "Using the Interface: Window Control"
+L["STRING_WELCOME_29"] = [=[Window Control basically do two things:
 
-- show |cFFFFFF00what window|r is it through the |cFFFFFF00#number|r,
-- open a |cFFFFFF00new window|r when clicked.
+- open a |cFFFFFF00new window|r.
 - show a menu with |cFFFFFF00closed windows|r which can be reopened at any time.]=]
 L["STRING_WELCOME_3"] = "Choose your DPS and HPS prefered method:"
 L["STRING_WELCOME_30"] = "Using the Interface: Bookmarks"
@@ -1494,4 +1491,5 @@ L["STRING_WELCOME_58"] = [=[Predefined sets of appearance configurations.
 L["STRING_WELCOME_59"] = "Enable background wallpaper."
 L["STRING_WELCOME_6"] = "the timer of each raid member is put on hold if his activity is ceased and back again to count when is resumed."
 L["STRING_WELCOME_7"] = "used for rankings, this method uses the elapsed combat time for measure the Dps and Hps of all raid members."
+L["STRING_WINDOW1ATACH_DESC"] = "To create a group of windows, drag window #2 near window #1."
 L["STRING_YES"] = "Yes"

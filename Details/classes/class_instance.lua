@@ -2280,9 +2280,11 @@ function _details:SetAttributesOption(instance, func)
 	--> custom
 	CoolTip:AddMenu(1, func, nil, 5, nil, attributes.list[5], nil, true)
 	CoolTip:AddIcon("Interface\\AddOns\\Details\\images\\attributes_icons", 1, 1, 20, 20, p*(5-1), p*(5), 0, 1)
+
 	CoolTip:AddMenu(2, _details.OpenCustomDisplayWindow, nil, nil, nil, Loc["STRING_CUSTOM_NEW"], "Interface\\AddOns\\Details\\images\\Character-Plus", true)
-	
-	for index, custom in _ipairs(_details.custom) do 
+	CoolTip:AddLine("$div", nil, 2, nil, -6, -9)
+
+	for index, custom in _ipairs(_details.custom) do
 		if (custom.temp) then
 			CoolTip:AddLine(custom.name .. Loc["STRING_CUSTOM_TEMPORARILY"], nil, 2)
 		else
@@ -2290,23 +2292,27 @@ function _details:SetAttributesOption(instance, func)
 		end
 		
 		CoolTip:AddMenu(2, func, true, 5, index)
-		CoolTip:AddIcon(custom.icon, 2, 1, 16, 16)
+		CoolTip:AddIcon(custom.icon, 2, 1, 20, 20)
 	end
 	
 	--> set the wallpaper on custom
 	GameCooltip:SetWallpaper(2,[[Interface\TALENTFRAME\WarriorArm-TopLeft]], {1, 0, 0, 1}, {1, 1, 1, 0.1})
 
 	if (#_details.custom == 0) then
-		CoolTip:SetLastSelected(2, 5, 1)
+		CoolTip:SetLastSelected(2, 5, 2)
 	else
 		if (instance.attribute == 5) then
-			CoolTip:SetLastSelected(2, 5, instance.sub_attribute+1)
+			CoolTip:SetLastSelected(2, 5, instance.sub_attribute+2)
 		else
-			CoolTip:SetLastSelected(2, 5, instance.sub_attribute_last[5]+1)
+			CoolTip:SetLastSelected(2, 5, instance.sub_attribute_last[5]+2)
 		end
 	end
 
 	CoolTip:SetOption("StatusBarTexture",[[Interface\AddOns\Details\images\bar4_vidro]])
+	CoolTip:SetOption("ButtonsYMod", -7)
+	CoolTip:SetOption("ButtonsYModSub", -7)
+	CoolTip:SetOption("HeighMod", 8)
+	CoolTip:SetOption("HeighModSub", 8)
 	
 	CoolTip:SetLastSelected(1, attribute_active)
 	

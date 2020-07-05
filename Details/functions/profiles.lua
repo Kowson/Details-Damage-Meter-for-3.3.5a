@@ -309,11 +309,26 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 				if (instance_limit < index) then
 					break
 				end
-				
+
+				--> fix for the old flat skin
 				if (skin.skin == "Flat Color") then
 					skin.skin = "Serenity"
 				end
-				
+
+				--> fix for old left and right menus
+				if (skin.menu_icons and type (skin.menu_icons[5]) ~= "boolean") then
+					skin.menu_icons[5] = true
+					skin.menu_icons[6] = true
+
+					local skin_profile = _details.skins[skin.skin] and _details.skins[skin.skin].instance_cprops
+					if (skin_profile) then
+						skin.menu_icons_size = skin_profile.menu_icons_size
+						skin.menu_anchor = table_deepcopy(skin_profile.menu_anchor)
+						--print (skin.menu_anchor[1], skin.menu_anchor[2], skin.menu_anchor.side)
+						skin.menu_anchor_down = table_deepcopy(skin_profile.menu_anchor_down)
+					end
+				end
+
 				--> get the instance
 				local instance = _details:GetInstance(index)
 				if (not instance) then

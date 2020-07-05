@@ -84,7 +84,7 @@ function _G._details:Start()
 			self.custom = self.custom or {}
 			
 		--> micro button alert
-			self.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent)--, "MicroButtonAlertTemplate")
+			self.MicroButtonAlert = CreateFrame("frame", "DetailsMicroButtonAlert", UIParent, "MicroButtonAlertTemplate")
 			self.MicroButtonAlert:Hide()
 			
 		--> actor details window
@@ -100,7 +100,6 @@ function _G._details:Start()
 			self:Createinstance()
 		end
 		self:GetLowerInstanceNumber()
-		self:CheckConsolidates()
 		
 	--> start time machine
 		self.timeMachine:Ligar()
