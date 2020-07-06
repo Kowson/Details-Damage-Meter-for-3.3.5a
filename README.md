@@ -2,8 +2,9 @@
 Details Damage Meter backported for World of Warcraft 3.3.5a Wrath of the Lich King (WotLK).
 
 # Some information
-Addon works quite well for Ulduar and Trial of the (Grand) Crusader and VoA.  
-Icecrown Citadel needs also to be done (See Details_RaidInfo-ToC). I've never done ICC so couldn't finish it on my own.
+Feel free to ask any questions (and maybe features? :>).  
+Would love to hear some feedback from you.  
+Now go and flex before rest of your raid :P
 
 # Installation
 
@@ -13,7 +14,12 @@ Icecrown Citadel needs also to be done (See Details_RaidInfo-ToC). I've never do
 4. Copy (or drag and drop) all folders into your WoW-Directory\Interface\AddOns
 5. Restart WoW
 
-DBM directories are needed for plugin Encounter Details to work.
+## In order to have working boss encounters you also need to have installed [DBM-for-Details](https://github.com/Kowson/DBM-for-Details)
+1. Download **[Latest Version](https://github.com/Kowson/DBM-for-Details/releases/latest)**
+2. Unpack the ZIP file
+3. Open the folder "DBM-for-Details-(#.#.##)"
+4. Copy (or drag and drop) all folders into your WoW-Directory\Interface\AddOns
+5. Restart WoW
 
 # Screenshots
 https://imgur.com/a/5dWJBxl
