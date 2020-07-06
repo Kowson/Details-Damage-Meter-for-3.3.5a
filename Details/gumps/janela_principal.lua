@@ -4260,9 +4260,9 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 					button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left", 3, 0)
 				else
 					button:SetPoint(point1, anchor_frame, point2)
-					got_anchor = button
 				end
 				self.lastIcon = button
+				got_anchor = button
 				button:SetParent(self.baseframe)
 				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
 				button:Show()
@@ -4281,7 +4281,7 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 				button:ClearAllPoints()
 				if (got_anchor) then
 					if (self.plugins_grow_direction == 2) then --right(default)
-						if (self.lastIcon == buttons[4]) then
+						if (self.lastIcon == tbuttons[6]) then
 							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", 2, 0) --, button.x, button.y
 						else
 							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right") --, button.x, button.y
