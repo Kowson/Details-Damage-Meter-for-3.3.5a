@@ -1171,7 +1171,7 @@ function DpsTuningPlugin:OnEvent(_, event, ...)
 				--> create main plugin object
 				CreatePluginFrames()
 				
-				local MINIMAL_DETAILS_VERSION_REQUIRED = 28
+				local MINIMAL_DETAILS_VERSION_REQUIRED = 1
 				
 				local default_settings = {
 					SpellBarsShowType = 1,
