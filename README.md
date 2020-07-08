@@ -13,6 +13,7 @@ Now go and flex before rest of your raid :P
 3. Open the folder "Details-Damage-Meter-for-3.3.5a-(#.#.##)"
 4. Copy (or drag and drop) all folders into your WoW-Directory\Interface\AddOns
 5. Restart WoW
+6. Might need to use /details reinstall if something doesn't work.
 
 ## In order to have working boss encounters you also need to have installed [DBM-for-Details](https://github.com/Kowson/DBM-for-Details)
 1. Download **[Latest Version](https://github.com/Kowson/DBM-for-Details/releases/latest)**
