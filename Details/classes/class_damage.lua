@@ -2943,26 +2943,14 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 
 			data[#data+1] = t1
 
-		t1[1] = this_spell.n_amt
-		t1[2] = normal_table
-		t1[3] = Loc["STRING_NORMAL_HITS"]
-		t1[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_min)
-		t1[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_max)
-		t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
-		t1[7] = Loc["STRING_DPS"] .. ": " .. _details:comma_value(normal_dmg/T)
-		t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
-			--[[ TODO: OLD
-			data[#data+1] = {
-				this_spell.n_amt, 
-				normal_hits/total_hits*100, 
-				Loc["STRING_NORMAL_HITS"],
-				Loc["STRING_MINIMUM"]..": ".._details:comma_value(this_spell.n_min),
-				Loc["STRING_MAXIMUM"]..": ".._details:comma_value(this_spell.n_max), 
-				Loc["STRING_MEDIA"]..": ".._cstr("%.1f", media_normal), 
-				Loc["STRING_DPS"]..": ".._cstr("%.1f", normal_dmg/T), 
-				normal_hits.. " / ".._cstr("%.1f", normal_hits/total_hits*100).."%"
-				}
-			]]--
+			t1[1] = this_spell.n_amt
+			t1[2] = normal_table
+			t1[3] = Loc["STRING_NORMAL_HITS"]
+			t1[4] = Loc["STRING_MINIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_min)
+			t1[5] = Loc["STRING_MAXIMUM_SHORT"] .. ": " .. _details:comma_value(this_spell.n_max)
+			t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
+			t1[7] = Loc["STRING_DPS"] .. ": " .. _details:comma_value(normal_dmg/T)
+			t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
 		end
 
 	--> CRITICAL
@@ -2988,18 +2976,6 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			t2[6] = Loc ["STRING_AVERAGE"] .. ": " .. _details:comma_value (media_critical)
 			t2[7] = Loc ["STRING_DPS"] .. ": " .. _details:comma_value (crit_dps)
 			t2[8] = this_spell.c_amt .. " / " .. _cstr ("%.1f", this_spell.c_amt/total_hits*100) .. "%"
-			--[[ TODO: OLD - REMOVE
-			data[#data+1] = {
-				this_spell.c_amt,
-				this_spell.c_amt/total_hits*100, 
-				Loc["STRING_CRITICAL_HITS"], 
-				Loc["STRING_MINIMUM"]..": ".._details:comma_value(this_spell.c_min),
-				Loc["STRING_MAXIMUM"]..": ".._details:comma_value(this_spell.c_max),
-				Loc["STRING_MEDIA"]..": ".._cstr("%.1f", media_critical), 
-				Loc["STRING_DPS"]..": ".._cstr("%.1f", crit_dps),
-				this_spell.c_amt.. " / ".._cstr("%.1f", this_spell.c_amt/total_hits*100).."%"
-				}
-			]]--
 		end
 		
 	--> Outros misses: GLACING, resisted, blocked, absorbed
@@ -3018,20 +2994,6 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			t3[6] = Loc["STRING_ABSORBED"] .. ": " .. this_spell.a_dmg --this_spell.absorbed.amt.." / "..
 			t3[7] = Loc["STRING_BLOCKED"] .. ": " .. this_spell.b_amt .. " / " .. this_spell.b_dmg
 			t3[8] = others_deviations .. " / " .. _cstr("%.1f", percentage_defenses) .. "%"
-
-
-			--[[ TODO: OLD - REMOVE
-			data[#data+1] = {
-				others_deviations,
-				{["p"] = percentage_defenses,["c"] = {117/255, 58/255, 0/255}},
-				Loc["STRING_DEFENSES"], 
-				Loc["STRING_GLANCING"]..": "..this_spell.g_amt.." / ".._math_floor(this_spell.g_amt/this_spell.counter*100).."%", --this_spell.g_dmg
-				Loc["STRING_RESISTED"]..": "..this_spell.r_dmg, --this_spell.resisted.amt.." / "..
-				Loc["STRING_ABSORBED"]..": "..this_spell.a_dmg, --this_spell.absorbed.amt.." / "..
-				Loc["STRING_BLOCKED"]..": "..this_spell.b_amt.." / "..this_spell.b_dmg,
-				others_deviations.." / ".._cstr("%.1f", percentage_defenses).."%"
-				}
-			]]--
 		end
 		
 	--> Erros de Ataque	--ability.missType  -- {"ABSORB", "BLOCK", "DEFLECT", "DODGE", "EVADE", "IMMUNE", "MISS", "PARRY", "REFLECT", "RESIST"}
@@ -3053,18 +3015,6 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			t3[6] = Loc["STRING_DODGE"] .. ": " .. dodge
 			t3[7] = ""
 			t3[8] = misses .. " / " .. _cstr("%.1f", percentage_misses) .. "%"
-			--[[ TODO: OLD - REMOVE
-			data[#data+1] = { 
-				misses,
-				{["p"] = percentage_misses,["c"] = {0.5, 0.1, 0.1}},
-				Loc["STRING_FAIL_ATTACKS"], 
-				Loc["STRING_MISS"]..": "..miss,
-				Loc["STRING_PARRY"]..": "..parry,
-				Loc["STRING_DODGE"]..": "..dodge,
-				"",
-				misses.." / ".._cstr("%.1f", percentage_misses).."%"
-				}
-			]]--
 		end
 
 	table.sort(data, _details.Sort1)
