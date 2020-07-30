@@ -1968,20 +1968,6 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			t1[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_normal)
 			t1[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value(normal_healed/T)
 			t1[8] = normal_hits .. " / " .. _cstr("%.1f", normal_hits/total_hits*100) .. "%"
-
-			--[[ TODO: OLD- REMOVE
-			data[#data+1] = {
-				this_spell.n_amt, 
-				normal_hits/total_hits*100, 
-				--this_spell.n_healed/this_spell.total*100, 
-				Loc["STRING_HEAL"], --> localiza-me
-				Loc["STRING_MINIMUM"] .. ": " .. _details:comma_value(this_spell.n_min), --> localiza-me
-				Loc["STRING_MAXIMUM"] .. ": " .. _details:comma_value(this_spell.n_max), --> localiza-me
-				Loc["STRING_MEDIA"] .. ": " .. _cstr("%.1f", media_normal), --> localiza-me
-				Loc["STRING_HPS"] .. ": " .. _cstr("%.1f", normal_healed/T), --> localiza-me
-				normal_hits .. " / ".. _cstr("%.1f", normal_hits/total_hits*100).."%"
-				}
-			]]--
 		end
 
 	--> CRITICAL
@@ -2005,20 +1991,6 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			t2[6] = Loc["STRING_AVERAGE"] .. ": " .. _details:comma_value(media_critical)
 			t2[7] = Loc["STRING_HPS"] .. ": " .. _details:comma_value(crit_hps)
 			t2[8] = this_spell.c_amt .. " / " .. _cstr("%.1f", this_spell.c_amt/total_hits*100) .. "%"
-
-			--[[ TODO: OLD - REMOVE
-			data[#data+1] = {
-				this_spell.c_amt,
-				this_spell.c_amt/total_hits*100, 
-				--this_spell.c_healed/this_spell.total*100,
-				Loc["STRING_HEAL_CRIT"], --> localiza-me
-				Loc["STRING_MINIMUM"] .. ": " .. _details:comma_value(this_spell.c_min), --> localiza-me
-				Loc["STRING_MAXIMUM"] .. ": " .. _details:comma_value(this_spell.c_max), --> localiza-me
-				Loc["STRING_MEDIA"] .. ": " .. _cstr("%.1f", media_critical), --> localiza-me
-				Loc["STRING_HPS"] .. ": " .. _cstr("%.1f", crit_hps), --> localiza-me
-				this_spell.c_amt .. " / ".._cstr("%.1f", this_spell.c_amt/total_hits*100).."%"
-				}
-			]]--
 		end
 		
 	end
@@ -2041,18 +2013,6 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			t3[6] = ""
 			t3[7] = ""
 			t3[8] = absorbed .. " / " .. _cstr("%.1f", percentage_absorbed) .. "%"
-			--[[ TODO: OLD - REMOVE
-			data[#data+1] = {
-				absorbed,
-				{["p"] = percentage_absorbed,["c"] = {117/255, 58/255, 0/255}},
-				Loc["STRING_HEAL_ABSORBED"], --> localiza-me
-				"", --this_spell.glacing.healed
-				"",
-				"",
-				"",
-				absorbed.." / ".._cstr("%.1f", percentage_absorbed).."%"
-				}
-			]]--
 		end
 
 	for i = #data+1, 3 do --> para o overheal aparecer na ultima bar
@@ -2074,18 +2034,6 @@ function attribute_heal:SetDetailsHealingDone(spellid, bar)
 			t4[6] = ""
 			t4[7] = ""
 			t4[8] = _details:comma_value(overheal) .. " / " .. _cstr("%.1f", percentage_overheal) .. "%"
-			--[[ TODO: OLD - REMOVE
-			data[4] = { 
-				overheal,
-				{["p"] = percentage_overheal,["c"] = {0.5, 0.1, 0.1}},
-				Loc["STRING_OVERHEAL"], --> localiza-me
-				"",
-				"",
-				"",
-				"",
-				_details:comma_value(overheal).." / ".._cstr("%.1f", percentage_overheal).."%"
-				}
-			]]--
 		end
 	
 	for index = 1, 4 do
