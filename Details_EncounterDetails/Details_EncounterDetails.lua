@@ -818,8 +818,8 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		EncounterDetailsFrame.boss_icon:SetTexture(Texture)
 		EncounterDetailsFrame.boss_icon:SetTexCoord(L, R, T, B)
 	else
-		EncounterDetailsFrame.boss_icone:SetTexture([[Interface\CHARACTERFRAME\TempPortrait]]) -- TODO: CHECK IF IMAGE EXISTS
-		EncounterDetailsFrame.boss_icone:SetTexCoord (0, 1, 0, 1)
+		EncounterDetailsFrame.boss_icon:SetTexture([[Interface\CHARACTERFRAME\TempPortrait]]) -- TODO: CHECK IF IMAGE EXISTS
+		EncounterDetailsFrame.boss_icon:SetTexCoord (0, 1, 0, 1)
 	end
 	
 	local file, L, R, T, B = EncounterDetails:GetRaidBackground(_combat_object.is_boss.mapid)

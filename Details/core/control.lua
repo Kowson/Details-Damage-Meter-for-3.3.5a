@@ -169,22 +169,6 @@
 						
 							local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
 							local zoneMapID = GetCurrentMapAreaID()
-							--[[
-							if(zoneType == "raid") then
-								if (zoneName == "Ulduar") then zoneMapID = 530
-								elseif (zoneName == "Naxxramas") then zoneMapID = 536
-								elseif (zoneName == "Trial of the Crusader") then zoneMapID = 544
-								elseif (zoneName == "The Eye of Eternity") then zoneMapID = 528
-								elseif (zoneName == "Icecrown Citadel") then zoneMapID = 605
-								elseif (zoneName == "Onyxia's Lair") then zoneMapID = 718
-								elseif (zoneName == "The Obsidian Sanctum") then zoneMapID = 531
-								elseif (zoneName == "Vault of Archavon") then zoneMapID = 533
-								elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
-								else zoneMapID = 4
-								end
-							else zoneMapID = 4
-							end
-							]]--
 							local BossIds = _details:GetBossIds(zoneMapID)
 							if (BossIds) then
 								local BossIndex = BossIds[serial]
@@ -213,21 +197,6 @@
 		
 			local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
 			local zoneMapID = GetCurrentMapAreaID()
-			--[[ 
-			if(zoneType == "raid") then
-				if (zoneName == "Ulduar") then zoneMapID = 530
-				elseif (zoneName == "Naxxramas") then zoneMapID = 536
-				elseif (zoneName == "Trial of the Crusader") then zoneMapID = 544
-				elseif (zoneName == "The Eye of Eternity") then zoneMapID = 528
-				elseif (zoneName == "Icecrown Citadel") then zoneMapID = 605
-				elseif (zoneName == "Onyxia's Lair") then zoneMapID = 718
-				elseif (zoneName == "The Obsidian Sanctum") then zoneMapID = 531
-				elseif (zoneName == "Vault of Archavon") then zoneMapID = 533
-				elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
-				else zoneMapID = 4
-				end
-			end
-			]]--
 			local BossIds = _details:GetBossIds(zoneMapID)
 			
 			if (BossIds) then
@@ -410,22 +379,6 @@
 				if (not _details.table_current.is_boss) then
 					local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
 					local zoneMapID = GetCurrentMapAreaID()
-					--[[
-					if(zoneType == "raid") then
-							if (zoneName == "Ulduar") then zoneMapID = 530
-							elseif (zoneName == "Naxxramas") then zoneMapID = 536
-							elseif (zoneName == "Trial of the Crusader") then zoneMapID = 544
-							elseif (zoneName == "The Eye of Eternity") then zoneMapID = 528
-							elseif (zoneName == "Icecrown Citadel") then zoneMapID = 605
-							elseif (zoneName == "Onyxia's Lair") then zoneMapID = 718
-							elseif (zoneName == "The Obsidian Sanctum") then zoneMapID = 531
-							elseif (zoneName == "Vault of Archavon") then zoneMapID = 533
-							elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
-							else zoneMapID = 4
-							end
-					else zoneMapID = 4
-					end
-					]]--
 					local findboss = _details:GetRaidBossFindFunction(zoneMapID)
 					if (findboss) then
 						local BossIndex = findboss()
