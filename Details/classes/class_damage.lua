@@ -3007,14 +3007,14 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 			data[#data+1] = t4
 			misses_table.p = percentage_misses
 
-			t3[1] = misses
-			t3[2] = misses_table
-			t3[3] = Loc["STRING_FAIL_ATTACKS"]
-			t3[4] = Loc["STRING_MISS"] .. ": " .. miss
-			t3[5] = Loc["STRING_PARRY"] .. ": " .. parry
-			t3[6] = Loc["STRING_DODGE"] .. ": " .. dodge
-			t3[7] = ""
-			t3[8] = misses .. " / " .. _cstr("%.1f", percentage_misses) .. "%"
+			t4[1] = misses
+			t4[2] = misses_table
+			t4[3] = Loc["STRING_FAIL_ATTACKS"]
+			t4[4] = Loc["STRING_MISS"] .. ": " .. miss
+			t4[5] = Loc["STRING_PARRY"] .. ": " .. parry
+			t4[6] = Loc["STRING_DODGE"] .. ": " .. dodge
+			t4[7] = ""
+			t4[8] = misses .. " / " .. _cstr("%.1f", percentage_misses) .. "%"
 		end
 
 	table.sort(data, _details.Sort1)
