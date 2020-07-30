@@ -49,11 +49,11 @@ local naxx = {
 	find_boss_encounter = function()
 		--> find horsemen or KT or thaddius
 		if (_details.table_current and _details.table_current[1] and _details.table_current[1]._ActorTable) then
-			for _, damage_actor in ipairs (_details.table_current[1]._ActorTable) do
-				local serial = tonumber (damage_actor.serial:sub (9, 12), 16)
+			for _, damage_actor in ipairs(_details.table_current[1]._ActorTable) do
+				local serial = tonumber(damage_actor.serial:sub(9, 12), 16)
 				if (serial == 15990) then -- KT
 					return 15 --> kt 
-				elseif (serial ==16064) then -- thane horseman guy
+				elseif (serial == 16064) then -- thane horseman guy
 					return 9 -- horsemen 
 				elseif (serial == 15929 or serial == 15930) then -- stalagg / feugen
 					return 13 -- thaddius
