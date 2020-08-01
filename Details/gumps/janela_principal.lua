@@ -1247,20 +1247,20 @@ function _details:instancesHorizontais(instance)
 
 	instance = self or instance
 
-	local linha_horizontal, left, right = {}, 0, 0
+	local line_horizontal, left, right = {}, 0, 0
 	
 	local top, bottom = 0, 0
 
 	local checking = instance
 	
 	local check_index_previous = _details.table_instances[instance.mine_id-1]
-	if (check_index_previous) then --> possiu uma instância antes de mim
-		if (check_index_previous.snap[3] and check_index_previous.snap[3] == instance.mine_id) then --> o index negactive vai para a left
+	if (check_index_previous) then --> has previous instance
+		if (check_index_previous.snap[3] and check_index_previous.snap[3] == instance.mine_id) then --> negative index moves left
 			for i = instance.mine_id-1, 1, -1 do 
 				local this_instance = _details.table_instances[i]
 				if (this_instance.snap[3]) then
-					if (this_instance.snap[3] == checking.mine_id) then
-						linha_horizontal[#linha_horizontal+1] = this_instance
+					if (this_instance.snap[3] == checking.mine_id) then -- this_instance on the left side of instance
+						line_horizontal[#line_horizontal+1] = this_instance
 						left = left + this_instance.baseframe:GetWidth()
 						checking = this_instance
 					end
@@ -1268,12 +1268,12 @@ function _details:instancesHorizontais(instance)
 					break
 				end
 			end
-		elseif (check_index_previous.snap[1] and check_index_previous.snap[1] == instance.mine_id) then --> o index negactive vai para a right
+		elseif (check_index_previous.snap[1] and check_index_previous.snap[1] == instance.mine_id) then --> negative index moves right
 			for i = instance.mine_id-1, 1, -1 do 
 				local this_instance = _details.table_instances[i]
 				if (this_instance.snap[1]) then
-					if (this_instance.snap[1] == checking.mine_id) then
-						linha_horizontal[#linha_horizontal+1] = this_instance
+					if (this_instance.snap[1] == checking.mine_id) then -- this_instance on the right side of instance
+						line_horizontal[#line_horizontal+1] = this_instance
 						right = right + this_instance.baseframe:GetWidth()
 						checking = this_instance
 					end
@@ -1287,13 +1287,13 @@ function _details:instancesHorizontais(instance)
 	checking = instance
 	
 	local check_index_posterior = _details.table_instances[instance.mine_id+1]
-	if (check_index_posterior) then
+	if (check_index_posterior) then -- has next instances
 		if (check_index_posterior.snap[3] and check_index_posterior.snap[3] == instance.mine_id) then --> o index posterior vai para a left
 			for i = instance.mine_id+1, #_details.table_instances do 
 				local this_instance = _details.table_instances[i]
 				if (this_instance.snap[3]) then
 					if (this_instance.snap[3] == checking.mine_id) then
-						linha_horizontal[#linha_horizontal+1] = this_instance
+						line_horizontal[#line_horizontal+1] = this_instance
 						left = left + this_instance.baseframe:GetWidth()
 						checking = this_instance
 					end
@@ -1306,7 +1306,7 @@ function _details:instancesHorizontais(instance)
 				local this_instance = _details.table_instances[i]
 				if (this_instance.snap[1]) then
 					if (this_instance.snap[1] == checking.mine_id) then
-						linha_horizontal[#linha_horizontal+1] = this_instance
+						line_horizontal[#line_horizontal+1] = this_instance
 						right = right + this_instance.baseframe:GetWidth()
 						checking = this_instance
 					end
@@ -1317,7 +1317,7 @@ function _details:instancesHorizontais(instance)
 		end
 	end
 
-	return linha_horizontal, left, right, bottom, top
+	return line_horizontal, left, right, bottom, top
 	
 end
 
@@ -1346,14 +1346,14 @@ local resize_scripts_onmousedown = function(self, button)
 		local isVertical = self._instance.verticalSnap
 		local isHorizontal = self._instance.horizontalSnap
 	
-		local agrupadas
+		local grouped
 		if (self._instance.verticalSnap) then
-			agrupadas = self._instance:instancesVerticais()
+			grouped = self._instance:instancesVerticais()
 		elseif (self._instance.horizontalSnap) then
-			agrupadas = self._instance:instancesHorizontais()
+			grouped = self._instance:instancesHorizontais()
 		end
 
-		self._instance.stretchToo = agrupadas
+		self._instance.stretchToo = grouped
 		if (self._instance.stretchToo and #self._instance.stretchToo > 0) then
 			for _, this_instance in ipairs(self._instance.stretchToo) do 
 				this_instance.baseframe._place = this_instance:SaveMainWindowPosition()
@@ -1943,13 +1943,13 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instance)
 			baseframe:StartSizing("bottom")
 		end
 		
-		local linha_horizontal = {}
+		local line_horizontal = {}
 	
 		local checking = instance
 		for i = instance.mine_id-1, 1, -1 do 
 			local this_instance = _details.table_instances[i]
 			if ((this_instance.snap[1] and this_instance.snap[1] == checking.mine_id) or(this_instance.snap[3] and this_instance.snap[3] == checking.mine_id)) then
-				linha_horizontal[#linha_horizontal+1] = this_instance
+				line_horizontal[#line_horizontal+1] = this_instance
 				checking = this_instance
 			else
 				break
@@ -1960,14 +1960,14 @@ local function button_stretch_scripts(baseframe, backgrounddisplay, instance)
 		for i = instance.mine_id+1, #_details.table_instances do 
 			local this_instance = _details.table_instances[i]
 			if ((this_instance.snap[1] and this_instance.snap[1] == checking.mine_id) or(this_instance.snap[3] and this_instance.snap[3] == checking.mine_id)) then
-				linha_horizontal[#linha_horizontal+1] = this_instance
+				line_horizontal[#line_horizontal+1] = this_instance
 				checking = this_instance
 			else
 				break
 			end
 		end
 		
-		instance.stretchToo = linha_horizontal
+		instance.stretchToo = line_horizontal
 		if (#instance.stretchToo > 0) then
 			for _, this_instance in ipairs(instance.stretchToo) do 
 				this_instance:HideScrollBar(true)

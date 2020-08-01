@@ -139,8 +139,8 @@
 		end
 		local _w, _h = self:GetRealSize()
 
-		local metade_width = _w/2
-		local metade_altura = _h/2
+		local half_width = _w/2
+		local half_height = _h/2
 		
 		local statusbar_y_mod = 0
 		if (not self.show_statusbar) then
@@ -148,19 +148,19 @@
 		end
 		
 		if (not self.ponto1) then
-			self.ponto1 = {x = _x - metade_width, y = _y + metade_altura +(statusbar_y_mod*-1)} --topleft
-			self.ponto2 = {x = _x - metade_width, y = _y - metade_altura + statusbar_y_mod} --bottomleft
-			self.ponto3 = {x = _x + metade_width, y = _y - metade_altura + statusbar_y_mod} --bottomright
-			self.ponto4 = {x = _x + metade_width, y = _y + metade_altura +(statusbar_y_mod*-1)} --topright
+			self.ponto1 = {x = _x - half_width, y = _y + half_height +(statusbar_y_mod*-1)} --topleft
+			self.ponto2 = {x = _x - half_width, y = _y - half_height + statusbar_y_mod} --bottomleft
+			self.ponto3 = {x = _x + half_width, y = _y - half_height + statusbar_y_mod} --bottomright
+			self.ponto4 = {x = _x + half_width, y = _y + half_height +(statusbar_y_mod*-1)} --topright
 		else
-			self.ponto1.x = _x - metade_width
-			self.ponto1.y = _y + metade_altura +(statusbar_y_mod*-1)
-			self.ponto2.x = _x - metade_width
-			self.ponto2.y = _y - metade_altura + statusbar_y_mod
-			self.ponto3.x = _x + metade_width
-			self.ponto3.y = _y - metade_altura + statusbar_y_mod
-			self.ponto4.x = _x + metade_width
-			self.ponto4.y = _y + metade_altura +(statusbar_y_mod*-1)
+			self.ponto1.x = _x - half_width
+			self.ponto1.y = _y + half_height +(statusbar_y_mod*-1)
+			self.ponto2.x = _x - half_width
+			self.ponto2.y = _y - half_height + statusbar_y_mod
+			self.ponto3.x = _x + half_width
+			self.ponto3.y = _y - half_height + statusbar_y_mod
+			self.ponto4.x = _x + half_width
+			self.ponto4.y = _y + half_height +(statusbar_y_mod*-1)
 		end
 	end
 
@@ -194,8 +194,8 @@
 		self.position[displaying].h = _h
 		
 		--> update the 4 points for window groups
-		local metade_width = _w/2
-		local metade_altura = _h/2
+		local half_width = _w/2
+		local half_height = _h/2
 		
 		local statusbar_y_mod = 0
 		if (not self.show_statusbar) then
@@ -203,19 +203,19 @@
 		end
 		
 		if (not self.ponto1) then
-			self.ponto1 = {x = _x - metade_width, y = _y + metade_altura +(statusbar_y_mod*-1)} --topleft
-			self.ponto2 = {x = _x - metade_width, y = _y - metade_altura + statusbar_y_mod} --bottomleft
-			self.ponto3 = {x = _x + metade_width, y = _y - metade_altura + statusbar_y_mod} --bottomright
-			self.ponto4 = {x = _x + metade_width, y = _y + metade_altura +(statusbar_y_mod*-1)} --topright
+			self.ponto1 = {x = _x - half_width, y = _y + half_height +(statusbar_y_mod*-1)} --topleft
+			self.ponto2 = {x = _x - half_width, y = _y - half_height + statusbar_y_mod} --bottomleft
+			self.ponto3 = {x = _x + half_width, y = _y - half_height + statusbar_y_mod} --bottomright
+			self.ponto4 = {x = _x + half_width, y = _y + half_height +(statusbar_y_mod*-1)} --topright
 		else
-			self.ponto1.x = _x - metade_width
-			self.ponto1.y = _y + metade_altura +(statusbar_y_mod*-1)
-			self.ponto2.x = _x - metade_width
-			self.ponto2.y = _y - metade_altura + statusbar_y_mod
-			self.ponto3.x = _x + metade_width
-			self.ponto3.y = _y - metade_altura + statusbar_y_mod
-			self.ponto4.x = _x + metade_width
-			self.ponto4.y = _y + metade_altura +(statusbar_y_mod*-1)
+			self.ponto1.x = _x - half_width
+			self.ponto1.y = _y + half_height +(statusbar_y_mod*-1)
+			self.ponto2.x = _x - half_width
+			self.ponto2.y = _y - half_height + statusbar_y_mod
+			self.ponto3.x = _x + half_width
+			self.ponto3.y = _y - half_height + statusbar_y_mod
+			self.ponto4.x = _x + half_width
+			self.ponto4.y = _y + half_height +(statusbar_y_mod*-1)
 		end
 		
 		self.baseframe.BoxBarsAltura = self.baseframe:GetHeight() - end_window_spacement --> espaço para o final da window
