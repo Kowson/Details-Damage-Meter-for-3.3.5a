@@ -1817,6 +1817,7 @@ do
 	[64320] = true, --> Rune of Power
 	[65724] = true, --> Empowered Dark    
 	[65748] = true, --> Empowered Light
+	[29232] = true, --> Fungal Creep (Loatheb)
 	-- Raid
 	[49016] = true, --> Hysteria
 	[10060] = true, --> Power Infusion

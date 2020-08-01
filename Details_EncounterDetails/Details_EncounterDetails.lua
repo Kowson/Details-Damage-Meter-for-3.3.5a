@@ -1030,7 +1030,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			table_in_order[#table_in_order+1] = tab
 		end
 		
-		_table_sort(table_in_order, function(a, b) return a[1] > b[1] end)
+		_table_sort(table_in_order, _details.Sort1)
 
 		container = frame.overall_abilities.gump
 		amount = 0
@@ -1388,7 +1388,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		for spellid, tab in _pairs(abilities_interrompidas) do 
 			table_in_order[#table_in_order+1] = tab
 		end
-		_table_sort(table_in_order, _details.Sort1)
+		_table_sort(table_in_order, function (a, b) return a[2] > b[2] end)
 
 		index = 1
 		
