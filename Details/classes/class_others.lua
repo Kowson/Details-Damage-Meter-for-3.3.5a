@@ -1804,7 +1804,7 @@ function attribute_misc:ToolTipInterrupt(instance, number, bar)
 				amount[name] = 1
 				
 				local my_self = instance.showing[class_type]:CatchCombatant(nil, name)
-				if (my_self) then
+				if (my_self and my_self.interrupt) then
 					totais[#totais+1] = {name, my_self.interrupt}
 				end
 			else

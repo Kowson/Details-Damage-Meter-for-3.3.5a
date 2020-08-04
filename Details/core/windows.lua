@@ -225,7 +225,7 @@
 
 	function _details:RestoreMainWindowPosition(pre_defined)
 
-		local _scale = self.baseframe:GetEffectiveScale() 
+		local _scale = self.baseframe:GetEffectiveScale()
 		local _UIscale = _UIParent:GetScale()
 		
 		local novo_x = self.position[self.displaying].x*_UIscale/_scale
@@ -315,7 +315,7 @@
 						instance.baseframe:SetWidth(self.baseframe:GetWidth())
 						local mod =(self.baseframe:GetWidth() - instance.baseframe._place.width) / 2
 						instance:RestoreMainWindowPositionNoResize(instance.baseframe._place, mod, nil)
-						instance:BaseFrameSnap()
+						--instance:BaseFrameSnap()
 					end
 				end
 				if ((self.eh_vertical or self.eh_tudo or not self.eh_horizontal) and(not self.verticalSnap or self.eh_vertical)) then
@@ -329,7 +329,7 @@
 								mod = -(self.baseframe:GetHeight() - instance.baseframe._place.altura) / 2
 							end
 							instance:RestoreMainWindowPositionNoResize(instance.baseframe._place, nil, mod)
-							instance:BaseFrameSnap()
+							--instance:BaseFrameSnap()
 						end
 					end
 				end
