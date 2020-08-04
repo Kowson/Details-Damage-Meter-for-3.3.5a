@@ -352,7 +352,7 @@
 	--> check if need start an combat
 
 		if (not _in_combat) then
-			if (	token ~= "SPELL_PERIODIC_DAMAGE" and 
+			if (	token ~= "SPELL_PERIODIC_DAMAGE" and --> don't enter combat if it is DoT
 			( 
 				(src_flags and _bit_band(src_flags, AFFILIATION_GROUP) ~= 0 and _UnitAffectingCombat(src_name) )
 					or 
@@ -360,21 +360,19 @@
 					or
 				(not _details.in_group and src_flags and _bit_band(src_flags, AFFILIATION_GROUP) ~= 0)
 				)
-			) then 
-				--> n�o entra em combat se for DOT
-				--if (_details.encounter_table.id and _details.encounter_table["start"] >= _G.time()-3 and _details.announce_firsthit.enabled) then
-				--[[
-				if(IsInInstance()) then
-					local link
-					if (spellid <= 10) then
-						link = _GetSpellInfo(spellid)
-					else
-						link = GetSpellLink(spellid)
+			) then
+				if (_details.encounter_table.id and _details.encounter_table["start"] >= _G.time()-3 and _details.announce_firsthit.enabled) then
+					if(IsInInstance()) then
+						local link
+						if (spellid <= 10) then
+							link = _GetSpellInfo(spellid)
+						else
+							link = GetSpellLink(spellid)
+						end
+						local _, _, srcName = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
+						_details:Msg("First hit: " .. (link or "") .. " from " .. (srcName or "Unknown"))
 					end
-					local _, _, srcName = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
-					_details:Msg("First hit: " ..(link or "") .. " from " ..(srcName or "Unknown"))
 				end
-				]]--
 				_details:EnterCombat(src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
 			end
 		end
@@ -2938,23 +2936,6 @@
 		
 		local zoneName, zoneType, _, _, _, _ = _GetInstanceInfo()
 		local zoneMapID = GetCurrentMapAreaID()
-		--[[
-		if(zoneType == "raid") then
-			if (zoneName == "Ulduar") then zoneMapID = 530
-			elseif (zoneName == "Naxxramas") then zoneMapID = 536
-			elseif (zoneName == "Trial of the Crusader") then zoneMapID = 544
-			elseif (zoneName == "The Eye of Eternity") then zoneMapID = 528
-			elseif (zoneName == "Icecrown Citadel") then zoneMapID = 605
-			elseif (zoneName == "Onyxia's Lair") then zoneMapID = 718
-			elseif (zoneName == "The Obsidian Sanctum") then zoneMapID = 531
-			elseif (zoneName == "Vault of Archavon") then zoneMapID = 533
-			elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
-			else zoneMapID = 4
-			end
-		else zoneMapID = 4
-		end
-		]]--
-		--print(encounterID, encounterName, difficultyID, raidSize)
 		
 		_details.encounter_table.phase = 1
 		
@@ -2993,7 +2974,7 @@
 		if (encounter_table) then
 			_details.encounter_table.index = boss_index
 		end
-		
+		_details:FindBoss() -- possible fix to get encounter at the beginning of fight
 	end
 	
 	function _details:ENCOUNTER_END(id, encounterName, wipe)
@@ -3050,9 +3031,11 @@
 	end
 
 	function _details.parser_functions:PLAYER_REGEN_DISABLED(...)
-		if (_details.EncounterInformation[_details.zone_id]) then 
-			_details:ScheduleTimer("ReadBossFrames", 1)
-			_details:ScheduleTimer("ReadBossFrames", 30)
+		if (_details.EncounterInformation[_details.zone_id]) then
+			if (_details.no_dbm) then
+				_details:ScheduleTimer("ReadBossFrames", 1)
+				_details:ScheduleTimer("ReadBossFrames", 30)
+			end
 		end			
 		-- CaptureGet checks if capturing a type is enabled overall, regardless of any temporary disables
 		-- IsCapturing checks if details is CURRENTLY capturing the type or not

@@ -657,13 +657,15 @@ function _details:ThisGrouped(this_instance, side) --> side //// 1 = encostou na
 end
 
 function _details:BaseFrameSnap()
-	for mine_id, instance in _ipairs(_details.table_instances) do
+
+	local group = self:GetInstanceGroup()
+
+	for mine_id, instance in _ipairs(group) do
 		if (instance:IsActive()) then
 			instance.baseframe:ClearAllPoints()
 		end
 	end
-	
-	local group = self:GetInstanceGroup()
+
 	local scale = self.window_scale
 	for _, instance in _ipairs(group) do
 		instance:SetWindowScale(scale)
