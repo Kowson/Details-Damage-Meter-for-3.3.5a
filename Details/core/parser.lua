@@ -2974,6 +2974,7 @@
 		if (encounter_table) then
 			_details.encounter_table.index = boss_index
 		end
+		_details:EnterCombat() -- possible fix to mark correct encounter
 		_details:FindBoss() -- possible fix to get encounter at the beginning of fight
 	end
 	
