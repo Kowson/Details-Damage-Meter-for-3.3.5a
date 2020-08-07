@@ -207,6 +207,8 @@ local function CreatePluginFrames (data)
 
 	local Threater = function()
 
+		local options = ThreatMeter.options
+
 		if (ThreatMeter.Actived and UnitExists ("target") and not _UnitIsFriend ("player", "target")) then
 			if (_UnitInRaid("player")) then
 				for i = 1, _GetNumRaidMembers(), 1 do
@@ -363,10 +365,7 @@ local function CreatePluginFrames (data)
 				if (threat_actor and threat_actor[5] > 0) then
 					local class = threat_actor [4]
 					thisRow._icon:SetTexCoord (_unpack (CLASS_ICON_TCOORDS[class]))
-					
-					--local color = RAID_CLASS_COLORS [class]
-					--thisRow.textleft:SetTextColor (color.r, color.g, color.b)
-					
+
 					thisRow:SetLeftText (threat_actor [1])
 				
 					local pct = threat_actor [2]
@@ -374,17 +373,24 @@ local function CreatePluginFrames (data)
 					thisRow:SetRightText (ThreatMeter:ToK2 (threat_actor [5]) .. " (" .. _cstr ("%.1f", pct) .. "%)")
 					thisRow:SetValue (pct)
 					
-					if (ThreatMeter.options.useplayercolor and threat_actor [1] == player) then
-						thisRow:SetColor (_unpack (ThreatMeter.options.playercolor))
+					if (options.useplayercolor and threat_actor[1] == player) then
+						thisRow:SetColor(_unpack(options.playercolor))
+					elseif (options.useclasscolor) then
+						local color = RAID_CLASS_COLORS[threat_actor[5]]
+						if (color) then
+							thisRow:SetColor(color.r, color.g, color.b)
+						else
+							thisRow:SetColor(1, 1, 1, 1)
+						end
 					else
 						if (index == 2) then
-							thisRow:SetColor (pct*0.01, _math_abs (pct-100)*0.01, 0, 1)
+							thisRow:SetColor(pct*0.01, _math_abs(pct-100)*0.01, 0, 1)
 						else
-							thisRow:SetColor (pct*0.01, _math_abs (pct-100)*0.01, 0, .3)
+							thisRow:SetColor(pct*0.01, _math_abs(pct-100)*0.01, 0, .3)
 							if (pct >= 50) then
-								thisRow:SetColor ( 1, _math_abs (pct - 100)/100, 0, 1)
+								thisRow:SetColor(1, _math_abs(pct - 100)/100, 0, 1)
 							else
-								thisRow:SetColor (pct/100, 1, 0, 1)
+								thisRow:SetColor(pct/100, 1, 0, 1)
 							end
 						end
 					end
@@ -392,7 +398,7 @@ local function CreatePluginFrames (data)
 					if (not thisRow.statusbar:IsShown()) then
 						thisRow:Show()
 					end
-					if (threat_actor [1] == player) then
+					if (threat_actor[1] == player) then
 						shownMe = true
 					end
 				else
@@ -412,8 +418,8 @@ local function CreatePluginFrames (data)
 						thisRow._icon:SetTexCoord (_unpack (CLASS_ICON_TCOORDS[class]))
 						thisRow:SetRightText (ThreatMeter:ToK2 (threat_actor [5]) .. " (" .. _cstr ("%.1f", threat_actor [2]) .. "%)")
 						thisRow:SetValue (threat_actor [2])
-						if (ThreatMeter.options.useplayercolor) then
-							thisRow:SetColor (_unpack (ThreatMeter.options.playercolor))
+						if (options.useplayercolor) then
+							thisRow:SetColor(_unpack(options.playercolor))
 						else
 							thisRow:SetColor (threat_actor [2]*0.01, _math_abs (threat_actor [2]-100)*0.01, 0, .3)
 						end
@@ -551,6 +557,13 @@ local build_options_panel = function()
 			desc = "If Player Color is enabled, your bar have this color.",
 			name = "Color"
 		},
+		{
+			type = "toggle",
+			get = function() return ThreatMeter.saveddata.useclasscolors end,
+			set = function(self, fixedparam, value) ThreatMeter.saveddata.useclasscolors = value end,
+			desc = "When enabled, threat bars uses the class color of the character.",
+			name = "Use Class Colors"
+		},
 	}
 	
 	_details.gump:BuildMenu (options_frame, menu, 15, -65, 260)
@@ -592,7 +605,7 @@ function ThreatMeter:OnEvent (_, event, ...)
 				local MINIMAL_DETAILS_VERSION_REQUIRED = 1
 				
 				--> Install
-				local install, saveddata = _G._details:InstallPlugin ("RAID", Loc ["STRING_PLUGIN_NAME"], "Interface\\Icons\\ability_paladin_guardedbythelight", ThreatMeter, "DETAILS_PLUGIN_TINY_THREAT", MINIMAL_DETAILS_VERSION_REQUIRED, "Details! Team", "v1.06")
+				local install, saveddata = _G._details:InstallPlugin ("RAID", Loc ["STRING_PLUGIN_NAME"], "Interface\\Icons\\ability_paladin_guardedbythelight", ThreatMeter, "DETAILS_PLUGIN_TINY_THREAT", MINIMAL_DETAILS_VERSION_REQUIRED, "Details! Team", "v1.07")
 				if (type (install) == "table" and install.error) then
 					print (install.error)
 				end
@@ -617,6 +630,7 @@ function ThreatMeter:OnEvent (_, event, ...)
 				ThreatMeter.saveddata.showamount = ThreatMeter.saveddata.showamount or false
 				ThreatMeter.saveddata.useplayercolor = ThreatMeter.saveddata.useplayercolor or false
 				ThreatMeter.saveddata.playercolor = ThreatMeter.saveddata.playercolor or {1, 1, 1}
+				ThreatMeter.saveddata.useclasscolors = ThreatMeter.saveddata.useclasscolors or false
 
 				ThreatMeter.options = ThreatMeter.saveddata
 				

@@ -328,6 +328,12 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 						skin.menu_anchor_down = table_deepcopy(skin_profile.menu_anchor_down)
 					end
 				end
+				if (skin.menu_icons and not skin.menu_icons.space) then
+					skin.menu_icons.space = -4
+				end
+				if (skin.menu_icons and not skin.menu_icons.shadow) then
+					skin.menu_icons.shadow = false
+				end
 
 				--> get the instance
 				local instance = _details:GetInstance(index)

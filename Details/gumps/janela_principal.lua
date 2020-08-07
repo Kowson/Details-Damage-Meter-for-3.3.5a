@@ -4185,6 +4185,21 @@ function _details:SetIconAlpha(alpha, hide, no_animations)
 	end
 end
 
+function _details:ToolbarMenuSetButtonsOptions(spacement, shadow)
+	if (type(spacement) ~= "number") then
+		spacement = self.menu_icons.space
+	end
+
+	if (type(shadow) ~= "boolean") then
+		shadow = self.menu_icons.shadow
+	end
+
+	self.menu_icons.space = spacement
+	self.menu_icons.shadow = shadow
+
+	return self:ToolbarMenuSetButtons()
+end
+
 local tbuttons = {}
 function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _reset, _close)
 
@@ -4225,9 +4240,13 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 
 	local anchor_frame, point1, point2 = self:GetMenuAnchorPoint()
 	local got_anchor = false
+
 	self.lastIcon = nil
-	
+	self.firstIcon = nil
+
 	local size = self.menu_icons_size
+	local space = self.menu_icons.space
+	local shadow = self.menu_icons.shadow
 	
 	--> normal buttons
 	if (self.menu_anchor.side == 1) then
@@ -4235,10 +4254,11 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 			if (self.menu_icons[index]) then
 				button:ClearAllPoints()
 				if (got_anchor) then
-					button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", -3, 0)
+					button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", space, 0)
 				else
 					button:SetPoint(point1, anchor_frame, point2)
 					got_anchor = button
+					self.firstIcon = button
 				end
 				self.lastIcon = button
 				button:SetParent(self.baseframe)
@@ -4246,6 +4266,15 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 				button:Show()
 
 				button:SetSize(16*size, 16*size)
+				if (shadow) then
+					button:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+					button:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+					button:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+				else
+					button:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+					button:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+					button:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+				end
 			else
 				button:Hide()
 			end
@@ -4257,9 +4286,10 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 			if (self.menu_icons[index]) then
 				button:ClearAllPoints()
 				if (got_anchor) then
-					button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left", 3, 0)
+					button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left", -space, 0)
 				else
 					button:SetPoint(point1, anchor_frame, point2)
+					self.firstIcon = button
 				end
 				self.lastIcon = button
 				got_anchor = button
@@ -4268,6 +4298,15 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 				button:Show()
 
 				button:SetSize(16*size, 16*size)
+				if (shadow) then
+					button:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+					button:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+					button:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons_shadow]])
+				else
+					button:SetNormalTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+					button:SetHighlightTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+					button:SetPushedTexture([[Interface\AddOns\Details\images\toolbar_icons]])
+				end
 			else
 				button:Hide()
 			end
@@ -4277,27 +4316,31 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 	--> plugins buttons
 	if (self:IsLowerInstance()) then
 		if (#_details.ToolBar.Shown > 0) then
+			local last_plugin_icon
 			for index, button in ipairs(_details.ToolBar.Shown) do 
 				button:ClearAllPoints()
+
 				if (got_anchor) then
-					if (self.plugins_grow_direction == 2) then --right(default)
-						if (self.lastIcon == tbuttons[6]) then
-							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", 2, 0) --, button.x, button.y
-						else
-							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right") --, button.x, button.y
+					if (self.plugins_grow_direction == 2) then -- right
+						if (self.menu_anchor.side == 1) then -- left
+							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right")
+						elseif (self.menu_anchor.side == 2) then -- right
+							button:SetPoint("left", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "right")
 						end
-					elseif (self.plugins_grow_direction == 1) then --left
-						if (index == 1) then
-							button:SetPoint("right", got_anchor.widget or got_anchor, "left") --, button.x, button.y
-						else
-							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left") --, button.x, button.y
+					elseif (self.plugins_grow_direction == 1) then -- left
+						if (self.menu_anchor.side == 1) then -- left
+							button:SetPoint("right", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "left")
+						elseif (self.menu_anchor.side == 2) then -- right
+							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left")
 						end
 					end
 				else
 					button:SetPoint(point1, anchor_frame, point2)
+					self.firstIcon = button
 					got_anchor = button
 				end
 				self.lastIcon = button
+				last_plugin_icon = button
 				button:SetParent(self.baseframe)
 				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
 				button:Show()
@@ -4311,94 +4354,7 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 end
 
 function _details:ToolbarMenuButtons(_mode, _segment, _attributes, _report)
-	if (true) then -- TODO: ?????
-		return self:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report)
-	end
-	if (_mode == nil) then
-		_mode = self.menu_icons[1]
-	end
-	if (_segment == nil) then
-		_segment = self.menu_icons[2]
-	end
-	if (_attributes == nil) then
-		_attributes = self.menu_icons[3]
-	end
-	if (_report == nil) then
-		_report = self.menu_icons[4]
-	end
-	
-	self.menu_icons[1] = _mode
-	self.menu_icons[2] = _segment
-	self.menu_icons[3] = _attributes
-	self.menu_icons[4] = _report
-	
-	local buttons = {self.baseframe.header.mode_selecao, self.baseframe.header.segment, self.baseframe.header.attribute,  self.baseframe.header.report}
-	
-	local anchor_frame, point1, point2 = self:GetMenuAnchorPoint()
-	local got_anchor = false
-	self.lastIcon = nil
-
-	local size = self.menu_icons_size
-
-	--> normal buttons
-	for index, button in _ipairs(buttons) do
-		if (self.menu_icons[index]) then
-			button:ClearAllPoints()
-			if (got_anchor) then
-				button:SetPoint("left", self.lastIcon, "right")
-			else
-				button:SetPoint(point1, anchor_frame, point2)
-				got_anchor = button
-			end
-
-			self.lastIcon = button
-			button:SetParent(self.baseframe)
-			button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
-			button:Show()
-
-			if (buttons[4] == button) then
-				button:SetSize(8*size, 16*size)
-			else
-				button:SetSize(16*size, 16*size)
-			end
-			
-		else
-			button:Hide()
-		end
-	end
-	--> plugins buttons
-	if (self:IsLowerInstance()) then
-		if (#_details.ToolBar.Shown > 0) then
-			for index, button in _ipairs(_details.ToolBar.Shown) do
-				button:ClearAllPoints()
-				if (got_anchor) then
-					if (self.plugins_grow_direction == 2) then --right (default)
-						if (self.lastIcon == buttons[4]) then
-							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", 2, 0) --, button.x, button.y
-						else
-							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right") --, button.x, button.y
-						end
-					elseif (self.plugins_grow_direction == 1) then --left
-						if (index == 1) then
-							button:SetPoint("right", got_anchor.widget or got_anchor, "left") --, button.x, button.y
-						else
-							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left") --, button.x, button.y
-						end
-					end
-				else
-					button:SetPoint (point1, anchor_frame, point2)
-					got_anchor = button
-				end
-				self.lastIcon = button
-				button:SetParent(self.baseframe)
-				button:SetFrameLevel(self.baseframe.UPFrame:GetFrameLevel()+1)
-				button:Show()
-
-				button:SetSize(16*size, 16*size)
-			end
-		end
-	end
-	return true
+	return self:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report)
 end
 
 local parameters_table = {}

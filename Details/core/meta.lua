@@ -580,6 +580,7 @@
 				this_instance.consolidateButtonTexture = nil
 				this_instance.consolidateButton = nil
 				this_instance.lastIcon = nil
+				this_instance.firstIcon = nil
 				
 				this_instance.menu_attribute_string = nil
 				
