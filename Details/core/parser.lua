@@ -475,6 +475,11 @@
 			if (tanks_members_cache[dst_serial]) then --> autoshot or melee hit
 				--> avoidance
 				local avoidance = player_dst.avoidance
+				if (not avoidance) then
+					player_dst.avoidance = _details:CreateActorAvoidanceTable()
+					avoidance = player_dst.avoidance
+				end
+
 				local overall = avoidance.overall
 				
 				local mob = avoidance[src_name]
@@ -693,6 +698,12 @@
 			if (TargetActor) then
 			
 				local avoidance = TargetActor.avoidance
+
+				if (not avoidance) then
+					TargetActor.avoidance = _details:CreateActorAvoidanceTable()
+					avoidance = TargetActor.avoidance
+				end
+
 				local missTable = avoidance.overall[missType]
 				
 				if (missTable) then
