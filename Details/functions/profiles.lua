@@ -455,6 +455,16 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 						_details.move_window_func(instance.baseframe, false, instance)
 					end
 				end
+			else
+				--> is in startup
+				for _, instance in _details:ListInstances() do
+					for side, id in pairs(instance.snap) do
+						local window = _details.table_instances[id]
+						if (not window.active) then
+							instance.snap[side] = nil
+						end
+					end
+				end
 			end
 			
 		end
@@ -470,6 +480,10 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 		
 		--> update tooltip settings
 		_details:SetTooltipBackdrop()
+
+		if (_details.initializing) then
+			_details.profile_loaded = true
+		end
 
 	--> end
 

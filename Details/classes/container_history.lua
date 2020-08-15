@@ -308,7 +308,11 @@ function history:reset()
 	_table_wipe(_details.cache_healing_group)
 	_details:UpdateParserGears()
 
-	collectgarbage()
+	if (not InCombatLockdown() and not UnitAffectingCombat("player")) then
+		collectgarbage()
+	else
+		_details.schedule_hard_garbage_collect = true
+	end
 	
 	_details:instanceCallFunction(_details.UpdateSegments) -- atualiza o instance.showing para as news tables criadas
 	_details:instanceCallFunction(_details.UpdateSoloMode_AfertReset) -- verifica se precisa zerar as table da window solo mode

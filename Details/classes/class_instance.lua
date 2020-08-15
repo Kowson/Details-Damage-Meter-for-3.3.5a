@@ -676,26 +676,27 @@ function _details:BaseFrameSnap()
 		--print("DEBUG instance " .. snap_to .. " side "..side)
 		local instance_dst = _details.table_instances[snap_to]
 
-		if (side == 1) then --> a left
-			instance_dst.baseframe:SetPoint("TOPRIGHT", my_baseframe, "TOPLEFT")
-			
-		elseif (side == 2) then --> em baixo
-			local statusbar_y_mod = 0
-			if (not self.show_statusbar) then
-				statusbar_y_mod = 14
-			end
-			instance_dst.baseframe:SetPoint("TOPLEFT", my_baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
-			
-		elseif (side == 3) then --> a right
-			instance_dst.baseframe:SetPoint("BOTTOMLEFT", my_baseframe, "BOTTOMRIGHT")
-			
-		elseif (side == 4) then --> em cima
-			local statusbar_y_mod = 0
-			if (not instance_dst.show_statusbar) then
-				statusbar_y_mod = -14
-			end
-			instance_dst.baseframe:SetPoint("BOTTOMLEFT", my_baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod)
+		if (instance_dst.active and instance_dst.baseframe) then
+			if (side == 1) then --> a left
+				instance_dst.baseframe:SetPoint("TOPRIGHT", my_baseframe, "TOPLEFT")
 
+			elseif (side == 2) then --> down
+				local statusbar_y_mod = 0
+				if (not self.show_statusbar) then
+					statusbar_y_mod = 14
+				end
+				instance_dst.baseframe:SetPoint("TOPLEFT", my_baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
+
+			elseif (side == 3) then --> right
+				instance_dst.baseframe:SetPoint("BOTTOMLEFT", my_baseframe, "BOTTOMRIGHT")
+
+			elseif (side == 4) then --> up
+				local statusbar_y_mod = 0
+				if (not instance_dst.show_statusbar) then
+					statusbar_y_mod = -14
+				end
+				instance_dst.baseframe:SetPoint("BOTTOMLEFT", my_baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod)
+			end
 		end
 	end
 
@@ -725,30 +726,32 @@ function _details:BaseFrameSnap()
 					end
 
 					--> do os setpoints
-					if (side_reverse == 1) then --> a left
-						instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "BOTTOMRIGHT")
-						
-					elseif (side_reverse == 2) then --> em baixo
-					
-						local statusbar_y_mod = 0
-						if (not instance_dst.show_statusbar) then
-							statusbar_y_mod = -14
+					if (instance_dst.active and instance_dst.baseframe) then
+						if (side_reverse == 1) then --> a left
+							instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "BOTTOMRIGHT")
+
+						elseif (side_reverse == 2) then --> em baixo
+
+							local statusbar_y_mod = 0
+							if (not instance_dst.show_statusbar) then
+								statusbar_y_mod = -14
+							end
+
+							instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod) -- +(statusbar_y_mod*-1)
+
+						elseif (side_reverse == 3) then --> a right
+							instance_dst.baseframe:SetPoint("TOPRIGHT", instance.baseframe, "TOPLEFT")
+
+						elseif (side_reverse == 4) then --> em cima
+
+							local statusbar_y_mod = 0
+							if (not instance.show_statusbar) then
+								statusbar_y_mod = 14
+							end
+
+							instance_dst.baseframe:SetPoint("TOPLEFT", instance.baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
+
 						end
-						
-						instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod) -- +(statusbar_y_mod*-1)
-						
-					elseif (side_reverse == 3) then --> a right
-						instance_dst.baseframe:SetPoint("TOPRIGHT", instance.baseframe, "TOPLEFT")
-						
-					elseif (side_reverse == 4) then --> em cima
-					
-						local statusbar_y_mod = 0
-						if (not instance.show_statusbar) then
-							statusbar_y_mod = 14
-						end
-					
-						instance_dst.baseframe:SetPoint("TOPLEFT", instance.baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
-						
 					end
 				end
 			end
@@ -761,29 +764,30 @@ function _details:BaseFrameSnap()
 			for side, snap_to in _pairs(instance.snap) do
 				if (snap_to > instance.mine_id and snap_to ~= self.mine_id) then
 					local instance_dst = _details.table_instances[snap_to]
-					
-					if (side == 1) then --> a left
-						instance_dst.baseframe:SetPoint("TOPRIGHT", instance.baseframe, "TOPLEFT")
-						
-					elseif (side == 2) then --> em baixo
-						local statusbar_y_mod = 0
-						if (not instance.show_statusbar) then
-							statusbar_y_mod = 14
+					if (instance_dst.active and instance_dst.baseframe) then
+						if (side == 1) then --> left
+							instance_dst.baseframe:SetPoint("TOPRIGHT", instance.baseframe, "TOPLEFT")
+
+						elseif (side == 2) then --> down
+							local statusbar_y_mod = 0
+							if (not instance.show_statusbar) then
+								statusbar_y_mod = 14
+							end
+							instance_dst.baseframe:SetPoint("TOPLEFT", instance.baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
+
+						elseif (side == 3) then --> right
+							instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "BOTTOMRIGHT")
+
+						elseif (side == 4) then --> up
+
+							local statusbar_y_mod = 0
+							if (not instance_dst.show_statusbar) then
+								statusbar_y_mod = -14
+							end
+
+							instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod)
+
 						end
-						instance_dst.baseframe:SetPoint("TOPLEFT", instance.baseframe, "BOTTOMLEFT", 0, -34 + statusbar_y_mod)
-						
-					elseif (side == 3) then --> a right
-						instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "BOTTOMRIGHT")
-						
-					elseif (side == 4) then --> em cima
-					
-						local statusbar_y_mod = 0
-						if (not instance_dst.show_statusbar) then
-							statusbar_y_mod = -14
-						end
-					
-						instance_dst.baseframe:SetPoint("BOTTOMLEFT", instance.baseframe, "TOPLEFT", 0, 34 + statusbar_y_mod)
-						
 					end
 				end
 			end

@@ -3116,6 +3116,14 @@
 
 			_details.history:adicionar_overall(_details.table_current)
 		end
+
+		if (_details.schedule_hard_garbage_collect) then
+			if (_details.debug) then
+				_details:Msg ("(debug) found schedule collectgarbage().")
+			end
+			_details.schedule_hard_garbage_collect = false
+			collectgarbage()
+		end
 		
 		for index, instance in ipairs(_details.table_instances) do 
 			if (instance.active) then
