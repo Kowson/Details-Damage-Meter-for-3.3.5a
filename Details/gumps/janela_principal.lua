@@ -4200,6 +4200,8 @@ function _details:ToolbarMenuSetButtonsOptions(spacement, shadow)
 	return self:ToolbarMenuSetButtons()
 end
 
+-- search key: ~buttons
+
 local tbuttons = {}
 function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _reset, _close)
 
@@ -4323,15 +4325,15 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 				if (got_anchor) then
 					if (self.plugins_grow_direction == 2) then -- right
 						if (self.menu_anchor.side == 1) then -- left
-							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right")
+							button:SetPoint("left", self.lastIcon.widget or self.lastIcon, "right", space, 0)
 						elseif (self.menu_anchor.side == 2) then -- right
-							button:SetPoint("left", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "right")
+							button:SetPoint("left", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "right", space, 0)
 						end
 					elseif (self.plugins_grow_direction == 1) then -- left
 						if (self.menu_anchor.side == 1) then -- left
-							button:SetPoint("right", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "left")
+							button:SetPoint("right", last_plugin_icon or self.firstIcon.widget or self.firstIcon, "left", -space, 0)
 						elseif (self.menu_anchor.side == 2) then -- right
-							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left")
+							button:SetPoint("right", self.lastIcon.widget or self.lastIcon, "left", -space, 0)
 						end
 					end
 				else
@@ -4346,6 +4348,16 @@ function _details:ToolbarMenuSetButtons(_mode, _segment, _attributes, _report, _
 				button:Show()
 				
 				button:SetSize(16*size, 16*size)
+
+				if (shadow and button.shadow) then
+					button:SetNormalTexture(button.__icon .. "_shadow")
+					button:SetPushedTexture(button.__icon .. "_shadow")
+					button:SetHighlightTexture(button.__icon .. "_shadow", "ADD")
+				else
+					button:SetNormalTexture(button.__icon)
+					button:SetPushedTexture(button.__icon)
+					button:SetHighlightTexture(button.__icon, "ADD")
+				end
 			end
 		end
 	end
