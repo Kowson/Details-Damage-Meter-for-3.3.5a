@@ -4578,11 +4578,7 @@ local build_mode_list = function(self, elapsed)
 		CoolTip:AddMenu(1, _details.OpenOptionsWindow)
 		CoolTip:AddIcon([[Interface\AddOns\Details\images\mode_icons]], 1, 1, 20, 20, 0.5, 0.625, 0, 1)
 
-		if (instance.toolbar_side == 1) then
-			CoolTip:SetOwner(self)
-		elseif (instance.toolbar_side == 2) then --> bottom
-			CoolTip:SetOwner(self, "bottom", "top", 0, 0) -- -7
-		end
+		_details:SetMenuOwner(self, instance)
 
 		CoolTip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], menu_wallpaper_tex, menu_wallpaper_color, true)
 		CoolTip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
@@ -4590,6 +4586,27 @@ local build_mode_list = function(self, elapsed)
 		show_anti_overlap(instance, self, "top")
 		
 		CoolTip:ShowCooltip()
+	end
+end
+
+function _details:SetMenuOwner(self, instance)
+	local _, y = instance.baseframe:GetCenter()
+	local screen_height = GetScreenHeight()
+
+	if (instance.toolbar_side == 1) then
+		if (y+300 > screen_height) then
+			GameCooltip:SetOwner(self, "top", "bottom", 0, -10)
+		else
+			GameCooltip:SetOwner(self)
+		end
+	elseif (instance.toolbar_side == 2) then --> bottom
+		local instance_height = instance.baseframe:GetHeight()
+
+		if (y + math.max(instance_height, 250) > screen_height) then
+			GameCooltip:SetOwner(self, "top", "bottom", 0, -10)
+		else
+			GameCooltip:SetOwner(self, "bottom", "top", 0, 0)
+		end
 	end
 end
 
@@ -4869,15 +4886,7 @@ local build_segment_list = function(self, elapsed)
 			
 		---------------------------------------------
 		
-		if (instance.consolidate) then
-			CoolTip:SetOwner(self, "topleft", "topright", 3)
-		else
-			if (instance.toolbar_side == 1) then
-				CoolTip:SetOwner(self)
-			elseif (instance.toolbar_side == 2) then --> bottom
-				CoolTip:SetOwner(self, "bottom", "top", 0, 0) -- -7
-			end
-		end
+		_details:SetMenuOwner(self, instance)
 		
 		CoolTip:SetOption("TextSize", _details.font_sizes.menus)
 		CoolTip:SetOption("SubMenuIsTooltip", true)
@@ -6158,12 +6167,14 @@ end
 
 --> reset button functions
 	local reset_button_onenter = function(self)
-	
+		local GameCooltip = GameCooltip
+
 		OnEnterMainWindow(self.instance, self)
 		GameCooltip.buttonOver = true
 		self.instance.baseframe.header.button_mouse_over = true
 		
 		GameCooltip:Reset()
+		GameCooltip:SetType("menu")
 		GameCooltip:SetOption("ButtonsYMod", -2)
 		GameCooltip:SetOption("YSpacingMod", 0)
 		GameCooltip:SetOption("TextHeightMod", 0)
@@ -6186,7 +6197,8 @@ end
 		
 		show_anti_overlap(self.instance, self, "top")
 		
-		GameCooltip:ShowCooltip(self, "menu")
+		_details:SetMenuOwner(self, self.instance)
+		GameCooltip:ShowCooltip()
 	end
 	
 	local reset_button_onleave = function(self)
@@ -6226,10 +6238,13 @@ end
 	local close_button_onenter = function(self)
 		OnEnterMainWindow(self.instance, self, 3)
 
+		local GameCooltip = GameCooltip
+
 		GameCooltip.buttonOver = true
 		self.instance.baseframe.header.button_mouse_over = true
 		
 		GameCooltip:Reset()
+		GameCooltip:SetType("menu")
 		GameCooltip:SetOption("ButtonsYMod", -7)
 		GameCooltip:SetOption("ButtonsYModSub", -2)
 		GameCooltip:SetOption("YSpacingMod", 0)
@@ -6261,7 +6276,8 @@ end
 		
 		show_anti_overlap(self.instance, self, "top")
 		
-		GameCooltip:ShowCooltip(self, "menu")
+		_details:SetMenuOwner(self, self.instance)
+		GameCooltip:ShowCooltip()
 	end
 	
 	local close_button_onleave = function(self)
@@ -6674,14 +6690,11 @@ function gump:CreateHeader(baseframe, instance)
 		FixedValue = instance,
 		ShowSpeed = 0.15,
 		Options = function()
-			if (instance.consolidate) then
-				return {Anchor = instance.consolidateFrame, MyAnchor = "topleft", RelativeAnchor = "topright", TextSize = _details.font_sizes.menus}
-			else
-				if (instance.toolbar_side == 1) then --top
-					return {TextSize = _details.font_sizes.menus}
-				elseif (instance.toolbar_side == 2) then --bottom
-					return {TextSize = _details.font_sizes.menus, HeightAnchorMod = 0} -- -7
-				end
+			_details:SetMenuOwner(baseframe.header.attribute.widget, instance)
+			if (instance.toolbar_side == 1) then --top
+				return {TextSize = _details.font_sizes.menus}
+			elseif (instance.toolbar_side == 2) then --bottom
+				return {TextSize = _details.font_sizes.menus, HeightAnchorMod = 0} -- -7
 			end
 		end}
 	
@@ -6712,6 +6725,7 @@ function gump:CreateHeader(baseframe, instance)
 				baseframe.header.button_mouse_over = true
 				
 				GameCooltip:Reset()
+				GameCooltip:SetType("menu")
 				GameCooltip:SetOption("ButtonsYMod", -3)
 				GameCooltip:SetOption("YSpacingMod", 0)
 				GameCooltip:SetOption("TextHeightMod", 0)
@@ -6728,8 +6742,9 @@ function gump:CreateHeader(baseframe, instance)
 				GameCooltip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
 				
 				show_anti_overlap(instance, self, "top")
+				_details:SetMenuOwner(self, instance)
 				
-				GameCooltip:ShowCooltip(self, "menu")
+				GameCooltip:ShowCooltip()
 				
 			end)
 			baseframe.header.report:SetScript("OnLeave", function(self)

@@ -172,7 +172,7 @@ function _details:ToolTipDead(instance, death, this_bar, keydown)
 	
 	GameCooltip:Reset()
 	GameCooltip:SetType("tooltipbar")
-	GameCooltip:SetOwner(this_bar)
+	--GameCooltip:SetOwner(this_bar)
 	
 	GameCooltip:AddLine(Loc["STRING_REPORT_LEFTCLICK"], nil, 1, _unpack(self.click_to_report_color))
 	GameCooltip:AddIcon([[Interface\TUTORIALFRAME\UI-TUTORIAL-FRAME]], 1, 1, 12, 16, 0.015625, 0.13671875, 0.4375, 0.59765625)
@@ -264,7 +264,18 @@ function _details:ToolTipDead(instance, death, this_bar, keydown)
 	GameCooltip:SetOption("RightBorderSize", 5)
 	GameCooltip:SetOption("StatusBarTexture",[[Interface\AddOns\Details\images\bar4_reverse]])
 	GameCooltip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0.64453125, 0}, {.8, .8, .8, 0.2}, true)
-	
+
+	local myPoint = _details.tooltip.anchor_point
+	local anchorPoint = _details.tooltip.anchor_relative
+	local x_Offset = _details.tooltip.anchor_offset[1]
+	local y_Offset = _details.tooltip.anchor_offset[2]
+
+	if (_details.tooltip.anchored_to == 1) then
+		GameCooltip:SetHost(this_bar, myPoint, anchorPoint, x_Offset, y_Offset)
+	else
+		GameCooltip:SetHost(DetailsTooltipAnchor, myPoint, anchorPoint, x_Offset, y_Offset)
+	end
+
 	GameCooltip:ShowCooltip()
 	
 end
