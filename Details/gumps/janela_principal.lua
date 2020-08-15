@@ -4521,10 +4521,10 @@ local build_mode_list = function(self, elapsed)
 						_this_instance:ResetAttribute()
 						attribute = _this_instance.attribute
 						sub_attribute = _this_instance.sub_attribute
-						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.lista[attribute] .. " - " .. _details.sub_attributes[attribute].lista[sub_attribute], _, true)
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.list[attribute] .. " - " .. _details.sub_attributes[attribute].list[sub_attribute], _, true)
 						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 2, 1, 16, 16, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
 					else
-						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.lista[attribute] .. " - " .. CustomObject:GetName(), _, true)
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#".. index .. " " .. _details.attributes.list[attribute] .. " - " .. CustomObject:GetName(), _, true)
 						CoolTip:AddIcon(CustomObject.icon, 2, 1, 16, 16, 0, 1, 0, 1)
 					end
 
@@ -4559,8 +4559,7 @@ local build_mode_list = function(self, elapsed)
 
 					else
 
-						--CoolTip:AddMenu (2, OnClickNovoMenu, index, instancia, nil, "#".. index .. " " .. _detalhes.atributos.lista [atributo] .. " - " .. _detalhes.sub_atributos [atributo].lista [sub_atributo], _, true)
-						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#" .. index .. " " .. _details.sub_attributes[attribute].lista[sub_attribute], _, true)
+						CoolTip:AddMenu(2, OnClickNewMenu, index, instance, nil, "#" .. index .. " " .. _details.sub_attributes[attribute].list[sub_attribute], _, true)
 						CoolTip:AddIcon(_details.sub_attributes[attribute].icons[sub_attribute][1], 2, 1, 16, 16, unpack(_details.sub_attributes[attribute].icons[sub_attribute][2]))
 
 					end
