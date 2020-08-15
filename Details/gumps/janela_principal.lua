@@ -4484,10 +4484,20 @@ local build_mode_list = function(self, elapsed)
 		--CoolTip:AddMenu (2, _detalhes.OpenOptionsWindow, true, 1, nil, "Cant Create Window", _, true)
 		--CoolTip:AddIcon ([[Interface\Buttons\UI-PlusButton-Up]], 2, 1, 16, 16)
 
+		local HaveClosedInstances = false
+		for index = 1, math.min (#_details.table_instances, _details.instances_amount), 1 do
+			local _this_instance = _details.table_instances[index]
+			if (not _this_instance.active) then
+				HaveClosedInstances = true
+				break
+			end
+		end
 		if (_details:GetNumInstancesAmount() < _details:GetMaxInstancesAmount()) then
 			CoolTip:AddMenu(2, OnClickNewMenu, true, instance, nil, "Create Window", _, true)
 			CoolTip:AddIcon([[Interface\Buttons\UI-AttributeButton-Encourage-Up]], 2, 1, 16, 16)
-			GameCooltip:AddLine("$div", nil, 2, nil, -5, -11)
+			if (HaveClosedInstances) then
+				GameCooltip:AddLine("$div", nil, 2, nil, -5, -11)
+			end
 		end
 
 		local ClosedInstances = 0

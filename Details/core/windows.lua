@@ -1748,7 +1748,7 @@
 			return geterrorhandler()(err)
 		end
 	
-		local code =[[local str = "STR"; str = str:ReplaceData(100, 50, 75, {name = "you", total = 10, total_without_pet = 5, damage_taken = 7, last_dps = 1, friendlyfire_total = 6, totalover = 2, totalabsorb = 4, totalover_without_pet = 6, healing_taken = 1, heal_enemy_amt = 2});]]
+		local code =[[local str = "STR"; str = _details.string.replace(str, 100, 50, 75, {name = "you", total = 10, total_without_pet = 5, damage_taken = 7, last_dps = 1, friendlyfire_total = 6, totalover = 2, totalabsorb = 4, totalover_without_pet = 6, healing_taken = 1, heal_enemy_amt = 2});]]
 		code = code:gsub("STR", test)
 
 		local f = loadstring(code)

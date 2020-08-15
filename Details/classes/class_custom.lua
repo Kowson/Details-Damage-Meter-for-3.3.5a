@@ -23,6 +23,7 @@
 	local _bit_band = bit.band --lua local
 	local _unpack = unpack --lua local
 	local _type = type --lua local
+	local _pcall = pcall --lua local
 	
 	local _GetSpellInfo = _details.getspellinfo -- api local
 	local _IsInRaid = IsInRaid -- api local
@@ -31,6 +32,7 @@
 	local _GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers -- api local
 	local _GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers -- api local
 	local _GetUnitName = GetUnitName -- api local
+	local _string_replace = _details.string.replace -- details api
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -131,7 +133,13 @@
 			end
 			
 			--> call the loop function
-			total, top, amount = func(combat, instance_container, instance)
+			--total, top, amount = func(combat, instance_container, instance)
+			local okay
+			okay, total, top, amount = _pcall(func, combat, instance_container, instance)
+			if (not okay) then
+				_details:Msg("|cFFFF9900error on custom display function|r:", total)
+				return _details:EndRefresh(instance, 0, combat, combat[1])
+			end
 		else
 			--> get the attribute
 			local attribute = custom_object:GetAttribute()
@@ -458,7 +466,7 @@
 		else
 			local formated_value = SelectedToKFunction(_, self.value)
 			if (UsingCustomRightText) then
-				row.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_value, "", percent, self))
+				row.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_value, "", percent, self))
 			else
 				row.text_right:SetText(formated_value .. "(" .. percent .. "%)")
 			end
@@ -604,7 +612,7 @@
 		if (self.enemy) then
 			if (self.arena_enemy) then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 				end
@@ -612,13 +620,13 @@
 			else
 				if (_details.faction_against == "Horde") then
 					if (UsingCustomLeftText) then
-						this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
+						this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
 					else
 						this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"..self.displayName) --seta o text da esqueda -- HORDA
 					end
 				else
 					if (UsingCustomLeftText) then
-						this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
+						this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
 					else
 						this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"..self.displayName) --seta o text da esqueda -- ALLY
 					end
@@ -631,13 +639,13 @@
 		else
 			if (self.arena_ally) then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 				end
 			else
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, ""))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, ""))
 				else
 					this_bar.text_left:SetText(bar_number .. self.displayName) --seta o text da esqueda
 				end
