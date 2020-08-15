@@ -1396,7 +1396,6 @@ function DetailsCreateCoolTip()
 		CoolTip.active = true
 		
 		for i = 1, CoolTip.Indexes do
-		
 			local menuButton = frame1.Lines[i]
 			if (not menuButton) then
 				menuButton = CoolTip:NewMainButton(i)
@@ -1404,15 +1403,7 @@ function DetailsCreateCoolTip()
 			
 			CoolTip:SetupMainButton(menuButton, i)
 			
-			if (CoolTip.SelectedIndexMain and CoolTip.SelectedIndexMain == i) then
-				if (CoolTip.HaveSubMenu and CoolTip.IndexesSub[i] and CoolTip.IndexesSub[i] > 0) then
-					CoolTip:ShowSub(i)
-				end
-			end
-			
 			menuButton.background:Hide()
-			
-			--menuButton:SetHeight(CoolTip.OptionsTable.ButtonHeightMod or CoolTip.default_height)
 		end
 
 		--> selected texture
@@ -1546,6 +1537,13 @@ function DetailsCreateCoolTip()
 		end
 	
 		gump:Fade(frame1, 0)
+		for i = 1, CoolTip.Indexes do
+			if (CoolTip.SelectedIndexMain and CoolTip.SelectedIndexMain == i) then
+				if (CoolTip.HaveSubMenu and CoolTip.IndexesSub[i] and CoolTip.IndexesSub[i] > 0) then
+					CoolTip:ShowSub(i)
+				end
+			end
+		end
 
 		return true
 	end
