@@ -1,2 +1,0 @@
-- Remove Bookmark Tutorial frame
-- Fix Highlight area animations backported from 5.4.8
