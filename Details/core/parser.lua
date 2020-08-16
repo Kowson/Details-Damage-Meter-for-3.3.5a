@@ -352,7 +352,7 @@
 	--> check if need start an combat
 
 		if (not _in_combat) then
-			if (	token ~= "SPELL_PERIODIC_DAMAGE" and --> don't enter combat if it is DoT
+			if ( token ~= "SPELL_PERIODIC_DAMAGE" and --> don't enter combat if it is DoT
 			( 
 				(src_flags and _bit_band(src_flags, AFFILIATION_GROUP) ~= 0 and _UnitAffectingCombat(src_name) )
 					or 
@@ -374,6 +374,13 @@
 					end
 				end
 				_details:EnterCombat(src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
+			else
+				--> enter combat if it is DoT and it belongs to the player and the last combat was more than 10 seconds ago
+				if (token == "SPELL_PERIODIC_DAMAGE" and src_name == _details.playername) then
+					if (_details.last_combat_time + 10 < _details._time) then
+						_details:EnterCombat(src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
+					end
+				end
 			end
 		end
 		
@@ -660,6 +667,7 @@
 		local spell = this_player.spell_tables._ActorTable[spellid]
 		if (not spell) then
 			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell.spellschool = school
 		end
 		
 		return spell_damage_func(spell, dst_serial, dst_name, dst_flags, amount, src_name, resisted, blocked, absorbed, critical, glacing, token)

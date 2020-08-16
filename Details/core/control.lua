@@ -345,6 +345,7 @@
 			end
 			
 			_details.leaving_combat = true
+			_details.last_combat_time = _details._time
 			
 			if (_details.schedule_remove_overall and not from_encounter_end and not InCombatLockdown()) then
 				if (_details.debug) then

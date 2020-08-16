@@ -137,7 +137,7 @@
 				return self.group
 			end
 			
---[[ exported]] 	function _details:IsPlayer()
+--[[ exported]] function _details:IsPlayer()
 				if (self.flag_original) then
 					if (_bit_band(self.flag_original, OBJECT_TYPE_PLAYER) ~= 0) then
 						return true
@@ -145,7 +145,29 @@
 				end
 				return false
 			end
-			
+
+--[[ exported]]	function _details:IsNeutralOrEnemy()
+				if (self.flag_original) then
+					if (_bit_band(self.flag_original, 0x00000060) ~= 0) then
+						return true
+					end
+				end
+				return false
+			end
+
+--[[ exported]]	function _details:IsEnemy()
+				if (self.flag_original) then
+					if (_bit_band (self.flag_original, 0x00000060) ~= 0) then
+						return true
+					end
+				end
+				return false
+			end
+
+--[[ exported]]	function _details:GetSpellList()
+				return self.spell_tables._ActorTable
+			end
+
 			-- enemies(sort function)
 			local sortEnemies = function(t1, t2)
 				local a = _bit_band(t1.flag_original, 0x00000060)
@@ -3346,7 +3368,7 @@ end
 					--> soma todos os demais valores
 					for key, value in _pairs(ability) do 
 						if (_type(value) == "number") then
-							if (key ~= "id") then
+							if (key ~= "id" and key ~= "spellschool") then
 								if (not ability_shadow[key]) then 
 									ability_shadow[key] = 0
 								end
@@ -3487,7 +3509,7 @@ attribute_damage.__add = function(table1, table2)
 			--> soma os valores da ability
 			for key, value in _pairs(ability) do 
 				if (_type(value) == "number") then
-					if (key ~= "id") then
+					if (key ~= "id" and key ~= "spellschool") then
 						if (not ability_table1[key]) then 
 							ability_table1[key] = 0
 						end
@@ -3549,7 +3571,7 @@ attribute_damage.__sub = function(table1, table2)
 			--> subtrai os valores da ability
 			for key, value in _pairs(ability) do 
 				if (_type(value) == "number") then
-					if (key ~= "id") then
+					if (key ~= "id" and key ~= "spellschool") then
 						if (not ability_table1[key]) then 
 							ability_table1[key] = 0
 						end

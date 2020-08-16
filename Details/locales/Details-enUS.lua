@@ -94,6 +94,8 @@ L["STRING_CUSTOM_CREATED"] = "The new display has been created."
 L["STRING_CUSTOM_DESCRIPTION"] = "Desc:"
 L["STRING_CUSTOM_DESCRIPTION_DESC"] = "Description about what this display does."
 L["STRING_CUSTOM_DONE"] = "Done"
+L["STRING_CUSTOM_DTBS"] = "Damage Taken By Spell"
+L["STRING_CUSTOM_DTBS_DESC"] = "Show the damage of enemy spells against your group."
 L["STRING_CUSTOM_EDIT"] = "Edit"
 L["STRING_CUSTOM_EDITCODE_DESC"] = "This is a advanced function where the user can create its own display code."
 L["STRING_CUSTOM_EDIT_SEARCH_CODE"] = "Edit Search Code"
@@ -731,7 +733,7 @@ L["STRING_OPTIONS_MICRODISPLAYS_OPTION_TOOLTIP"] = "Set the config for this micr
 L["STRING_OPTIONS_MICRODISPLAYS_SHOWHIDE_TOOLTIP"] = "Show or Hide this Micro Display"
 L["STRING_OPTIONS_MICRODISPLAYSSIDE"] = "Micro Displays Anchor"
 L["STRING_OPTIONS_MICRODISPLAYSSIDE_DESC"] = "Place the micro displays on the top of the window or on the bottom side."
-L["STRING_OPTIONS_MICRODISPLAYS_WARNING"] = [=[|cFFFFFF00Warning|r: micro displays can't be shown because
+L["STRING_OPTIONS_MICRODISPLAYS_WARNING"] = [=[|cFFFFFF00Note|r: micro displays can't be shown because
 they are anchored on bottom
 side and the statusbar is disabled.]=]
 L["STRING_OPTIONS_MICRODISPLAYWARNING"] = "Micro displays isn't shown because statusbar is disabled."
@@ -1135,9 +1137,9 @@ L["STRING_OPTIONS_TOOLBAR2_SETTINGS_DESC"] = "This options change the reset, win
 L["STRING_OPTIONS_TOOLBAR_SETTINGS"] = "Left Menu Settings"
 L["STRING_OPTIONS_TOOLBAR_SETTINGS_DESC"] = "This options change the main menu on the top of the window."
 L["STRING_OPTIONS_TOOLBARSIDE"] = "Toolbar Anchor"
-L["STRING_OPTIONS_TOOLBARSIDE_DESC"] = [=[Place the toolbar on the top or bottom side of window.
+L["STRING_OPTIONS_TOOLBARSIDE_DESC"] = [=[Places the toolbar (a.k.a title bar) on the top or bottom side of window.
 
-When alternating the position, title text won't change, check out |cFFFFFF00Title Text|r section for more options.]=]
+|cFFFFFF00Important|r: when alternating the position, title text won't change, check out |cFFFFFF00Title Bar: Text|r section for more options.]=]
 L["STRING_OPTIONS_TOOLS_ANCHOR"] = "Tools:"
 L["STRING_OPTIONS_TOOLTIP_ANCHOR"] = "Settings:"
 L["STRING_OPTIONS_TOOLTIP_ANCHORTEXTS"] = "Texts:"
@@ -1350,7 +1352,7 @@ L["STRING_REPORTFRAME_SAY"] = "Say"
 L["STRING_REPORTFRAME_SEND"] = "Send"
 L["STRING_REPORTFRAME_WHISPER"] = "Whisper"
 L["STRING_REPORTFRAME_WHISPERTARGET"] = "Whisper Target"
-L["STRING_REPORTFRAME_WINDOW_TITLE"] = "Create Report"
+L["STRING_REPORTFRAME_WINDOW_TITLE"] = "Link Details!"
 L["STRING_REPORT_INVALIDTARGET"] = "Whisper target not found"
 L["STRING_REPORT_LAST"] = "Last"
 L["STRING_REPORT_LASTFIGHT"] = "last fight"
