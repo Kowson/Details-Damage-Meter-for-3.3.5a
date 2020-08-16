@@ -455,6 +455,28 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 						_details.move_window_func(instance.baseframe, false, instance)
 					end
 				end
+			else
+				--> is in startup
+				for _, instance in _details:ListInstances() do
+					for side, id in pairs(instance.snap) do
+						local window = _details.table_instances[id]
+						if (not window.active) then
+							instance.snap[side] = nil
+							if ((side == 1 or side == 3) and (not instance.snap[1] and not instance.snap[3])) then
+								instance.horizontalSnap = false
+							elseif ((side == 2 or side == 4) and (not instance.snap[2] and not instance.snap[4])) then
+								instance.verticalSnap = false
+							end
+						end
+					end
+					if (not instance:IsEnabled()) then
+						for side, id in pairs(instance.snap) do
+							instance.snap[side] = nil
+						end
+						instance.horizontalSnap = false
+						instance.verticalSnap = false
+					end
+				end
 			end
 			
 		end
@@ -470,6 +492,10 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 		
 		--> update tooltip settings
 		_details:SetTooltipBackdrop()
+
+		if (_details.initializing) then
+			_details.profile_loaded = true
+		end
 
 	--> end
 

@@ -156,6 +156,9 @@ function _G._details:Start()
 			self.RefreshAfterStartup = nil
 			
 			function _details:CheckWallpaperAfterStartup()
+				if (not _details.profile_loaded) then
+					return _details:ScheduleTimer("CheckWallpaperAfterStartup", 2)
+				end
 				for i = 1, self.instances_amount do
 					local instance = self:GetInstance(i)
 					if (instance and instance:IsEnabled()) then
@@ -167,6 +170,7 @@ function _G._details:Start()
 					end
 				end
 				self.CheckWallpaperAfterStartup = nil
+				_details.profile_loaded = nil
 			end
 			_details:ScheduleTimer("CheckWallpaperAfterStartup", 5)
 			

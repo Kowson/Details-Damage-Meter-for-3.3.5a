@@ -352,7 +352,7 @@
 	--> check if need start an combat
 
 		if (not _in_combat) then
-			if (	token ~= "SPELL_PERIODIC_DAMAGE" and --> don't enter combat if it is DoT
+			if ( token ~= "SPELL_PERIODIC_DAMAGE" and --> don't enter combat if it is DoT
 			( 
 				(src_flags and _bit_band(src_flags, AFFILIATION_GROUP) ~= 0 and _UnitAffectingCombat(src_name) )
 					or 
@@ -374,6 +374,13 @@
 					end
 				end
 				_details:EnterCombat(src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
+			else
+				--> enter combat if it is DoT and it belongs to the player and the last combat was more than 10 seconds ago
+				if (token == "SPELL_PERIODIC_DAMAGE" and src_name == _details.playername) then
+					if (_details.last_combat_time + 10 < _details._time) then
+						_details:EnterCombat(src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
+					end
+				end
 			end
 		end
 		
@@ -475,6 +482,11 @@
 			if (tanks_members_cache[dst_serial]) then --> autoshot or melee hit
 				--> avoidance
 				local avoidance = player_dst.avoidance
+				if (not avoidance) then
+					player_dst.avoidance = _details:CreateActorAvoidanceTable()
+					avoidance = player_dst.avoidance
+				end
+
 				local overall = avoidance.overall
 				
 				local mob = avoidance[src_name]
@@ -655,6 +667,7 @@
 		local spell = this_player.spell_tables._ActorTable[spellid]
 		if (not spell) then
 			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell.spellschool = school
 		end
 		
 		return spell_damage_func(spell, dst_serial, dst_name, dst_flags, amount, src_name, resisted, blocked, absorbed, critical, glacing, token)
@@ -693,6 +706,12 @@
 			if (TargetActor) then
 			
 				local avoidance = TargetActor.avoidance
+
+				if (not avoidance) then
+					TargetActor.avoidance = _details:CreateActorAvoidanceTable()
+					avoidance = TargetActor.avoidance
+				end
+
 				local missTable = avoidance.overall[missType]
 				
 				if (missTable) then
@@ -3104,6 +3123,14 @@
 			_details.schedule_add_to_overall = false
 
 			_details.history:adicionar_overall(_details.table_current)
+		end
+
+		if (_details.schedule_hard_garbage_collect) then
+			if (_details.debug) then
+				_details:Msg ("(debug) found schedule collectgarbage().")
+			end
+			_details.schedule_hard_garbage_collect = false
+			collectgarbage()
 		end
 		
 		for index, instance in ipairs(_details.table_instances) do 

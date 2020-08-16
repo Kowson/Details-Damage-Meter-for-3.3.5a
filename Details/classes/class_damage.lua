@@ -26,7 +26,9 @@
 	local GameTooltip = GameTooltip --api local
 	local _IsInRaid = IsInRaid --api local
 	local _IsInGroup = IsInGroup --api local
+
 	local _GetSpellInfo = _details.getspellinfo --details api
+	local _string_replace = _details.string.replace --details api
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -135,7 +137,7 @@
 				return self.group
 			end
 			
---[[ exported]] 	function _details:IsPlayer()
+--[[ exported]] function _details:IsPlayer()
 				if (self.flag_original) then
 					if (_bit_band(self.flag_original, OBJECT_TYPE_PLAYER) ~= 0) then
 						return true
@@ -143,7 +145,29 @@
 				end
 				return false
 			end
-			
+
+--[[ exported]]	function _details:IsNeutralOrEnemy()
+				if (self.flag_original) then
+					if (_bit_band(self.flag_original, 0x00000060) ~= 0) then
+						return true
+					end
+				end
+				return false
+			end
+
+--[[ exported]]	function _details:IsEnemy()
+				if (self.flag_original) then
+					if (_bit_band (self.flag_original, 0x00000060) ~= 0) then
+						return true
+					end
+				end
+				return false
+			end
+
+--[[ exported]]	function _details:GetSpellList()
+				return self.spell_tables._ActorTable
+			end
+
 			-- enemies(sort function)
 			local sortEnemies = function(t1, t2)
 				local a = _bit_band(t1.flag_original, 0x00000060)
@@ -645,7 +669,7 @@
 		end
 		
 		if (UsingCustomRightText) then
-			this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_damage, formated_dps, percentage, self))
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
 		else
 			this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)")
 		end
@@ -1352,7 +1376,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			local formated_dps = SelectedToKFunction(_, dps)
 
 			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_damage, formated_dps, percentage, self))
+				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
 			else
 				this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
 			end
@@ -1365,7 +1389,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			local formated_dps = SelectedToKFunction(_, dps)
 		
 			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_dps, formated_damage, percentage, self))
+				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_dps, formated_damage, percentage, self))
 			else		
 				this_bar.text_right:SetText(formated_dps .. "(" .. formated_damage .. ", " .. percentage .. "%)") --seta o text da right
 			end
@@ -1379,7 +1403,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			local formated_dtps = SelectedToKFunction(_, dtps)
 
 			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_damage_taken, formated_dtps, percentage, self))
+				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentage, self))
 			else
 				this_bar.text_right:SetText(formated_damage_taken .."(" .. formated_dtps .. ", " .. percentage .. "%)") --seta o text da right --
 			end
@@ -1390,7 +1414,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			local formated_friendly_fire = SelectedToKFunction(_, self.friendlyfire_total)
 
 			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_friendly_fire, "", percentage, self))
+				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_friendly_fire, "", percentage, self))
 			else			
 				this_bar.text_right:SetText(formated_friendly_fire .. "(" .. percentage .. "%)") --seta o text da right --
 			end
@@ -1403,7 +1427,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 			local formated_dps = SelectedToKFunction(_, dps)
 		
 			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_damage, formated_dps, percentage, self))
+				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
 			else		
 				this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
 			end
@@ -1569,7 +1593,7 @@ end
 	if (self.enemy) then
 		if (self.arena_enemy) then
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 			else
 				this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 			end
@@ -1577,13 +1601,13 @@ end
 		else
 			if (_details.faction_against == "Horde") then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"..self.displayName) --seta o text da esqueda -- HORDA
 				end
 			else
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"..self.displayName) --seta o text da esqueda -- ALLY
 				end
@@ -1596,13 +1620,13 @@ end
 	else
 		if (self.arena_ally) then
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 			else
 				this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 			end
 		else
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, ""))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, ""))
 			else
 				this_bar.text_left:SetText(bar_number .. self.displayName) --seta o text da esqueda
 			end
@@ -3344,7 +3368,7 @@ end
 					--> soma todos os demais valores
 					for key, value in _pairs(ability) do 
 						if (_type(value) == "number") then
-							if (key ~= "id") then
+							if (key ~= "id" and key ~= "spellschool") then
 								if (not ability_shadow[key]) then 
 									ability_shadow[key] = 0
 								end
@@ -3485,7 +3509,7 @@ attribute_damage.__add = function(table1, table2)
 			--> soma os valores da ability
 			for key, value in _pairs(ability) do 
 				if (_type(value) == "number") then
-					if (key ~= "id") then
+					if (key ~= "id" and key ~= "spellschool") then
 						if (not ability_table1[key]) then 
 							ability_table1[key] = 0
 						end
@@ -3547,7 +3571,7 @@ attribute_damage.__sub = function(table1, table2)
 			--> subtrai os valores da ability
 			for key, value in _pairs(ability) do 
 				if (_type(value) == "number") then
-					if (key ~= "id") then
+					if (key ~= "id" and key ~= "spellschool") then
 						if (not ability_table1[key]) then 
 							ability_table1[key] = 0
 						end

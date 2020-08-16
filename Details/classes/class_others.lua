@@ -26,6 +26,8 @@ local _UnitAura = UnitAura
 local _UnitGUID = UnitGUID
 local _UnitName = UnitName
 
+local _string_replace = _details.string.replace -- details api
+
 local _details = 		_G._details
 local AceLocale = LibStub("AceLocale-3.0")
 local Loc = AceLocale:GetLocale( "Details" )
@@ -170,7 +172,7 @@ function _details:ToolTipDead(instance, death, this_bar, keydown)
 	
 	GameCooltip:Reset()
 	GameCooltip:SetType("tooltipbar")
-	GameCooltip:SetOwner(this_bar)
+	--GameCooltip:SetOwner(this_bar)
 	
 	GameCooltip:AddLine(Loc["STRING_REPORT_LEFTCLICK"], nil, 1, _unpack(self.click_to_report_color))
 	GameCooltip:AddIcon([[Interface\TUTORIALFRAME\UI-TUTORIAL-FRAME]], 1, 1, 12, 16, 0.015625, 0.13671875, 0.4375, 0.59765625)
@@ -262,7 +264,18 @@ function _details:ToolTipDead(instance, death, this_bar, keydown)
 	GameCooltip:SetOption("RightBorderSize", 5)
 	GameCooltip:SetOption("StatusBarTexture",[[Interface\AddOns\Details\images\bar4_reverse]])
 	GameCooltip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], {.6, 0.1, 0.64453125, 0}, {.8, .8, .8, 0.2}, true)
-	
+
+	local myPoint = _details.tooltip.anchor_point
+	local anchorPoint = _details.tooltip.anchor_relative
+	local x_Offset = _details.tooltip.anchor_offset[1]
+	local y_Offset = _details.tooltip.anchor_offset[2]
+
+	if (_details.tooltip.anchored_to == 1) then
+		GameCooltip:SetHost(this_bar, myPoint, anchorPoint, x_Offset, y_Offset)
+	else
+		GameCooltip:SetHost(DetailsTooltipAnchor, myPoint, anchorPoint, x_Offset, y_Offset)
+	end
+
 	GameCooltip:ShowCooltip()
 	
 end
@@ -753,7 +766,7 @@ function attribute_misc:UpdateBar(instance, bars_container, which_bar, place, to
 	local this_percentage = _math_floor((mine_total/instance.top) * 100)
 
 	if (UsingCustomRightText) then
-		this_bar.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(mine_total, "", percentage, self))
+		this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, mine_total, "", percentage, self))
 	else
 		this_bar.text_right:SetText(mine_total .."(" .. percentage .. "%)") --seta o text da right
 	end
@@ -897,7 +910,7 @@ function attribute_misc:RefreshBar(this_bar, instance, from_resize)
 	if (self.enemy) then
 		if (self.arena_enemy) then
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 			else
 				this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 			end
@@ -905,13 +918,13 @@ function attribute_misc:RefreshBar(this_bar, instance, from_resize)
 		else
 			if (_details.faction_against == "Horde") then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"..self.displayName) --seta o text da esqueda -- HORDA
 				end
 			else
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"..self.displayName) --seta o text da esqueda -- ALLY
 				end
@@ -924,13 +937,13 @@ function attribute_misc:RefreshBar(this_bar, instance, from_resize)
 	else
 		if (self.arena_ally) then
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 			else
 				this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 			end
 		else
 			if (UsingCustomLeftText) then
-				this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, ""))
+				this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, ""))
 			else
 				this_bar.text_left:SetText(bar_number .. self.displayName) --seta o text da esqueda
 			end

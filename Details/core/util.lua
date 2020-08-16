@@ -28,6 +28,7 @@
 	local _select = select
 	local _tonumber = tonumber
 	local _strsplit = strsplit
+	local _pcall = pcall
 	
 	local _UnitClass = UnitClass --wow api local
 	local _IsInRaid = IsInRaid --wow api local TODO: REMOVE ALL OCCURENCES of IsInRaid
@@ -151,18 +152,24 @@
 	
 	_details.ToKFunctions = {_details.NoToK, _details.ToK, _details.ToK2, _details.ToK0, _details.ToKMin, _details.ToK2Min, _details.ToK0Min, _details.comma_value}
 
+	_details.string = {}
+
 	--> replacing data
 	local args
 	local replace_arg = function(i)
 		return args[tonumber(i)]
 	end
 	local run_function = function(str)
-		local r = loadstring(str)(args[4])
-		return r or 0
+		local okey, value = _pcall(loadstring(str), args[4])
+		if (not okey) then
+			_details:Msg("|cFFFF9900error on custom text function|r:", value)
+			return 0
+		end
+		return value or 0
 	end
-	function string:ReplaceData(...)
+	function _details.string.replace(str, ...)
 		args = {...}
-		return(self:gsub("{data(%d+)}", replace_arg):gsub("{func(.-)}", run_function)) 
+		return(str:gsub("{data(%d+)}", replace_arg):gsub("{func(.-)}", run_function))
 	end
 
 	--local usertext = "i got the time: {data2}, {data3}% of {data1} minutes"

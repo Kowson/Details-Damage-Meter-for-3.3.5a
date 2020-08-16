@@ -23,6 +23,7 @@
 	local _bit_band = bit.band --lua local
 	local _unpack = unpack --lua local
 	local _type = type --lua local
+	local _pcall = pcall --lua local
 	
 	local _GetSpellInfo = _details.getspellinfo -- api local
 	local _IsInRaid = IsInRaid -- api local
@@ -31,6 +32,7 @@
 	local _GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers -- api local
 	local _GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers -- api local
 	local _GetUnitName = GetUnitName -- api local
+	local _string_replace = _details.string.replace -- details api
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -131,7 +133,13 @@
 			end
 			
 			--> call the loop function
-			total, top, amount = func(combat, instance_container, instance)
+			--total, top, amount = func(combat, instance_container, instance)
+			local okay
+			okay, total, top, amount = _pcall(func, combat, instance_container, instance)
+			if (not okay) then
+				_details:Msg("|cFFFF9900error on custom display function|r:", total)
+				return _details:EndRefresh(instance, 0, combat, combat[1])
+			end
 		else
 			--> get the attribute
 			local attribute = custom_object:GetAttribute()
@@ -165,7 +173,11 @@
 			instance:HideScrollBar()
 			return _details:EndRefresh(instance, total, combat, combat[container_index])
 		end
-		
+
+		if (amount > #instance_container._ActorTable) then
+			amount = #instance_container._ActorTable
+		end
+
 		combat.totals[custom_object:GetName()] = total
 		
 		instance_container:Sort()
@@ -458,7 +470,7 @@
 		else
 			local formated_value = SelectedToKFunction(_, self.value)
 			if (UsingCustomRightText) then
-				row.text_right:SetText(instance.row_info.textR_custom_text:ReplaceData(formated_value, "", percent, self))
+				row.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_value, "", percent, self))
 			else
 				row.text_right:SetText(formated_value .. "(" .. percent .. "%)")
 			end
@@ -468,7 +480,15 @@
 
 		-- update tooltip function--
 
-		actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+		if (self.id) then
+			local school_color = _details.school_colors[self.class]
+			if (not school_color) then
+				school_color = _details.school_colors["unknown"]
+			end
+			actor_class_color_r, actor_class_color_g, actor_class_color_b = _unpack(school_color)
+		else
+			actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+		end
 		
 		self:RefreshBar2(row, instance, previous_table, is_forced, row_value, index, row_container)
 		
@@ -548,7 +568,15 @@
 	function attribute_custom:RefreshBar(this_bar, instance, from_resize)
 		
 		if (from_resize) then
-			actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+			if (self.id) then
+				local school_color = _details.school_colors[self.class]
+				if (not school_color) then
+					school_color = _details.school_colors["unknown"]
+				end
+				actor_class_color_r, actor_class_color_g, actor_class_color_b = _unpack(school_color)
+			else
+				actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+			end
 		end
 		
 		if (instance.row_info.texture_class_colors) then
@@ -589,8 +617,13 @@
 			this_bar.icon_class:SetVertexColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
 
 		else
-			this_bar.icon_class:SetTexture(instance.row_info.icon_file)
-			this_bar.icon_class:SetTexCoord(_unpack(CLASS_ICON_TCOORDS[self.class])) --very slow method
+			if (self.id) then
+				this_bar.icon_class:SetTexCoord(0, 1, 0, 1)
+				this_bar.icon_class:SetTexture(self.icon)
+			else
+				this_bar.icon_class:SetTexture(instance.row_info.icon_file)
+				this_bar.icon_class:SetTexCoord(_unpack(CLASS_ICON_TCOORDS[self.class])) --very slow method
+			end
 			this_bar.icon_class:SetVertexColor(1, 1, 1)
 		end
 
@@ -604,7 +637,7 @@
 		if (self.enemy) then
 			if (self.arena_enemy) then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 				end
@@ -612,13 +645,13 @@
 			else
 				if (_details.faction_against == "Horde") then
 					if (UsingCustomLeftText) then
-						this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
+						this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"))
 					else
 						this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:0:32:0:32|t"..self.displayName) --seta o text da esqueda -- HORDA
 					end
 				else
 					if (UsingCustomLeftText) then
-						this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
+						this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"))
 					else
 						this_bar.text_left:SetText(bar_number .. "|TInterface\\AddOns\\Details\\images\\icons_bar:"..instance.row_info.height..":"..instance.row_info.height..":0:0:256:32:32:64:0:32|t"..self.displayName) --seta o text da esqueda -- ALLY
 					end
@@ -631,13 +664,13 @@
 		else
 			if (self.arena_ally) then
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t"))
 				else
 					this_bar.text_left:SetText(bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. instance.row_info.height .. ":" .. instance.row_info.height .. ":0:0:256:256:" .. _details.role_texcoord[self.role or "NONE"] .. "|t" .. self.displayName)
 				end
 			else
 				if (UsingCustomLeftText) then
-					this_bar.text_left:SetText(instance.row_info.textL_custom_text:ReplaceData(this_bar.placing, self.displayName, ""))
+					this_bar.text_left:SetText(_string_replace(instance.row_info.textL_custom_text, this_bar.placing, self.displayName, ""))
 				else
 					this_bar.text_left:SetText(bar_number .. self.displayName) --seta o text da esqueda
 				end
@@ -705,9 +738,16 @@
 	
 	function attribute_custom:GetActorTable(actor)
 		local index = self._NameIndexTable[actor.name]
+
 		if (index) then
 			return self._ActorTable[index]
 		else
+			--> if is a spell object
+			if (actor.id) then
+				local spellname = _GetSpellInfo(actor.id)
+				actor.name = spellname
+				actor.class = actor.spellschool
+			end
 			local new_actor = _setmetatable({
 			name = actor.name,
 			class = actor.class,
@@ -716,11 +756,16 @@
 			
 			new_actor.displayName = new_actor.name
 			
-			if (not new_actor.class) then
-				new_actor.class = _details:GetClass(actor.name) or "UNKNOW"
-			end
-			if (new_actor.class == "UNGROUPPLAYER") then
-				attribute_custom:ScheduleTimer("UpdateClass", 5, {new_actor = new_actor, actor = actor})
+			if (actor.id) then
+				new_actor.id = actor.id
+				new_actor.icon = select(3, _GetSpellInfo(actor.id))
+			else
+				if (not new_actor.class) then
+					new_actor.class = _details:GetClass(actor.name) or "UNKNOW"
+				end
+				if (new_actor.class == "UNGROUPPLAYER") then
+					attribute_custom:ScheduleTimer("UpdateClass", 5, {new_actor = new_actor, actor = actor})
+				end
 			end
 
 			index = #self._ActorTable+1
@@ -775,7 +820,16 @@
 		--> get the actor
 		local actor = self.my_actor
 		
-		local r, g, b = actor:GetClassColor()
+		local r, g, b
+		if (actor.id) then
+			local school_color = _details.school_colors[actor.class]
+			if (not school_color) then
+				school_color = _details.school_colors["unknown"]
+			end
+			r, g, b = _unpack(school_color)
+		else
+			r, g, b = actor:GetClassColor()
+		end
 		
 		_details:AddTooltipSpellHeaderText(custom_object:GetName(), "yellow", 1, 0, 0, 0)
 		GameCooltip:AddIcon(custom_object:GetIcon(), 1, 1, 14, 14, 0.90625, 0.109375, 0.15625, 0.875)
@@ -1103,7 +1157,7 @@
 		}
 		
 		local have = false
-		for _, custom in ipairs(self.custom) do
+		for _, custom in _ipairs(self.custom) do
 			if (custom.name == Loc["STRING_CUSTOM_POT_DEFAULT"]) then
 				have = true
 				break
@@ -1129,7 +1183,7 @@
 		}
 
 		local have = false
-		for _, custom in ipairs(self.custom) do
+		for _, custom in _ipairs(self.custom) do
 			if (custom.name == Loc["STRING_CUSTOM_HEALTHSTONE_DEFAULT"]) then
 				have = true
 				break
@@ -1189,7 +1243,7 @@
 		}
 		
 		local have = false
-		for _, custom in ipairs(self.custom) do
+		for _, custom in _ipairs(self.custom) do
 			if (custom.name == Loc["STRING_CUSTOM_ACTIVITY_DPS"]) then
 				have = true
 				break
@@ -1247,7 +1301,7 @@
 		}
 		
 		local have = false
-		for _, custom in ipairs(self.custom) do
+		for _, custom in _ipairs(self.custom) do
 			if (custom.name == Loc["STRING_CUSTOM_ACTIVITY_HPS"]) then
 				have = true
 				break
@@ -1258,7 +1312,117 @@
 			HealActivityTime.__index = _details.attribute_custom
 			self.custom[#self.custom+1] = HealActivityTime
 		end
-		
+
+---------------------------------------
+
+		local DamageTakenBySpell = {
+			name = Loc["STRING_CUSTOM_DTBS"],
+			icon = [[Interface\ICONS\spell_mage_infernoblast]],
+			attribute = false,
+			spellid = false,
+			author = "Details!",
+			desc = Loc["STRING_CUSTOM_DTBS_DESC"],
+			source = false,
+			target = false,
+			script = [[
+				--> get the parameters passed
+				local combat, instance_container, instance = ...
+				--> declare the values to return
+				local total, top, amount = 0, 0, 0
+				--> get a list of all damage actors
+				local AllDamageCharacters = combat:GetActorList(DETAILS_ATTRIBUTE_DAMAGE)
+				--> no amount increase for repeated spells
+				local NoRepeat = {}
+				--> do a loop among the actors
+				for index, character in ipairs(AllDamageCharacters) do
+
+					--> is the actor an enemy?
+					if (character:IsEnemy()) then
+
+						local AllSpells = character:GetSpellList()
+
+						for spellid, spell in pairs(AllSpells) do
+							if (spell.total >= 1 and spellid > 10) then
+								instance_container:AddValue(spell, spell.total)
+
+								total = total + spell.total
+
+								if (top < spell.total) then
+									top = spell.total
+								end
+
+								if (not NoRepeat[spellid]) then
+									amount = amount + 1
+									NoRepeat[spellid] = true
+								end
+							end
+						end
+					end
+				end
+				--> return
+				return total, top, amount
+			]],
+			tooltip = [[
+				--> get the parameters passed
+				local actor, combat, instance = ...
+				--> get the cooltip object (we do not use the conventional GameTooltip here)
+				local GameCooltip = GameCooltip
+				--> Cooltip code
+				local from_spell = actor.id
+				--> get a list of all damage actors
+				local AllDamageCharacters = combat:GetActorList(DETAILS_ATTRIBUTE_DAMAGE)
+				--> hold the targets
+				local Targets = {}
+				for index, character in ipairs(AllDamageCharacters) do
+					if (character:IsEnemy()) then
+						local AllSpells = character:GetSpellList()
+
+						for spellid, spell in pairs(AllSpells) do
+							if (spellid == from_spell) then
+								for index, _table in pairs(spell.targets._ActorTable) do
+									local targetname = _table.name
+									local amount = _table.total
+									local got = false
+									for index, t in ipairs(Targets) do
+										if (t[1] == targetname) then
+											t[2] = t[2] + amount
+											got = true
+											break
+										end
+									end
+									if (not got) then
+										Targets[#Targets+1] = {targetname, amount}
+									end
+								end
+							end
+						end
+					end
+				end
+				table.sort(Targets, _details.Sort2)
+				for index, t in ipairs(Targets) do
+					GameCooltip:AddLine(t[1], _details:ToK2(t[2]))
+					_details:AddTooltipBackgroundStatusbar()
+					local class = _details:GetClass(t[1])
+					if (class) then
+						local texture, l, r, t, b = _details:GetClassIcon(class)
+						GameCooltip:AddIcon(texture, 1, 1, 14, 14, l, r, t, b)
+					end
+				end
+			]],
+		}
+
+		local have = false
+		for _, custom in _ipairs(self.custom) do
+			if (custom.name == Loc["STRING_CUSTOM_DTBS"]) then
+				have = true
+				break
+			end
+		end
+		if (not have) then
+			setmetatable(DamageTakenBySpell, _details.attribute_custom)
+			DamageTakenBySpell.__index = _details.attribute_custom
+			self.custom[#self.custom+1] = DamageTakenBySpell
+		end
 	end
 
 
