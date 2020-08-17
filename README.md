@@ -1,6 +1,9 @@
 # Details-Damage-Meter-for-3.3.5a
 Details Damage Meter backported for World of Warcraft 3.3.5a Wrath of the Lich King (WotLK).
 
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=SGN33LGTQAUZ4&currency_code=USD&source=url)
+If you want to support me :)
+
 # Some information
 Feel free to ask any questions (and maybe features? :>).  
 Would love to hear some feedback from you.  
