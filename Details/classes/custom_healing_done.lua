@@ -49,6 +49,49 @@
 		TooltipMaximizedMethod = _details.tooltip.maximize_method
 	end
 
+	local temp_table = {}
+
+	local target_func = function(main_table)
+		local i = 1
+		for name, amount in _pairs(main_table) do
+			local t = temp_table[i]
+			if (not t) then
+				t = {"", 0}
+				temp_table[i] = t
+			end
+			t[1] = name
+			t[2] = amount
+			i = i + 1
+		end
+	end
+
+	local spells_used_func = function(main_table, target)
+		local i = 1
+		for spellid, spell_table in _pairs(main_table) do
+			local target_amount = spell_table.targets[target]
+			if (target_amount) then
+				local t = temp_table[i]
+				if (not t) then
+					t = {"", 0}
+					temp_table[i] = t
+				end
+				t[1] = spellid
+				t[2] = target_amount
+				i = i + 1
+			end
+		end
+	end
+
+	local function SortOrder(main_table, func, ...)
+		for i = 1, #temp_table do
+			temp_table[i][1] = ""
+			temp_table[i][2] = 0
+		end
+		func(main_table, ...)
+		_table_sort(temp_table, _details.Sort2)
+		return temp_table
+	end
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> healing done tooltip
 	
@@ -64,12 +107,12 @@
 					for name, _ in _pairs(this_actor.healing_from) do 
 						local healer = combat(2, name)
 						if (healer) then
-							local spell = healer.spell_tables._ActorTable[spellid]
+							local spell = healer.spells._ActorTable[spellid]
 							if (spell) then
-								local on_me = spell.targets._NameIndexTable[targetname]
+								local on_me = spell.targets[targetname]
 								if (on_me) then
 									on_me = spell.targets._ActorTable[on_me]
-									GameCooltip:AddLine(healer.name, FormatTooltipNumber(_, on_me.total))
+									GameCooltip:AddLine(healer.name, FormatTooltipNumber(_, on_me))
 								end
 							end
 						end
@@ -90,38 +133,52 @@
 		elseif (target) then
 			
 			if (target == "[all]") then
-				actor.targets:SortByKey("total")
-				for _, target_object in _ipairs(actor.targets._ActorTable) do
-					GameCooltip:AddLine(target_object.name, FormatTooltipNumber(_, target_object.total))
+				SortOrder (actor.targets, target_func)
+				for i = 1, #temp_table do
+					local t = temp_table[i]
+					if (t[2] < 1) then
+						break
+					end
+					GameCooltip:AddLine(t[1], FormatTooltipNumber(_, t[2]))
 					_details:AddTooltipBackgroundStatusbar()
 					GameCooltip:AddIcon([[Interface\FriendsFrame\StatusIcon-Offline]], 1, 1, 14, 14)
 				end
 				
 			elseif (target == "[raid]") then
 				local roster = combat.raid_roster
-				actor.targets:SortByKey("total")
-				for _, target_object in _ipairs(actor.targets._ActorTable) do
-					if (roster[target_object.name]) then
-						GameCooltip:AddLine(target_object.name, FormatTooltipNumber(_, target_object.total))
+				SortOrder(actor.targets, target_func)
+				for i = 1, #temp_table do
+					local t = temp_table[i]
+					if (t[2] < 1) then
+						break
+					end
+					if (roster[t[1]]) then
+						GameCooltip:AddLine(t[1], FormatTooltipNumber(_, t[2]))
 					end
 				end
 				
 			elseif (target == "[player]") then
-				local targetactor = actor.targets._NameIndexTable[_details.playername]
-				if (targetactor) then
-					targetactor = actor.targets._ActorTable[targetactor]
-					GameCooltip:AddLine(targetactor.name, FormatTooltipNumber(_, targetactor.total))
+				local target_amount = actor.targets[_details.playername]
+				if (target_amount) then
+					GameCooltip:AddLine(_details.playername, FormatTooltipNumber(_, target_amount))
 				end
 			else
-				local targetactor = actor.targets._NameIndexTable[target]
-				if (targetactor) then
-					targetactor = actor.targets._ActorTable[targetactor]
-					GameCooltip:AddLine(target, FormatTooltipNumber(_, targetactor.total))
+				SortOrder(actor.spells._ActorTable, spells_used_func, target)
+				for i = 1, #temp_table do
+					local t = temp_table[i]
+
+					if (t[2] < 1) then
+						break
+					end
+
+					local name, _, icon = _GetSpellInfo(t[1])
+					GameCooltip:AddLine(name, FormatTooltipNumber(_, t[2]))
+					GameCooltip:AddIcon(icon, 1, 1, 14, 14)
 				end
 			end
 		
 		else
-			actor:ToolTip_DamageDone(instance)
+			actor:ToolTip_HealingDone(instance)
 		end
 	end
 	
@@ -131,18 +188,20 @@
 	function attribute_custom:healdone(actor, source, target, spellid, combat, instance_container)
 
 		if (spellid) then --> spell is always healing done
-			local spell = actor.spell_tables._ActorTable[spellid]
-			local melee = actor.spell_tables._ActorTable[1]
+			local spell = actor.spells._ActorTable[spellid]
+			local melee = actor.spells._ActorTable[1]
 			if (spell) then
 				if (target) then
 					if (target == "[all]") then
-						for _, targetactor in _ipairs(spell.targets._ActorTable) do 
+						for target_name, amount in _pairs(spell.targets) do
 							--> add amount
-							instance_container:AddValue(targetactor, targetactor.total, true)
-							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + targetactor.total
+							--> we need to pass a object here in order to get name and class, so we just get the main heal actor from the combat
+							instance_container:AddValue(combat(1, target_name), amount, true)
+							--
+							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + amount
 							--> add to processed container
-							if (not attribute_custom._TargetActorsProcessed[targetactor.name]) then
-								attribute_custom._TargetActorsProcessed[targetactor.name] = true
+							if (not attribute_custom._TargetActorsProcessed[target_name]) then
+								attribute_custom._TargetActorsProcessed[target_name] = true
 								attribute_custom._TargetActorsProcessedAmt = attribute_custom._TargetActorsProcessedAmt + 1
 							end
 						end
@@ -150,14 +209,14 @@
 						
 					elseif (target == "[raid]") then
 						local roster = combat.raid_roster
-						for _, targetactor in _ipairs(spell.targets._ActorTable) do 
-							if (roster[targetactor.name]) then
+						for target_name, amount in _ipairs(spell.targets._ActorTable) do
+							if (roster[target_name]) then
 								--> add amount
-								instance_container:AddValue(targetactor, targetactor.total, true)
-								attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + targetactor.total
+								instance_container:AddValue(combat(1, target_name), amount, true)
+								attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + amount
 								--> add to processed container
-								if (not attribute_custom._TargetActorsProcessed[targetactor.name]) then
-									attribute_custom._TargetActorsProcessed[targetactor.name] = true
+								if (not attribute_custom._TargetActorsProcessed[target_name]) then
+									attribute_custom._TargetActorsProcessed[target_name] = true
 									attribute_custom._TargetActorsProcessedAmt = attribute_custom._TargetActorsProcessedAmt + 1
 								end
 							end
@@ -165,30 +224,28 @@
 						return 0, true
 						
 					elseif (target == "[player]") then
-						local targetactor = spell.targets._NameIndexTable[_details.playername]
-						if (targetactor) then
-							targetactor = spell.targets._ActorTable[targetactor]
+						local target_amount = spell.targets[_details.playername]
+						if (target_amount) then
 							--> add amount
-							instance_container:AddValue(targetactor, targetactor.total, true)
-							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + targetactor.total
+							instance_container:AddValue(combat(1, _details.playername), target_amount, true)
+							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + target_amount
 							--> add to processed container
-							if (not attribute_custom._TargetActorsProcessed[targetactor.name]) then
-								attribute_custom._TargetActorsProcessed[targetactor.name] = true
+							if (not attribute_custom._TargetActorsProcessed[_details.playername]) then
+								attribute_custom._TargetActorsProcessed[_details.playername] = true
 								attribute_custom._TargetActorsProcessedAmt = attribute_custom._TargetActorsProcessedAmt + 1
 							end
 						end
 						return 0, true
 					
 					else
-						local targetactor = actor.targets._NameIndexTable[target]
-						if (targetactor) then
-							targetactor = spell.targets._ActorTable[targetactor]
+						local target_amount = actor.targets[target]
+						if (target_amount) then
 							--> add amount
-							instance_container:AddValue(targetactor, targetactor.total, true)
-							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + targetactor.total
+							instance_container:AddValue(combat(1, target), target_amount, true)
+							attribute_custom._TargetActorsProcessedTotal = attribute_custom._TargetActorsProcessedTotal + target_amount
 							--> add to processed container
-							if (not attribute_custom._TargetActorsProcessed[targetactor.name]) then
-								attribute_custom._TargetActorsProcessed[targetactor.name] = true
+							if (not attribute_custom._TargetActorsProcessed[target]) then
+								attribute_custom._TargetActorsProcessed[target] = true
 								attribute_custom._TargetActorsProcessedAmt = attribute_custom._TargetActorsProcessedAmt + 1
 							end
 						end
@@ -204,26 +261,26 @@
 		elseif (target) then
 
 			if (target == "[all]") then
-				return actor.targets:GetTotal()
+				local total = 0
+				for target_name, amount in _pairs(actor.targets) do
+					total = total + amount
+				end
+				return total
 				
 			elseif (target == "[raid]") then
-				return actor.targets:GetTotalOnRaid(nil, combat)
+				local total = 0
+				for target_name, amount in _pairs(actor.targets) do
+					if (combat.raid_roster[target_name]) then
+						total = total + amount
+					end
+				end
+				return total
 			
 			elseif (target == "[player]") then
-				local targetactor = actor.targets._NameIndexTable[_details.playername]
-				if (targetactor) then
-					return actor.targets._ActorTable[targetactor].total
-				else
-					return 0
-				end
+				return actor.targets[_details.playername] or 0
 
 			else
-				local targetactor = actor.targets._NameIndexTable[target]
-				if (targetactor) then
-					return actor.targets._ActorTable[targetactor].total
-				else
-					return 0
-				end
+				return actor.targets[target] or 0
 			end
 		else
 			return actor.total or 0

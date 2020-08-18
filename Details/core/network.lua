@@ -262,12 +262,15 @@
 		if (_details.debug) then
 			_details:Msg("(debug) network received:", prefix, "length:",string.len(data))
 		end
-		
+
+		--print("comm received", prefix, _details.network.functions[prefix])
+
 		local func = _details.network.functions[prefix]
 		if (func) then
 			func(player, realm, dversion, arg6, arg7, arg8, arg9)
 		else
 			func = plugins_registred[prefix]
+			--print("plugin comm?", func, player, realm, dversion, arg6, arg7, arg8, arg9)
 			if (func) then
 				func(player, realm, dversion, arg6, arg7, arg8, arg9)
 			else
@@ -310,7 +313,7 @@
 			end
 		end
 	end
-	
+
 	function _details.parser_functions:CHAT_MSG_CHANNEL(...)
 		local message, _, _, _, _, _, _, _, channelName = ...
 		if (channelName == "Details") then
@@ -345,9 +348,11 @@
 		elseif (channel == "Details") then
 			local id = _details:GetChannelId(channel)
 			if (id) then
+				if (not _details.listener:IsEventRegistered("CHAT_MSG_CHANNEL")) then
+					_details.listener:RegisterEvent("CHAT_MSG_CHANNEL")
+				end
 				SendChatMessage(prefix .. "_" .. _details:Serialize(self.__version, ...), "CHANNEL", nil, id)
 			end
-			
 		else
 			_details:SendCommMessage(prefix, _details:Serialize(self.__version, ...), channel)
 		end
@@ -445,9 +450,37 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> sharer
 
+	local city_zones = {
+		["ShattrathCity"] = true,
+		["Dalaran"] = true,
+
+		["Orgrimmar"] = true,
+		["Undercity"] = true,
+		["ThunderBluff"] = true,
+		["SilvermoonCity"] = true,
+
+		["StormwindCity"] = true,
+		["Darnassus"] = true,
+		["Ironforge"] = true,
+		["TheExodar"] = true,
+	}
+
+	function _details:IsInCity()
+		SetMapToCurrentZone()
+		local mapFileName = GetMapInfo()
+
+		if (city_zones[mapFileName]) then
+			return true
+		end
+	end
+
 	--> entrar no canal ap�s logar no servidor
 	function _details:EnterChatChannel()
 		if (not _details.realm_sync) then
+			return
+		end
+
+	if (not _details:IsInCity()) then
 			return
 		end
 		
@@ -459,10 +492,6 @@
 	
 		local realm = GetRealmName()
 		realm = realm or ""
-		
-		--if (realm ~= "Azralon") then
-		--	return
-		--end
 	
 		--> room name
 		local room_name = "Details"
@@ -479,7 +508,6 @@
 		end
 		
 		--> enter
-		--print("entrando no canal")
 		JoinChannelByName(room_name)
 		_details.is_connected = true
 	end
@@ -498,10 +526,6 @@
 		local realm = GetRealmName()
 		realm = realm or ""
 		
-		--if (realm ~= "Azralon") then
-		--	return
-		--end
-		
 		--> room name
 		local room_name = "Details"
 		local is_in = false
@@ -515,7 +539,6 @@
 		end
 		
 		if (is_in) then
-			--print("saindo do canal")
 			LeaveChannelByName(room_name)
 		end
 		
@@ -524,80 +547,40 @@
 		_details.listener:UnregisterEvent("CHAT_MSG_CHANNEL")
 	end
 	
-	--> sair do canal quando estiver em group
-	local event_handler = {Enabled = true, __enabled = true, test = " test"}
-	function event_handler:ZONE_TYPE_CHANGED(zone_type)
-		if (not _details.realm_sync) then
-			return
-		end
-
-		if (zone_type == "none") then
-			if (not _details:InGroup()) then
-				if (_details.schedule_chat_leave) then
-					_details:CancelTimer(_details.schedule_chat_leave)
-				end
-				if (not _details.schedule_chat_enter) then
-					_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 2)
-				end
-			end
-		else
-			if (_details:InGroup()) then
-				if (_details.schedule_chat_enter) then
-					_details:CancelTimer(_details.schedule_chat_enter)
-				end
-				if (not _details.schedule_chat_leave) then
-					_details.schedule_chat_leave = _details:ScheduleTimer("LeaveChatChannel", 2)
-				end
-			end
-		end
-	end
-	
-	function event_handler:GROUP_ONENTER()
-		if (not _details.realm_sync) then
-			return
-		end
-	
-		if (_details.zone_type ~= "none") then
+	function _details:DoZoneCheck()
+		local in_city = _details:IsInCity()
+		if (not in_city) then
 			if (_details.schedule_chat_enter) then
 				_details:CancelTimer(_details.schedule_chat_enter)
 			end
 			if (not _details.schedule_chat_leave) then
-				_details.schedule_chat_leave = _details:ScheduleTimer("LeaveChatChannel", 2)
+				_details.schedule_chat_leave = _details:ScheduleTimer("LeaveChatChannel", 5)
+			end
+		else
+			if (in_city) then
+				if (_details.schedule_chat_leave) then
+					_details:CancelTimer(_details.schedule_chat_leave)
+				end
+				if (not _details.schedule_chat_enter) then
+					_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 5)
+				end
 			end
 		end
 	end
 	
-	function _details:CheckChatOnLeaveGroup()
+	function _details:CheckChatOnZoneChange()
 		if (not _details.realm_sync) then
 			return
 		end
-		
-		_details.schedule_group_onleave_check = nil
-		if (_details.zone_type == "none") then
-			if (_details.schedule_chat_leave) then
-				_details:CancelTimer(_details.schedule_chat_leave)
-			end
-			if (not _details.schedule_chat_enter) then
-				_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 2)
-			end
-		end
+		_details:ScheduleTimer("DoZoneCheck", 2)
 	end
-	function event_handler:GROUP_ONLEAVE()
-		if (not _details.realm_sync) then
-			return
-		end
-		
-		if (_details.schedule_group_onleave_check) then
-			_details:CancelTimer(_details.schedule_group_onleave_check)
-			_details.schedule_group_onleave_check = nil
-		end
-		_details.schedule_group_onleave_check = _details:ScheduleTimer("CheckChatOnLeaveGroup", 5)
-	end
-	
-	_details:RegisterEvent(event_handler, "GROUP_ONENTER", "GROUP_ONENTER")
-	_details:RegisterEvent(event_handler, "GROUP_ONLEAVE", "GROUP_ONLEAVE")
-	_details:RegisterEvent(event_handler, "ZONE_TYPE_CHANGED", "ZONE_TYPE_CHANGED")
 	
 	function _details:IsConnected()
+		if (not _details.is_connected) then
+			local id = _details:GetChannelId("Details")
+			if (id) then
+				_details.is_connected = true
+			end
+		end
 		return _details.is_connected
 	end

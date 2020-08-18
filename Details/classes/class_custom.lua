@@ -1000,7 +1000,6 @@
 		TooltipMaximizedMethod = _details.tooltip.maximize_method
 		attribute_custom:UpdateDamageDoneBracket()
 		attribute_custom:UpdateHealingDoneBracket()
-		attribute_custom:UpdateDamageTakenBracket()
 	end
 
 	function _details:AddDefaultCustomDisplays()
@@ -1033,10 +1032,10 @@
 					local found_potion = false
 					
 					--get the spell debuff uptime container
-					local debuff_uptime_container = player.debuff_uptime and player.debuff_uptime_spell_tables and player.debuff_uptime_spell_tables._ActorTable
+					local debuff_uptime_container = player.debuff_uptime and player.debuff_uptime_spells and player.debuff_uptime_spells._ActorTable
 					
 					--get the spell buff uptime container
-					local buff_uptime_container = player.buff_uptime and player.buff_uptime_spell_tables and player.buff_uptime_spell_tables._ActorTable
+					local buff_uptime_container = player.buff_uptime and player.buff_uptime_spells and player.buff_uptime_spells._ActorTable
 					if (buff_uptime_container) then
 					    
 					    --potion of the jade serpent
@@ -1115,7 +1114,7 @@
 			local player, combat, instance = ...
 
 			--get the buff container for all the others potions
-			local buff_uptime_container = player.buff_uptime and player.buff_uptime_spell_tables and player.buff_uptime_spell_tables._ActorTable
+			local buff_uptime_container = player.buff_uptime and player.buff_uptime_spells and player.buff_uptime_spells._ActorTable
 			if (buff_uptime_container) then
 			    --potion of the jade serpent
 			    local jade_serpent_potion = buff_uptime_container[53908]
@@ -1379,9 +1378,7 @@
 
 						for spellid, spell in pairs(AllSpells) do
 							if (spellid == from_spell) then
-								for index, _table in pairs(spell.targets._ActorTable) do
-									local targetname = _table.name
-									local amount = _table.total
+								for targetname, amount in pairs(spell.targets) do
 									local got = false
 									for index, t in ipairs(Targets) do
 										if (t[1] == targetname) then

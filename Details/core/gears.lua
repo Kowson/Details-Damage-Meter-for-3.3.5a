@@ -1,11 +1,14 @@
 local _details = 		_G._details
-local Loc = LibStub("AceLocale-3.0"):GetLocale( "Details" )
+local Loc = LibStub("AceLocale-3.0"):GetLocale("Details")
 
+local UnitName = UnitName
+local select = select
+local floor = floor
 
 local GetNumGroupMembers = GetNumGroupMembers
 
 function _details:UpdateGears()
-	
+
 	_details:UpdateParser()
 	_details:UpdateControl()
 	_details:UpdateCombat()
@@ -203,3 +206,115 @@ function _details:DoBackgroundTasks()
 end
 
 _details.background_tasks_loop = _details:ScheduleRepeatingTimer("DoBackgroundTasks", 120)
+
+local store_instances = {
+	[536] = true, -- Naxxramas
+	[531] = true, -- Obsidian Sanctum
+	[528] = true, -- Eye of Eternity
+	[533] = true, -- Vault of Archavon
+	[530] = true, -- Ulduar
+	[544] = true, -- Trial of the Crusader
+	-- [605] = true, -- Icecrown Citadel TODO: ICC
+}
+
+function _details:StoreEncounter(combat)
+	combat = combat or _details.table_current
+
+	if (not combat) then
+		return
+	end
+
+	local name, type, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance = GetInstanceInfo()
+	local mapID = GetCurrentMapAreaID()
+
+	if (not store_instances[mapID]) then
+		return
+	end
+
+	local boss_info = combat:GetBossInfo()
+	local encounter_id = boss_info and boss_info.id
+	if (not encounter_id) then
+		return
+	end
+
+	--> check the guild name
+	local match = 0
+	local guildName = select(1, GetGuildInfo("player"))
+	local raid_size = GetNumRaidMembers() or 0
+
+	if (guildName) then
+		for i = 1, raid_size do
+			local gName = select(1, GetGuildInfo ("raid" .. i)) or ""
+			if (gName == guildName) then
+				match = match + 1
+			end
+		end
+
+		if (match < raid_size * 0.75) then
+			return
+		end
+	else
+		return
+	end
+
+	--> check if the storage is already loaded
+	if (not IsAddOnLoaded("Details_DataStorage")) then
+		local loaded, reason = LoadAddOn("Details_DataStorage")
+		if (not loaded) then
+			return
+		end
+	end
+
+	--> get the storage table
+	local db = DetailsDataStorage
+
+	if (not db and _details.CreateStorageDB) then
+		db = _details:CreateStorageDB()
+		if (not db) then
+			return
+		end
+	end
+
+	local raid_database = db.RAID_STORAGE
+
+	if (not raid_database) then
+		db.RAID_STORAGE = {}
+		raid_database = db.RAID_STORAGE
+	end
+
+	--> encounter_database: numeric table with combats
+	local encounter_database = raid_database[encounter_id]
+
+	if (not encounter_database) then
+		raid_database[encounter_id] = {}
+		encounter_database = raid_database[encounter_id]
+	end
+
+	--> get raid members data
+	local this_combat_data = {
+		damage = {},
+		heal = {},
+		date = date("%H:%M %d/%m/%y"),
+		time = time(),
+		elapsed = combat:GetCombatTime(),
+		guild = guildName,
+	}
+
+	for i = 1, raid_size do
+		local player_name, player_realm = UnitName("raid" .. i)
+		if (player_realm and player_realm ~= "") then
+			player_name = player_name .. "-" .. player_realm
+		end
+
+		local damage_actor = combat(1, player_name)
+		if (damage_actor) then
+			this_combat_data.damage[player_name] = floor(damage_actor.total)
+		end
+
+		local heal_actor = combat(2, player_name)
+		if (heal_actor) then
+			this_combat_data.heal[player_name] = floor(heal_actor.total)
+		end
+	end
+	tinsert(encounter_database, this_combat_data)
+end

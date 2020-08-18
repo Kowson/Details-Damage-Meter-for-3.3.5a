@@ -51,8 +51,12 @@
 	local RaidBuffsSpells = _details.RaidBuffsSpells
 	
 	local spell_damage_func = _details.ability_damage.Add --details local
+	local spell_damageMiss_func = _details.ability_damage.AddMiss --details local
+	local spell_damageFF_func = _details.ability_damage.AddFF --details local
+
 	local spell_heal_func = _details.ability_heal.Add --details local
 	local spell_energy_func = _details.ability_e_energy.Add --details local
+	local spell_misc_func = _details.ability_misc.Add --details local
 	
 	--> current combat and overall pointers
 		local _current_combat = _details.table_current or {} --> placeholder table
@@ -89,7 +93,6 @@
 
 	local container_damage_target = _details.container_type.CONTAINER_DAMAGETARGET_CLASS
 	local container_misc = _details.container_type.CONTAINER_MISC_CLASS
-	local container_enemydebufftarget_target = _details.container_type.CONTAINER_ENEMYDEBUFFTARGET_CLASS
 	
 	local OBJECT_TYPE_PLAYER = 0x00000400
 	local OBJECT_TYPE_PETS = 0x00003000
@@ -281,9 +284,6 @@
 		local _hook_battleress_container = _details.hooks["HOOK_BATTLERESS"]
 		local _hook_interrupt_container = _details.hooks["HOOK_INTERRUPT"]
 
-		local _hook_buffs = false --[[REMOVED]]
-		local _hook_buffs_container = _details.hooks["HOOK_BUFF"] --[[REMOVED]]
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> internal functions
 
@@ -334,7 +334,7 @@
 	
 		if (src_serial == "0x0000000000000000") then
 			if (src_flags and _bit_band(src_flags, OBJECT_TYPE_PETS) ~= 0) then --> � um pet
-				--> pets must have an serial
+				--> pets must have a serial
 				return
 			end
 			--src_serial = nil
@@ -345,7 +345,7 @@
 			return
 		elseif (not src_name) then
 			--> no actor name, use spell name instead
-			src_name = "[*] "..spellname
+			src_name = "[*] " .. spellname
 		end
 
 	------------------------------------------------------------------------------------------------	
@@ -606,24 +606,13 @@
 				t.n = i
 			end
 		
-			--> faz a adu��o do friendly fire
+			--> add to friendly fire
 			this_player.friendlyfire_total = this_player.friendlyfire_total + amount
 			
-			local amigo = this_player.friendlyfire._NameIndexTable[dst_name]
-			if (not amigo) then
-				amigo = this_player.friendlyfire:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-			else
-				amigo = this_player.friendlyfire._ActorTable[amigo]
-			end
+			local friend = this_player.friendlyfire[dst_name] or this_player:CreateFFTable(dst_name)
 
-			amigo.total = amigo.total + amount
-
-			local spell = amigo.spell_tables._ActorTable[spellid]
-			if (not spell) then
-				spell = amigo.spell_tables:CatchSpell(spellid, true, token)
-			end
-
-			return spell:AddFF(amount) --adiciona a class da ability, a class da ability se encarrega de adicionar aos targets dela
+			friend.total = friend.total + amount
+			friend.spells[spellid] = (friend.spells[spellid] or 0) + amount
 		else
 			_current_total[1] = _current_total[1]+amount
 			
@@ -637,14 +626,7 @@
 			mine_owner.total = mine_owner.total + amount --> e adiciona o damage ao pet
 			
 			--> add owner targets
-			local owner_target = mine_owner.targets._NameIndexTable[dst_name]
-			if (not owner_target) then
-				owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
-			else
-				owner_target = mine_owner.targets._ActorTable[owner_target]
-			end
-			owner_target.total = owner_target.total + amount
-			
+			mine_owner.targets[dst_name] = (mine_owner.targets[dst_name] or 0) + amount
 			mine_owner.last_event = _timestamp
 		end
 
@@ -655,18 +637,12 @@
 		this_player.total_without_pet = this_player.total_without_pet + amount
 
 		--> actor targets
-		local this_dst = this_player.targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
-		else
-			this_dst = this_player.targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + amount
+		this_player.targets[dst_name] = (this_player.targets[dst_name] or 0) + amount
 
 		--> actor spells table
-		local spell = this_player.spell_tables._ActorTable[spellid]
+		local spell = this_player.spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.spells:CatchSpell(spellid, true, token)
 			spell.spellschool = school
 		end
 		
@@ -751,11 +727,12 @@
 		consider_absorb(amountMissed, dst_name, src_name, time, dst_flags)
 	end
 		--> actor spells table
-		local spell = this_player.spell_tables._ActorTable[spellid]
+		local spell = this_player.spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.spells:CatchSpell(spellid, true, token)
 		end
-		return spell:AddMiss(dst_serial, dst_name, dst_flags, src_name, missType)
+		return spell_damageMiss_func(spell, dst_serial, dst_name, dst_flags, src_name, missType)
+		--return spell:AddMiss(dst_serial, dst_name, dst_flags, src_name, missType)
 	end
 	
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -906,7 +883,7 @@
 		
 			this_player:Initialize(true) -- start player hps timer
 			-- start owner's timer
-			if (mine_owner and not mine_owner.dps_started) then
+			if (mine_owner and not mine_owner.hps_started) then
 				mine_owner:Initialize(true)
 				if (mine_owner.end_time) then
 					mine_owner.end_time = nil
@@ -926,17 +903,14 @@
 	--> add amount
 		
 		--> actor target
-		local this_dst = this_player.targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.targets._ActorTable[this_dst]
-		end
-		
 		if (heal_efetiva > 0) then
 		
 			--> combat total
 			_current_total[2] = _current_total[2] + heal_efetiva
+
+			--> actor healing amount
+			this_player.total = this_player.total + heal_efetiva
+			this_player.total_without_pet = this_player.total_without_pet + heal_efetiva
 		
 			--> healing taken 
 			player_dst.healing_taken = player_dst.healing_taken + heal_efetiva --> adiciona o damage tomado
@@ -944,30 +918,19 @@
 				player_dst.healing_from[src_name] = true
 			end
 			
-			--> actor healing amount
-			this_player.total = this_player.total + heal_efetiva
-			
 			if (is_shield) then
 				this_player.totalabsorb = this_player.totalabsorb + heal_efetiva
+				this_player.targets_absorbs[dst_name] = (this_player.targets_absorbs[dst_name] or 0) + heal_efetiva
 			end
-
-			this_player.total_without_pet = this_player.total_without_pet + heal_efetiva
 			
 			--> pet
 			if (mine_owner) then
 				mine_owner.total = mine_owner.total + heal_efetiva --> heal do pet
-				
-				local owner_target = mine_owner.targets._NameIndexTable[dst_name]
-				if (not owner_target) then
-					owner_target = mine_owner.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
-				else
-					owner_target = mine_owner.targets._ActorTable[owner_target]
-				end
-				owner_target.total = owner_target.total + amount
+				mine_owner.targets[dst_name] = (mine_owner.targets[dst_name] or 0) + amount
 			end
 			
 			--> target amount
-			this_dst.total = this_dst.total + heal_efetiva
+			this_player.targets[dst_name] = (this_player.targets[dst_name] or 0) + amount
 		end
 		
 		if (mine_owner) then
@@ -976,16 +939,17 @@
 		
 		if (overhealing > 0) then
 			this_player.totalover = this_player.totalover + overhealing
-			this_dst.overheal = this_dst.overheal + overhealing
+			this_player.targets_overheal[dst_name] = (this_player.targets_overheal[dst_name] or 0) + overhealing
+
 			if (mine_owner) then
 				mine_owner.totalover = mine_owner.totalover + overhealing
 			end
 		end
 
 		--> actor spells table
-		local spell = this_player.spell_tables._ActorTable[spellid]
+		local spell = this_player.spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.spells:CatchSpell(spellid, true, token)
 			if (is_shield) then
 				spell.is_shield = true
 			end
@@ -1421,22 +1385,8 @@
 				this_player.spellschool = spellschool
 				this_player.damage_spellid = spellid
 				this_player.debuff_uptime = 0
-				this_player.debuff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-				this_player.debuff_uptime_targets = container_combatants:NewContainer(container_enemydebufftarget_target)
-				
-				if (not this_player.shadow.debuff_uptime_targets) then
-					this_player.shadow.boss_debuff = true
-					this_player.shadow.damage_twin = src_name
-					this_player.shadow.spellschool = spellschool
-					this_player.shadow.damage_spellid = spellid
-					this_player.shadow.debuff_uptime = 0
-					this_player.shadow.debuff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-					this_player.shadow.debuff_uptime_targets = container_combatants:NewContainer(container_enemydebufftarget_target)
-				end
-				
-				this_player.debuff_uptime_targets.shadow = this_player.shadow.debuff_uptime_targets
-				this_player.debuff_uptime_spell_tables.shadow = this_player.shadow.debuff_uptime_spell_tables
-				
+				this_player.debuff_uptime_spells = container_abilities:NewContainer(container_misc)
+				this_player.debuff_uptime_targets = {}
 			end
 		
 		------------------------------------------------------------------------------------------------
@@ -1446,11 +1396,10 @@
 			this_player.last_event = _timestamp
 			
 			--> actor target
-			local this_dst = this_player.debuff_uptime_targets._NameIndexTable[dst_name]
+			local this_dst = this_player.debuff_uptime_targets[dst_name]
 			if (not this_dst) then
-				this_dst = this_player.debuff_uptime_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-			else
-				this_dst = this_player.debuff_uptime_targets._ActorTable[this_dst]
+				this_dst = _details.attribute_misc:CreateBuffTargetObject()
+				this_player.debuff_uptime_targets[dst_name] = this_dst
 			end
 			
 			if (in_out == "DEBUFF_UPTIME_IN") then
@@ -1507,17 +1456,8 @@
 		
 		if (not this_player.debuff_uptime) then
 			this_player.debuff_uptime = 0
-			this_player.debuff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-			this_player.debuff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-			
-			if (not this_player.shadow.debuff_uptime_targets) then
-				this_player.shadow.debuff_uptime = 0
-				this_player.shadow.debuff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-				this_player.shadow.debuff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-			end
-			
-			this_player.debuff_uptime_targets.shadow = this_player.shadow.debuff_uptime_targets
-			this_player.debuff_uptime_spell_tables.shadow = this_player.shadow.debuff_uptime_spell_tables
+			this_player.debuff_uptime_spells = container_abilities:NewContainer(container_misc)
+			this_player.debuff_uptime_targets = {}
 		end
 	
 	------------------------------------------------------------------------------------------------
@@ -1527,12 +1467,13 @@
 		this_player.last_event = _timestamp
 
 		--> actor spells table
-		local spell = this_player.debuff_uptime_spell_tables._ActorTable[spellid]
+		local spell = this_player.debuff_uptime_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.debuff_uptime_spell_tables:CatchSpell(spellid, true, "DEBUFF_UPTIME")
+			spell = this_player.debuff_uptime_spells:CatchSpell(spellid, true, "DEBUFF_UPTIME")
 		end
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
-		
+		--return spell:Add(dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
+		return spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
+
 	end
 
 	function parser:add_buff_uptime(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, in_out)
@@ -1555,31 +1496,13 @@
 		
 		if (not this_player.buff_uptime) then
 			this_player.buff_uptime = 0
-			this_player.buff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-			this_player.buff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-			
-			if (not this_player.shadow.buff_uptime_targets) then
-				this_player.shadow.buff_uptime = 0
-				this_player.shadow.buff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
-				this_player.shadow.buff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-			end
-			
-			this_player.buff_uptime_targets.shadow = this_player.shadow.buff_uptime_targets
-			this_player.buff_uptime_spell_tables.shadow = this_player.shadow.buff_uptime_spell_tables
+			this_player.buff_uptime_spells = container_abilities:NewContainer(container_misc)
+			this_player.buff_uptime_targets = {}
 		end	
 
 	------------------------------------------------------------------------------------------------
-	--> hook
-	
-		if (_hook_buffs) then
-			--> send event to registred functions
-			for _, func in _ipairs(_hook_buffs_container) do 
-				func(nil, token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, in_out)
-			end
-		end
-	------------------------------------------------------------------------------------------------
 	--> Check for pre-pull shields
-	if (in_out == "BUFF_UPTIME_IN" and absorb_spell_list [spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
+	if (in_out == "BUFF_UPTIME_IN" and absorb_spell_list[spellid] and _recording_healing) then -- we cant track overhealing on shields since theres no way to get the amount
 		local absorb_source = { 
 			absorbed = 0,
 			serial = src_serial,
@@ -1589,15 +1512,15 @@
 			spellname = spellname,
 			time_applied = time
 		}
-		if (not shields [dst_name]) then
-			shields [dst_name] = {}
-			shields [dst_name] [spellid] = {}
-			shields [dst_name] [spellid] [src_name] = absorb_source
-		elseif (not shields [dst_name] [spellid]) then 
-			shields [dst_name] [spellid] = {}
-			shields [dst_name] [spellid] [src_name] = absorb_source
+		if (not shields[dst_name]) then
+			shields[dst_name] = {}
+			shields[dst_name][spellid] = {}
+			shields[dst_name][spellid][src_name] = absorb_source
+		elseif (not shields[dst_name][spellid]) then
+			shields[dst_name][spellid] = {}
+			shields[dst_name][spellid][src_name] = absorb_source
 		else
-			shields [dst_name] [spellid] [src_name] = absorb_source
+			shields[dst_name][spellid][src_name] = absorb_source
 		end
 	end
 	------------------------------------------------------------------------------------------------
@@ -1607,17 +1530,25 @@
 		this_player.last_event = _timestamp
 
 		--> actor spells table
-		local spell = this_player.buff_uptime_spell_tables._ActorTable[spellid]
+		local spell = this_player.buff_uptime_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.buff_uptime_spell_tables:CatchSpell(spellid, true, "BUFF_UPTIME")
+			spell = this_player.buff_uptime_spells:CatchSpell(spellid, true, "BUFF_UPTIME")
 		end
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
-		
+		--return spell:Add(dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
+		return spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, this_player, "BUFF_OR_DEBUFF", in_out)
+
 	end
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 	--> ENERGY	serach key: ~energy												|
 -----------------------------------------------------------------------------------------------------------------------------------------
+
+	local energy_types = {
+		[SPELL_POWER_MANA] = true, -- 0
+		[SPELL_POWER_RAGE] = true, -- 1
+		[SPELL_POWER_ENERGY] = true, -- 3
+		[SPELL_POWER_RUNIC_POWER] = true, -- 6
+	}
 
 	function parser:energize(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype, amount, powertype, p6, p7)
 
@@ -1625,36 +1556,23 @@
 	--> early checks and fixes
 
 		if (not src_name) then
-			src_name = "[*] "..spellname
+			src_name = "[*] " .. spellname
 		elseif (not dst_name) then
 			return
 		end
 
 	------------------------------------------------------------------------------------------------
-	--> get regen key name
-		
-		local key_regenDone
-		local key_regenFrom 
-		local key_regenType
-		
-		if (powertype == 0) then --> MANA
-			key_regenDone = "mana_r"
-			key_regenFrom = "mana_from"
-			key_regenType = "mana"
-		elseif (powertype == 1) then --> RAGE
-			key_regenDone = "e_rage_r"
-			key_regenFrom = "e_rage_from"
-			key_regenType = "e_rage"
-		elseif (powertype == 3) then --> ENERGY
-			key_regenDone = "e_energy_r"
-			key_regenFrom = "e_energy_from"
-			key_regenType = "e_energy"
-		elseif (powertype == 6) then --> RUNEPOWER
-			key_regenDone = "runepower_r"
-			key_regenFrom = "runepower_from"
-			key_regenType = "runepower"
-		else
-			--> not tracking this regen type
+	--> check if is energy or resource
+
+		--> get resource type
+		local resource_amount = 0
+		if powertype == 4 then
+			powertype = 3
+			resource_amount = amount
+			amount = 0
+		end
+		--> check if is valid
+		if (not energy_types[powertype]) then
 			return
 		end
 		
@@ -1667,6 +1585,11 @@
 		local this_player, mine_owner = energy_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_energy_container:CatchCombatant(src_serial, src_name, src_flags, true)
+			this_player.powertype = powertype
+			if (mine_owner) then
+				mine_owner.powertype = powertype
+			end
+
 			if (not mine_owner) then --> se n�o for um pet, adicionar no cache
 				energy_cache[src_name] = this_player
 			end
@@ -1676,52 +1599,54 @@
 		local player_dst, dst_owner = energy_cache[dst_name]
 		if (not player_dst) then
 			player_dst, dst_owner, dst_name = _current_energy_container:CatchCombatant(dst_serial, dst_name, dst_flags, true)
+			player_dst.powertype = powertype
+			if (dst_owner) then
+				dst_owner.powertype = powertype
+			end
 			if (not dst_owner) then
 				energy_cache[dst_name] = player_dst
 			end
 		end
-		
-		--> actor targets
-		local this_dst = this_player.targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.targets:CatchCombatant(dst_serial, dst_name, dst_flags, true) --retorna o objeto class_target -> dst_DA_HABILIDADE:Newtable()
-		else
-			this_dst = this_player.targets._ActorTable[this_dst]
+
+		if (false and player_dst.powertype ~= this_player.powertype) then --- TODO: think of a way to track regenerating different resources
+			print("error: different power types: who -> ", this_player.powertype, " target -> ", player_dst.powertype)
+			return
 		end
 		
 		this_player.last_event = _timestamp
 
 	------------------------------------------------------------------------------------------------
 	--> amount add
+		if (resource_amount > 0) then
+			--> is a resource
+			this_player.resource = (this_player.resource or 0) + resource_amount
+			return
+		end
+
+		--> add to targets
+		this_player.targets[dst_name] = (this_player.targets[dst_name] or 0) + amount
+
+		--> add to combat total
+		_current_total[3][powertype] = _current_total[3][powertype] + amount
 		
-		--> combat total
-		_current_total[3][key_regenType] = _current_total[3][key_regenType] + amount
-		
-		if (this_player.group) then 
-			_current_gtotal[3][key_regenType] = _current_gtotal[3][key_regenType] + amount
+		if (this_player.group) then
+			_current_gtotal[3][powertype] = _current_gtotal[3][powertype] + amount
 		end
 
 		--> regen produced amount
-		this_player[key_regenType] = this_player[key_regenType] + amount
-		this_dst[key_regenType] = this_dst[key_regenType] + amount
-		
+		this_player.total = this_player.total + amount
+
 		--> target regenerated amount
-		player_dst[key_regenDone] = player_dst[key_regenDone] + amount
-		
-		--> regen from
-		if (not player_dst[key_regenFrom][src_name]) then
-			player_dst[key_regenFrom][src_name] = true
-		end
+		player_dst.received = player_dst.received + amount
 		
 		--> owner
 		if (mine_owner) then
-			mine_owner[key_regenType] = mine_owner[key_regenType] + amount --> e adiciona o damage ao pet
+			mine_owner.total = mine_owner.total + amount
 		end
-
 		--> actor spells table
-		local spell = this_player.spell_tables._ActorTable[spellid]
+		local spell = this_player.spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.spells:CatchSpell(spellid, true, token)
 		end
 		
 		--return spell:Add(dst_serial, dst_name, dst_flags, amount, src_name, powertype)
@@ -1755,22 +1680,11 @@
 		
 	------------------------------------------------------------------------------------------------
 	--> build containers on the fly
-
 		if (not this_player.cooldowns_defensive) then
 			this_player.cooldowns_defensive = _details:GetOrderNumber(src_name)
-			this_player.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			this_player.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities
-			
-			if (not this_player.shadow.cooldowns_defensive_targets) then
-				this_player.shadow.cooldowns_defensive = _details:GetOrderNumber(src_name)
-				this_player.shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				this_player.shadow.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
-			end
-
-			this_player.cooldowns_defensive_targets.shadow = this_player.shadow.cooldowns_defensive_targets
-			this_player.cooldowns_defensive_spell_tables.shadow = this_player.shadow.cooldowns_defensive_spell_tables
-		end	
-		
+			this_player.cooldowns_defensive_targets = {}
+			this_player.cooldowns_defensive_spells = container_abilities:NewContainer(container_misc) --> create container for abilities
+		end
 	------------------------------------------------------------------------------------------------
 	--> add amount
 
@@ -1827,18 +1741,12 @@
 		this_player.last_event = _timestamp
 		
 		--> actor targets
-		local this_dst = this_player.cooldowns_defensive_targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.cooldowns_defensive_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.cooldowns_defensive_targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + 1
+		this_player.cooldowns_defensive_targets[dst_name] = (this_player.cooldowns_defensive_targets[dst_name] or 0) + 1
 
 		--> actor spells table
-		local spell = this_player.cooldowns_defensive_spell_tables._ActorTable[spellid]
+		local spell = this_player.cooldowns_defensive_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.cooldowns_defensive_spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.cooldowns_defensive_spells:CatchSpell(spellid, true, token)
 		end
 		
 		if (_hook_cooldowns) then
@@ -1848,8 +1756,9 @@
 			end
 		end
 		
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, "BUFF_OR_DEBUFF", "COOLDOWN")
-		
+		--return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, "BUFF_OR_DEBUFF", "COOLDOWN")
+		return spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, token, "BUFF_OR_DEBUFF", "COOLDOWN")
+
 	end
 
 	
@@ -1884,19 +1793,9 @@
 		
 		if (not this_player.interrupt) then
 			this_player.interrupt = _details:GetOrderNumber(src_name)
-			this_player.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			this_player.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
+			this_player.interrupt_targets = {}
+			this_player.interrupt_spells = container_abilities:NewContainer(container_misc)
 			this_player.interrompeu_oque = {}
-			
-			if (not this_player.shadow.interrupt_targets) then
-				this_player.shadow.interrupt = _details:GetOrderNumber(src_name)
-				this_player.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				this_player.shadow.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
-				this_player.shadow.interrompeu_oque = {}
-			end
-
-			this_player.interrupt_targets.shadow = this_player.shadow.interrupt_targets
-			this_player.interrupt_spell_tables.shadow = this_player.shadow.interrupt_spell_tables
 		end
 		
 	------------------------------------------------------------------------------------------------
@@ -1914,72 +1813,42 @@
 
 		--> update last event
 		this_player.last_event = _timestamp
-		--shadow.last_event = _timestamp
 		
 		--> spells interrupted
-		if (not this_player.interrompeu_oque[extraSpellID]) then
-			this_player.interrompeu_oque[extraSpellID] = 1
-		else
-			this_player.interrompeu_oque[extraSpellID] = this_player.interrompeu_oque[extraSpellID] + 1
-		end
+		this_player.interrompeu_oque[extraSpellID] = (this_player.interrompeu_oque[extraSpellID] or 0) + 1
 		
 		--> actor targets
-		local this_dst = this_player.interrupt_targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.interrupt_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.interrupt_targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + 1
+		this_player.interrupt_targets[dst_name] = (this_player.interrupt_targets[dst_name] or 0) + 1
 
 		--> actor spells table
-		local spell = this_player.interrupt_spell_tables._ActorTable[spellid]
+		local spell = this_player.interrupt_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.interrupt_spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.interrupt_spells:CatchSpell(spellid, true, token)
 		end
-		spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
-		
+		--spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+		spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+
 		--> verifica se tem owner e adiciona o interrupt para o owner
 		if (mine_owner) then
 			
 			if (not mine_owner.interrupt) then
-				mine_owner.interrupt = 0
-				mine_owner.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				mine_owner.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
+				mine_owner.interrupt = _details:GetOrderNumber(src_name)
+				mine_owner.interrupt_targets = {}
+				mine_owner.interrupt_spells = container_abilities:NewContainer(container_misc)
 				mine_owner.interrompeu_oque = {}
-				
-				if (not mine_owner.shadow.interrupt_targets) then
-					mine_owner.shadow.interrupt = 0
-					mine_owner.shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-					mine_owner.shadow.interrupt_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
-					mine_owner.shadow.interrompeu_oque = {}
-				end
-
-				mine_owner.interrupt_targets.shadow = mine_owner.shadow.interrupt_targets
-				mine_owner.interrupt_spell_tables.shadow = mine_owner.shadow.interrupt_spell_tables
 			end
 			
 			-- adiciona ao total
 			mine_owner.interrupt = mine_owner.interrupt + 1
 			
 			-- adiciona aos targets
-			local this_dst = mine_owner.interrupt_targets._NameIndexTable[dst_name]
-			if (not this_dst) then
-				this_dst = mine_owner.interrupt_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-			else
-				this_dst = mine_owner.interrupt_targets._ActorTable[this_dst]
-			end
-			this_dst.total = this_dst.total + 1
+			mine_owner.interrupt_targets[dst_name] = (mine_owner.interrupt_targets[dst_name] or 0) + 1
 			
 			-- update last event
 			mine_owner.last_event = _timestamp
 			
 			-- spells interrupted
-			if (not mine_owner.interrompeu_oque[extraSpellID]) then
-				mine_owner.interrompeu_oque[extraSpellID] = 1
-			else
-				mine_owner.interrompeu_oque[extraSpellID] = mine_owner.interrompeu_oque[extraSpellID] + 1
-			end
+			mine_owner.interrompeu_oque[extraSpellID] = (mine_owner.interrompeu_oque[extraSpellID] or 0) + 1
 			
 			--> pet interrupt
 			if (_hook_interrupt) then
@@ -2000,8 +1869,6 @@
 	
 	--> search key: ~spellcast ~castspell ~cast
 	function parser:spellcast(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype)
-	
-		--print(token, time, "src:",src_serial, src_name, src_flags, "TARGET:",dst_serial, dst_name, dst_flags, "SPELL:",spellid, spellname, spelltype)
 
 	------------------------------------------------------------------------------------------------
 	--> record cooldowns cast which can't track with buff applyed.
@@ -2023,7 +1890,7 @@
 				return
 			end
 		else
-			--> successful casts(not interrupted)
+			--> enemy successful casts (not interrupted)
 			if (_bit_band(src_flags, 0x00000040) ~= 0 and src_name) then --> byte 2 = 4(enemy)
 				--> damager
 				local this_player = damage_cache[src_name]
@@ -2031,79 +1898,14 @@
 					this_player = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
 				end
 				--> actor spells table
-				local spell = this_player.spell_tables._ActorTable[spellid]
+				local spell = this_player.spells._ActorTable[spellid]
 				if (not spell) then
-					spell = this_player.spell_tables:CatchSpell(spellid, true, token)
+					spell = this_player.spells:CatchSpell(spellid, true, token)
 				end
 				spell.successful_casted = spell.successful_casted + 1
-				--print("cast success", src_name, spellname)
 			end
 			return
 		end
-		
-		
-	-- para aqui --
-	------------------------------------------------------------------------------------------------
-	--> record how many times the spell has been casted successfully
-
-		if (not src_name) then
-			src_name = "[*] ".. spellname
-		end
-		
-		if (not dst_name) then
-			dst_name = "[*] ".. spellid
-		end
-		
-		_current_misc_container.need_refresh = true
-
-	------------------------------------------------------------------------------------------------
-	--> get actors
-
-		--> main actor
-
-		local this_player, mine_owner = misc_cache[src_name]
-		if (not this_player) then --> pode ser um desconhecido ou um pet
-			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-			if (not mine_owner) then --> se n�o for um pet, adicionar no cache
-				misc_cache[src_name] = this_player
-			end
-		end
-		local shadow = this_player.shadow
-
-	------------------------------------------------------------------------------------------------
-	--> build containers on the fly
-
-		if (not this_player.spellcast) then
-			--> constr�i aqui a table dele
-			this_player.spellcast = 0
-			this_player.spellcast_spell_tables = container_abilities:NewContainer(container_misc)
-
-			if (not this_player.shadow.spellcast_targets) then
-				this_player.shadow.spellcast = 0
-				this_player.shadow.spellcast_spell_tables = container_abilities:NewContainer(container_misc)
-			end
-
-			this_player.spellcast_targets.shadow = this_player.shadow.spellcast_targets
-			this_player.spellcast_spell_tables.shadow = this_player.shadow.spellcast_spell_tables
-		end
-		
-	------------------------------------------------------------------------------------------------
-	--> add amount
-
-		--> last event update
-		this_player.last_event = _timestamp
-
-		--> actor dispell amount
-		this_player.spellcast = this_player.spellcast + 1
-		shadow.spellcast = shadow.spellcast + 1
-		
-		--> actor spells table
-		local spell = this_player.spellcast_spell_tables._ActorTable[spellid]
-		if (not spell) then
-			spell = this_player.spellcast_spell_tables:CatchSpell(spellid, true, token)
-		end
-		
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, token)
 	end
 
 
@@ -2125,13 +1927,6 @@
 		
 	------------------------------------------------------------------------------------------------
 	--> get actors
-
-		--> main actor
-		--> debug - no cache
-		--[[
-		local this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-		--]]
-		--[
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
@@ -2139,7 +1934,6 @@
 				misc_cache[src_name] = this_player
 			end
 		end
-		--]]
 
 	------------------------------------------------------------------------------------------------
 	--> build containers on the fly
@@ -2147,19 +1941,9 @@
 		if (not this_player.dispell) then
 			--> constr�i aqui a table dele
 			this_player.dispell = _details:GetOrderNumber(src_name)
-			this_player.dispell_targets = container_combatants:NewContainer(container_damage_target)
-			this_player.dispell_spell_tables = container_abilities:NewContainer(container_misc)
+			this_player.dispell_targets = {}
+			this_player.dispell_spells = container_abilities:NewContainer(container_misc)
 			this_player.dispell_oque = {}
-			
-			if (not this_player.shadow.dispell_targets) then
-				this_player.shadow.dispell = _details:GetOrderNumber(src_name)
-				this_player.shadow.dispell_targets = container_combatants:NewContainer(container_damage_target)
-				this_player.shadow.dispell_spell_tables = container_abilities:NewContainer(container_misc)
-				this_player.shadow.dispell_oque = {}
-			end
-
-			this_player.dispell_targets.shadow = this_player.shadow.dispell_targets
-			this_player.dispell_spell_tables.shadow = this_player.shadow.dispell_spell_tables
 		end
 
 	------------------------------------------------------------------------------------------------
@@ -2167,7 +1951,6 @@
 
 		--> last event update
 		this_player.last_event = _timestamp
-		--shadow.last_event = _timestamp
 
 		--> total dispells in combat
 		_current_total[4].dispell = _current_total[4].dispell + 1
@@ -2181,70 +1964,42 @@
 		
 		--> dispell what
 		if (extraSpellID) then
-			if (not this_player.dispell_oque[extraSpellID]) then
-				this_player.dispell_oque[extraSpellID] = 1
-			else
-				this_player.dispell_oque[extraSpellID] = this_player.dispell_oque[extraSpellID] + 1
-			end
+			this_player.dispell_oque[extraSpellID] = (this_player.dispell_oque[extraSpellID] or 0) + 1
 		end
 		
 		--> actor targets
-		local this_dst = this_player.dispell_targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.dispell_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.dispell_targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + 1
+		this_player.dispell_targets[dst_name] = (this_player.dispell_targets[dst_name] or 0) + 1
 
 		--> actor spells table
-		local spell = this_player.dispell_spell_tables._ActorTable[spellid]
+		local spell = this_player.dispell_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.dispell_spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.dispell_spells:CatchSpell(spellid, true, token)
 		end
-		spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
-		
+		--spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+		spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+
 		--> verifica se tem owner e adiciona o interrupt para o owner
 		if (mine_owner) then
-			
 			if (not mine_owner.dispell) then
 				--> constr�i aqui a table dele
-				mine_owner.dispell = 0
-				mine_owner.dispell_targets = container_combatants:NewContainer(container_damage_target)
-				mine_owner.dispell_spell_tables = container_abilities:NewContainer(container_misc)
+				mine_owner.dispell = _details:GetOrderNumber(src_name)
+				mine_owner.dispell_targets = {}
+				mine_owner.dispell_spells = container_abilities:NewContainer(container_misc)
 				mine_owner.dispell_oque = {}
-				
-				if (not mine_owner.shadow.dispell_targets) then
-					mine_owner.shadow.dispell = 0
-					mine_owner.shadow.dispell_targets = container_combatants:NewContainer(container_damage_target)
-					mine_owner.shadow.dispell_spell_tables = container_abilities:NewContainer(container_misc)
-					mine_owner.shadow.dispell_oque = {}
-				end
-
-				mine_owner.dispell_targets.shadow = mine_owner.shadow.dispell_targets
-				mine_owner.dispell_spell_tables.shadow = mine_owner.shadow.dispell_spell_tables
 			end
 			
-			-- adiciona ao total
+			-- add to total
 			mine_owner.dispell = mine_owner.dispell + 1
 			
-			-- adiciona aos targets
-			local this_dst = mine_owner.dispell_targets._NameIndexTable[dst_name]
-			if (not this_dst) then
-				this_dst = mine_owner.dispell_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-			else
-				this_dst = mine_owner.dispell_targets._ActorTable[this_dst]
-			end
-			this_dst.total = this_dst.total + 1
+			-- add to targets
+			mine_owner.dispell_targets[dst_name] = (mine_owner.dispell_targets[dst_name] or 0) + 1
 			
 			-- update last event
 			mine_owner.last_event = _timestamp
 			
 			-- spells interrupted
-			if (not mine_owner.dispell_oque[extraSpellID]) then
-				mine_owner.dispell_oque[extraSpellID] = 1
-			else
-				mine_owner.dispell_oque[extraSpellID] = mine_owner.dispell_oque[extraSpellID] + 1
+			if (extraSpellID) then
+				mine_owner.dispell_oque[extraSpellID] = (mine_owner.dispell_oque[extraSpellID] or 0) + 1
 			end
 		end		
 		
@@ -2278,19 +2033,9 @@
 	--> build containers on the fly
 
 		if (not this_player.ress) then
-			--> constr�i aqui a table dele
 			this_player.ress = _details:GetOrderNumber(src_name)
-			this_player.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			this_player.ress_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
-			
-			if (not this_player.shadow.ress_targets) then
-				this_player.shadow.ress = _details:GetOrderNumber(src_name)
-				this_player.shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				this_player.shadow.ress_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
-			end
-
-			this_player.ress_targets.shadow = this_player.shadow.ress_targets
-			this_player.ress_spell_tables.shadow = this_player.shadow.ress_spell_tables
+			this_player.ress_targets = {}
+			this_player.ress_spells = container_abilities:NewContainer(container_misc)
 		end
 		
 	------------------------------------------------------------------------------------------------
@@ -2347,20 +2092,15 @@
 		end	
 		
 		--> actor targets
-		local this_dst = this_player.ress_targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.ress_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.ress_targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + 1
+		this_player.ress_targets[dst_name] = (this_player.ress_targets[dst_name] or 0) + 1
 
 		--> actor spells table
-		local spell = this_player.ress_spell_tables._ActorTable[spellid]
+		local spell = this_player.ress_spells._ActorTable[spellid]
 		if (not spell) then
-			spell = this_player.ress_spell_tables:CatchSpell(spellid, true, token)
+			spell = this_player.ress_spells:CatchSpell(spellid, true, token)
 		end
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+		--return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
+		return spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, token, extraSpellID, extraSpellName)
 	end
 
 	--serach key: ~cc
@@ -2384,13 +2124,6 @@
 
 	------------------------------------------------------------------------------------------------
 	--> get actors
-
-		--> main actor
-		--> debug - no cache
-		--[[
-		local this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
-		--]]
-		--[
 		local this_player, mine_owner = misc_cache[src_name]
 		if (not this_player) then --> pode ser um desconhecido ou um pet
 			this_player, mine_owner, src_name = _current_misc_container:CatchCombatant(src_serial, src_name, src_flags, true)
@@ -2398,7 +2131,6 @@
 				misc_cache[src_name] = this_player
 			end
 		end
-		--]]
 		
 	------------------------------------------------------------------------------------------------
 	--> build containers on the fly
@@ -2406,19 +2138,9 @@
 		if (not this_player.cc_break) then
 			--> constr�i aqui a table dele
 			this_player.cc_break = _details:GetOrderNumber(src_name)
-			this_player.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			this_player.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
+			this_player.cc_break_targets = {}
+			this_player.cc_break_spells = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			this_player.cc_break_oque = {}
-			
-			if (not this_player.shadow.cc_break) then
-				this_player.shadow.cc_break = _details:GetOrderNumber(src_name)
-				this_player.shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				this_player.shadow.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
-				this_player.shadow.cc_break_oque = {}
-			end
-
-			this_player.cc_break_targets.shadow = this_player.shadow.cc_break_targets
-			this_player.cc_break_spell_tables.shadow = this_player.shadow.cc_break_spell_tables
 		end
 		
 	------------------------------------------------------------------------------------------------
@@ -2426,7 +2148,6 @@
 
 		--> update last event
 		this_player.last_event = _timestamp
-		--shadow.last_event = _timestamp
 		
 		--> combat cc break total
 		_current_total[4].cc_break = _current_total[4].cc_break + 1
@@ -2439,34 +2160,22 @@
 		this_player.cc_break = this_player.cc_break + 1
 		
 		--> broke what
-		if (not this_player.cc_break_oque[spellid]) then
-			this_player.cc_break_oque[spellid] = 1
-		else
-			this_player.cc_break_oque[spellid] = this_player.cc_break_oque[spellid] + 1
-		end
+		this_player.cc_break_oque[spellid] = (this_player.cc_break_oque[spellid] or 0) + 1
 		
 		--> actor targets
-		local this_dst = this_player.cc_break_targets._NameIndexTable[dst_name]
-		if (not this_dst) then
-			this_dst = this_player.cc_break_targets:CatchCombatant(dst_serial, dst_name, dst_flags, true)
-		else
-			this_dst = this_player.cc_break_targets._ActorTable[this_dst]
-		end
-		this_dst.total = this_dst.total + 1
+		this_player.cc_break_targets[dst_name] = (this_player.cc_break_targets[dst_name] or 0) + 1
 
 		--> actor spells table
-		local spell = this_player.cc_break_spell_tables._ActorTable[extraSpellID]
+		local spell = this_player.cc_break_spells._ActorTable[extraSpellID]
 		if (not spell) then
-			spell = this_player.cc_break_spell_tables:CatchSpell(extraSpellID, true, token)
+			spell = this_player.cc_break_spells:CatchSpell(extraSpellID, true, token)
 		end
-		return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, spellid, spellname)
+		--return spell:Add(dst_serial, dst_name, dst_flags, src_name, token, spellid, spellname)
+		return spell_misc_func(spell, dst_serial, dst_name, dst_flags, src_name, token, spellid, spellname)
 	end
 
 	--serach key: ~dead ~death ~death
 	function parser:dead(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags)
-
-	--> not yet well cleaned, need more improvements
-
 	------------------------------------------------------------------------------------------------
 	--> early checks and fixes
 	
@@ -2505,11 +2214,6 @@
 				--> must be in combat
 				_in_combat
 			) then
-			
-				--> true dead was a attempt to get the last hit because parser sometimes send the dead token before send the hit wich really killed the actor
-				--> but unfortunately seems parser not send at all any damage after actor dead
-				--_details:ScheduleTimer("TrueDead", 1, {time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags}) 
-				
 				_current_misc_container.need_refresh = true
 				
 				--> combat totals
@@ -2524,8 +2228,7 @@
 						misc_cache[dst_name] = this_player
 					end
 				end
-				
-				--> prepare a estrutura da death pegando a table de damage e a table de heal
+
 				--> objeto da death
 				local this_death = {}
 				
@@ -2603,9 +2306,6 @@
 
 				--> reseta a pool
 				last_events_cache[dst_name] = nil
-				--damage.last_events_table =  _details:CreateActorLastEventTable()
-				--heal.last_events_table =  _details:CreateActorLastEventTable()
-
 			end
 		end
 	end
@@ -2858,22 +2558,9 @@
 			_details.last_zone_type = zoneType
 		end
 		local zoneMapID = GetCurrentMapAreaID()
-		--[[
-		if(zoneType == "raid") then
-			if (zoneName == "Ulduar") then zoneMapID = 530
-			elseif (zoneName == "Naxxramas") then zoneMapID = 536
-			elseif (zoneName == "Trial of the Crusader") then zoneMapID = 544
-			elseif (zoneName == "The Eye of Eternity") then zoneMapID = 528
-			elseif (zoneName == "Icecrown Citadel") then zoneMapID = 605
-			elseif (zoneName == "Onyxia's Lair") then zoneMapID = 718
-			elseif (zoneName == "The Obsidian Sanctum") then zoneMapID = 531
-			elseif (zoneName == "Vault of Archavon") then zoneMapID = 533
-			elseif (zoneName == "The Ruby Sanctum") then zoneMapID = 610
-			else zoneMapID = 4
-			end
-		else zoneMapID = 4
-		end
-		]]--
+
+		_details:CheckChatOnZoneChange(zoneType)
+
 		_details.zone_type = zoneType
 		_details.zone_id = zoneMapID
 		_details.zone_name = zoneName
@@ -3123,6 +2810,11 @@
 			_details.schedule_add_to_overall = false
 
 			_details.history:adicionar_overall(_details.table_current)
+		end
+
+		if (_details.schedule_store_boss_encounter) then
+			pcall(_details.StoreEncounter)
+			_details.schedule_store_boss_encounter = nil
 		end
 
 		if (_details.schedule_hard_garbage_collect) then
@@ -3534,12 +3226,6 @@
 			_hook_interrupt = true
 		else
 			_hook_interrupt = false
-		end
-		
-		if (_details.hooks["HOOK_BUFF"].enabled) then --[[REMOVED]]
-			_hook_buffs = true
-		else
-			_hook_buffs = false
 		end
 
 		return _details:ClearParserCache()

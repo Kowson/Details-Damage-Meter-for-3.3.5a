@@ -1,13 +1,15 @@
 *
 
 !.gitignore
-!boss_heads/
-!Details/
-!Details_DpsTuning/
-!Details_EncounterDetails/
-!Details_RaidInfo-ChamberOfAspects/
-!Details_RaidInfo-EoE/
-!Details_RaidInfo-Naxx/
-!Details_RaidInfo-ToC/
-!Details_RaidInfo-Ulduar/
-!Details_TinyThreat/
+!boss_heads/*
+!Details/*
+!Details_DpsTuning/*
+!Details_EncounterDetails/*
+!Details_DataStorage/*
+!Details_RaidInfo-ChamberOfAspects/*
+!Details_RaidInfo-EoE/*
+!Details_RaidInfo-Naxx/*
+!Details_RaidInfo-ToC/*
+!Details_RaidInfo-Ulduar/*
+!Details_TinyThreat/*
+!API.txt

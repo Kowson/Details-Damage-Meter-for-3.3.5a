@@ -25,9 +25,7 @@ local _bit_band = bit.band
 
 
 --> Create the plugin Object
---print("Initialize")
 local EncounterDetails = _details:NewPluginObject("Details_EncounterDetails", DETAILSPLUGIN_ALWAYSENABLED)
---print("NewObject")
 tinsert(UISpecialFrames, "Details_EncounterDetails")
 --> Main Frame
 local EncounterDetailsFrame = EncounterDetails.Frame
@@ -39,6 +37,8 @@ local class_type_damage = _details.attributes.damage --> damage
 local class_type_misc = _details.attributes.misc --> misc
 --> main combat object
 local _combat_object
+
+local sort_by_name = function (t1, t2) return t1.name < t2.name end
 
 local CLASS_ICON_TCOORDS = _G._details.class_coords
 
@@ -291,9 +291,9 @@ local function CreatePluginFrames(data)
 		return true
 	end
 	
-	--> create the button to show on toolbar[1] function OnClick[2] texture[3] tooltip[4] width or 14[5] height or 14[6] frame name or nil
-	--EncounterDetails.ToolbarButton = _details.ToolBar:NewPluginToolbarButton(EncounterDetails.OpenWindow, "Interface\\AddOns\\Details\\images\\ScenarioIcon-Boss", Loc["STRING_PLUGIN_NAME"], Loc["STRING_TOOLTIP"], 12, 12, "ENCOUNTERDETAILS_BUTTON") --"Interface\\COMMON\\help-i"
 	EncounterDetails.ToolbarButton = _details.ToolBar:NewPluginToolbarButton(EncounterDetails.OpenWindow, "Interface\\AddOns\\Details_EncounterDetails\\images\\icon", Loc["STRING_PLUGIN_NAME"], Loc["STRING_TOOLTIP"], 16, 16, "ENCOUNTERDETAILS_BUTTON") --"Interface\\COMMON\\help-i"
+	EncounterDetails.ToolbarButton.shadow = true --> loads icon_shadow.tga when the instance is showing icons with shadows
+
 	--> setpoint anchors mod if needed
 	EncounterDetails.ToolbarButton.y = 0.5
 	EncounterDetails.ToolbarButton.x = 0
@@ -322,6 +322,19 @@ local shift_monitor = function(self)
 		end
 	end
 end
+
+local sort_damage_from = function(a, b)
+	if (a[3] ~= "PET" and b[3] ~= "PET") then
+		return a[2] > b[2]
+	elseif (a[3] == "PET" and b[3] ~= "PET") then
+		return false
+	elseif (a[3] ~= "PET" and b[3] == "PET") then
+		return true
+	else
+		return a[2] > b[2]
+	end
+end
+
 
 --> custom tooltip for dead details ---------------------------------------------------------------------------------------------------------
 
@@ -444,7 +457,7 @@ local function DispellInfo(dispell, bar)
 		table_players[#table_players + 1] = {name, tab[1], tab[2]}
 	end
 	
-	_table_sort(table_players, function(a, b) return a[2] > b[2] end)
+	_table_sort(table_players, _details.Sort2)
 	
 	_GameTooltip:ClearLines()
 	_GameTooltip:AddLine(bar.text_left:GetText())
@@ -470,7 +483,7 @@ local function KickBy(spell, bar)
 		table_players[#table_players + 1] = {name, tab[1], tab[2]}
 	end
 	
-	_table_sort(table_players, function(a, b) return a[2] > b[2] end)
+	_table_sort(table_players, _details.Sort2)
 	
 	_GameTooltip:ClearLines()
 	_GameTooltip:AddLine(bar.text_left:GetText())
@@ -495,7 +508,7 @@ local function EnemySkills(ability, bar)
 		table_players[#table_players + 1] = {name, tab[1], tab[2]}
 	end
 	
-	_table_sort(table_players, function(a, b) return a[2] > b[2] end)
+	_table_sort(table_players, _details.Sort2)
 	
 	_GameTooltip:ClearLines()
 	_GameTooltip:AddLine(bar.text_left:GetText())
@@ -525,21 +538,19 @@ local function DamageTakenDetails(player, bar)
 		local this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
 		if (this_agressor) then --> checagem por causa do total e do garbage collector que não limpa os names que deram damage
 		
-			local abilities = this_agressor.spell_tables._ActorTable
-			for id, ability in _pairs(abilities) do 
-			--print("oi - " .. this_agressor.name)
+			local abilities = this_agressor.spells._ActorTable
+			for id, ability in _pairs(abilities) do
 				local targets = ability.targets
-				for index, dst in _ipairs(targets._ActorTable) do 
-					--print("hello -> "..dst.name)
-					if (dst.name == player.name) then
-						mine_agressores[#mine_agressores+1] = {id, dst.total, this_agressor.name}
+				for target_name, amount in _pairs(targets) do
+					if (target_name == player.name) then
+						mine_agressores[#mine_agressores+1] = {id, amount, this_agressor.name}
 					end
 				end
 			end
 		end
 	end
 
-	_table_sort(mine_agressores, function(a, b) return a[2] > b[2] end)
+	_table_sort(mine_agressores, _details.Sort2)
 	
 	_GameTooltip:ClearLines()
 	_GameTooltip:AddLine(bar.text_left:GetText())
@@ -950,7 +961,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 				not player.group and
 				_bit_band(player.flag_original, 0x00000400) == 0
 			) then
-				local abilities = player.spell_tables._ActorTable
+				local abilities = player.spells._ActorTable
 				for id, ability in _pairs(abilities) do
 					--if (abilities_poll[id]) then
 						--> this player used a boss ability
@@ -972,22 +983,22 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 
 						--> take targets and add to [2]
 						local targets = ability.targets
-						for index, player in _ipairs(targets._ActorTable) do
+						for target_name, amount in _pairs(targets) do
 
 							--> it has the name of the player, let's see if this dst is really a player checking the combat table
-							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[player.name]]
+							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[target_name]]
 							if (table_damage_of_player and table_damage_of_player.group) then
-								if (not this_ability[2][player.name]) then
-									this_ability[2][player.name] = {0, table_damage_of_player.class}
+								if (not this_ability[2][target_name]) then
+									this_ability[2][target_name] = {0, table_damage_of_player.class}
 								end
-								this_ability[2][player.name][1] = this_ability[2][player.name][1] + player.total
+								this_ability[2][target_name][1] = this_ability[2][target_name][1] + amount
 							end
 						end
 					--end
 				end
 			elseif (have_pool) then
 				--> check if the sepll id is in the spell poll
-				local abilities = player.spell_tables._ActorTable
+				local abilities = player.spells._ActorTable
 				for id, ability in _pairs(abilities) do
 					if (abilities_poll[id]) then
 						--> this player used a boss ability
@@ -1009,14 +1020,14 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 
 						--> take targets and add to [2]
 						local targets = ability.targets
-						for index, player in _ipairs(targets._ActorTable) do
+						for target_name, amount in _pairs(targets) do
 							--> it has the name of the player, let's see if this dst is really a player checking the combat table
-							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[player.name]]
+							local table_damage_of_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[target_name]]
 							if (table_damage_of_player and table_damage_of_player.group) then
-								if (not this_ability[2][player.name]) then
-									this_ability[2][player.name] = {0, table_damage_of_player.class}
+								if (not this_ability[2][target_name]) then
+									this_ability[2][target_name] = {0, table_damage_of_player.class}
 								end
-								this_ability[2][player.name][1] = this_ability[2][player.name][1] + player.total
+								this_ability[2][target_name][1] = this_ability[2][target_name][1] + amount
 							end
 						end
 					end
@@ -1131,19 +1142,18 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 				tab.total = player.total
 				
 				--> em quem ele deu damage
-				for _, dst in _ipairs(player.targets._ActorTable) do 
-					--local this_player = DamageContainer._ActorTable[DamageContainer._NameIndexTable[dst.name]]
-					local this_player = _combat_object(1, dst.name)
+				for target_name, amount in _pairs(player.targets) do
+					local this_player = _combat_object(1, target_name)
 					if (this_player) then
 						if (this_player.class and this_player.class ~= "UNGROUPPLAYER" and this_player.class ~= "UNKNOW") then
-							tab.damage_em[#tab.damage_em +1] = {dst.name, dst.total, this_player.class}
-							tab.damage_em_total = tab.damage_em_total + dst.total
+							tab.damage_em[#tab.damage_em +1] = {target_name, amount, this_player.class}
+							tab.damage_em_total = tab.damage_em_total + amount
 						end
 					else
 						--print("actor not found: " ..dst.name )
 					end
 				end
-				_table_sort(tab.damage_em, function(a, b) return a[2] > b[2] end)
+				_table_sort(tab.damage_em, _details.Sort2)
 				
 				--> quem deu damage nele
 				for agressor, _ in _pairs(player.damage_from) do 
@@ -1151,26 +1161,15 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 					local this_player = _combat_object(1, agressor)
 					--if (this_player and this_player:IsPlayer()) then 
 					if (this_player) then 
-						for _, dst in _ipairs(this_player.targets._ActorTable) do 
-							if (dst.name == name) then 
-								tab.damage_from[#tab.damage_from+1] = {agressor, dst.total, this_player.class}
-								tab.damage_from_total = tab.damage_from_total + dst.total
+						for target_name, amount in _pairs(this_player.targets) do
+							if (target_name == name) then
+								tab.damage_from[#tab.damage_from+1] = {agressor, amount, this_player.class}
+								tab.damage_from_total = tab.damage_from_total + amount
 							end
 						end
 					end
 				end
-				_table_sort(tab.damage_from, 
-								function(a, b) 
-									if (a[3] ~= "PET" and b[3] ~= "PET") then 
-										return a[2] > b[2] 
-									elseif (a[3] == "PET" and b[3] ~= "PET") then
-										return false
-									elseif (a[3] ~= "PET" and b[3] == "PET") then
-										return true
-									else
-										return a[2] > b[2] 
-									end
-								end)
+				_table_sort(tab.damage_from, sort_damage_from)
 				
 				tinsert(adds, tab)
 				
@@ -1247,7 +1246,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		local index = 1
 		amount = 0
 		
-		table.sort(adds, function(t1, t2) return t1.name < t2.name end)
+		_table_sort(adds, sort_by_name)
 		
 		for index, this_table in _ipairs(adds) do 
 		
@@ -1388,7 +1387,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		for spellid, tab in _pairs(abilities_interrompidas) do 
 			table_in_order[#table_in_order+1] = tab
 		end
-		_table_sort(table_in_order, function (a, b) return a[2] > b[2] end)
+		_table_sort(table_in_order, _details.Sort2)
 
 		index = 1
 		
@@ -1410,8 +1409,8 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 			local successful = 0
 			--> pegar quantas vezes a spell passou com sucesso. table
 			for _, enemy_actor in _ipairs(DamageContainer._ActorTable) do
-				if (enemy_actor.spell_tables._ActorTable[spellid]) then
-					local spell = enemy_actor.spell_tables._ActorTable[spellid]
+				if (enemy_actor.spells._ActorTable[spellid]) then
+					local spell = enemy_actor.spells._ActorTable[spellid]
 					successful = spell.successful_casted
 				end
 			end
@@ -1561,7 +1560,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		
 		amount = 0
 	
-		-- boss_info.spell_tables_info o erro de lua do boss é a ability dele que não foi declarada ainda
+		-- boss_info.spells_info o erro de lua do boss é a ability dele que não foi declarada ainda
 	
 		local deaths = _combat_object.last_events_tables
 		local abilities_info = boss_info and boss_info.spell_mechanics or {} --bar.extra pega esse cara aqui --> então esse erro é das abilities que não tao

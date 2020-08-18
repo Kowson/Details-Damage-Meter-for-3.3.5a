@@ -59,7 +59,7 @@
 			for _, actor in _ipairs(_details.table_current[class_type_damage]._ActorTable) do 
 			
 				if (not actor.group and not actor.owner and not actor.name:find("[*]") and _bit_band(actor.flag_original, 0x00000060) ~= 0) then --> 0x20+0x40 neutral + enemy reaction
-					for name, _ in _pairs(actor.targets._NameIndexTable) do
+					for name, _ in _pairs(actor.targets) do
 						if (name == _details.playername) then
 							return actor.name
 						else
@@ -76,8 +76,8 @@
 			for _, actor in _ipairs(_details.table_current[class_type_damage]._ActorTable) do 
 			
 				if (actor.group and not actor.owner) then
-					for index, target in _ipairs(actor.targets._ActorTable) do 
-						return target.name
+					for target_name, _ in _pairs(actor.targets) do
+						return target_name
 					end
 				end
 				
@@ -88,7 +88,7 @@
 	
 	-- try get the current encounter name during the encounter
 	
-		local boss_found = function(index, name, zone, mapid, diff)
+		local boss_found = function(index, name, zone, mapid, diff, encounterid)
 			local boss_table = {
 				index = index,
 				name = name,
@@ -97,7 +97,7 @@
 				mapid = mapid,
 				diff = diff,
 				diff_string = select(4, GetInstanceInfo()),
-				--ej_instance_id = EJ_GetCurrentInstance(),
+				id = encounterid,
 			}
 			
 			_details.table_current.is_boss = boss_table
@@ -156,7 +156,7 @@
 		
 			if (_details.encounter_table.name) then
 				local encounter_table = _details.encounter_table
-				return boss_found(encounter_table.index, encounter_table.name, encounter_table.zone, encounter_table.mapid, encounter_table.diff)
+				return boss_found(encounter_table.index, encounter_table.name, encounter_table.zone, encounter_table.mapid, encounter_table.diff, encounter_table.id)
 			end
 		
 			for index = 1, 5, 1 do 
@@ -192,7 +192,7 @@
 
 			if (_details.encounter_table.name) then
 				local encounter_table = _details.encounter_table
-				return boss_found(encounter_table.index, encounter_table.name, encounter_table.zone, encounter_table.mapid, encounter_table.diff)
+				return boss_found(encounter_table.index, encounter_table.name, encounter_table.zone, encounter_table.mapid, encounter_table.diff, encounter_table.id)
 			end
 		
 			local zoneName, zoneType, DifficultyID, _, _, _ = _GetInstanceInfo()
@@ -211,7 +211,9 @@
 								BossIndex = BossIds[serial]
 								if (BossIndex) then
 									Actor.boss = true
-									Actor.shadow.boss = true
+									if (Actor.shadow) then
+										Actor.shadow.boss = true
+									end
 									return boss_found(BossIndex, _details:GetBossName(zoneMapID, BossIndex), zoneName, zoneMapID, DifficultyID)
 								end
 							end
@@ -360,9 +362,9 @@
 			_details:CloseEnemyDebuffsUptime()
 			
 			--> ugly fix for warlocks soul link, need to rewrite friendly fire code.
-			for index, actor in pairs(_details.table_current[1]._ActorTable) do
+			for index, actor in _pairs(_details.table_current[1]._ActorTable) do -- TODO: Check it
 				if (actor.class == "WARLOCK") then
-					local soullink = actor.spell_tables._ActorTable[108446]
+					local soullink = actor.spells._ActorTable[19028]
 					if (soullink) then
 						actor.total = actor.total - soullink.total
 						actor.total_without_pet = actor.total_without_pet - soullink.total
@@ -454,6 +456,13 @@
 				
 				if (bossKilled) then
 					_details.table_current.is_boss.killed = true
+
+					--> add to storage
+					if (not InCombatLockdown() and not UnitAffectingCombat("player")) then
+						pcall(_details.StoreEncounter)
+					else
+						_details.schedule_store_boss_encounter = true
+					end
 				end
 
 				if (_details:GetBossDetails(_details.table_current.is_boss.mapid, _details.table_current.is_boss.index)) then
@@ -890,14 +899,14 @@
 				for _, actor in _ipairs(container._ActorTable) do 
 					if (actor.group) then
 						if (class_type == 1 or class_type == 2) then
-							for _, target_actor in _ipairs(actor.targets._ActorTable) do 
-								local target_object = container._ActorTable[container._NameIndexTable[target_actor.name]]
+							for target_name, amount in _pairs(actor.targets) do
+								local target_object = container._ActorTable[container._NameIndexTable[target_name]]
 								if (target_object) then
 									target_object.fight_component = true
 									if (target_object.shadow) then
 										target_object.shadow.fight_component = true
 									end
-									fight_component(energy_container, misc_container, target_actor.name)
+									fight_component(energy_container, misc_container, target_name)
 								end
 							end
 							if (class_type == 1) then

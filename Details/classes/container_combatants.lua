@@ -278,7 +278,7 @@
 				end
 			end
 
-			local novo_objeto = self.creation_func(_, serial, name, shadow_objeto) --> shadow_objeto passa para o class_damage gravar no .targets e .spell_tables, mas n�o grava nele mesmo
+			local novo_objeto = self.creation_func(_, serial, name, shadow_objeto) --> shadow_objeto passes to class_damage to write to .targets and .spells, but does not write to itself
 			novo_objeto.name = name
 
 		-- type do container
@@ -295,7 +295,6 @@
 				
 				if (shadow_objeto) then
 					novo_objeto.shadow = shadow_objeto
-					novo_objeto:CreateLink(shadow_objeto) --> criando o link
 					if (novo_objeto.group and _details.in_combat) then
 						_details.cache_damage_group[#_details.cache_damage_group+1] = novo_objeto
 					end
@@ -327,7 +326,6 @@
 				
 				if (shadow_objeto) then
 					novo_objeto.shadow = shadow_objeto
-					novo_objeto:CreateLink(shadow_objeto)  --> criando o link
 					if (novo_objeto.group and _details.in_combat) then
 						_details.cache_healing_group[#_details.cache_healing_group+1] = novo_objeto
 					end
@@ -356,7 +354,6 @@
 				
 				if (shadow_objeto) then
 					novo_objeto.shadow = shadow_objeto
-					novo_objeto:CreateLink(shadow_objeto)  --> criando o link
 				end
 				
 				if (novo_objeto.class == "UNGROUPPLAYER") then --> is a player
@@ -383,7 +380,6 @@
 				
 				if (shadow_objeto) then
 					novo_objeto.shadow = shadow_objeto
-					novo_objeto:CreateLink(shadow_objeto)  --> criando o link
 				end
 				
 				if (novo_objeto.class == "UNGROUPPLAYER") then --> is a player
@@ -398,16 +394,6 @@
 				end
 			
 			elseif (self.type == container_damage_target) then --> CONTAINER ALVO DO DAMAGE
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
-			
-			elseif (self.type == container_heal_target) then --> CONTAINER ALVOS DO HEALING
-				novo_objeto.overheal = 0
-				novo_objeto.absorbed = 0
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
 				
 			elseif (self.type == container_energy_target) then --> CONTAINER ALVOS DO ENERGY
 			
@@ -472,9 +458,6 @@
 			
 		elseif (type == container_heal) then
 			return attribute_heal.Newtable
-			
-		elseif (type == container_friendlyfire) then
-			return attribute_damage.FF_creation_func
 			
 		elseif (type == container_enemydebufftarget_target) then
 			return dst_of_ability.Newtable

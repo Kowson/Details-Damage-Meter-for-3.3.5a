@@ -375,28 +375,6 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> internal functions
 
-	local LastDamage = 0
-	local LastDamageRecord = 0
-
-	--> record raid/party/player damage every second
-	function _details:LogDps()
-
-		LastDamageRecord = LastDamageRecord + 1
-
-		if (LastDamageRecord > 1) then
-			LastDamageRecord = 0
-			
-			local NowDamage =(_details.table_current.totals_group[1] - LastDamage) /2
-			
-			_table_insert(_details.table_current.DpsGraphic, NowDamage)
-			if (NowDamage > _details.table_current.DpsGraphic.max) then 
-				_details.table_current.DpsGraphic.max = NowDamage
-			end
-			
-			LastDamage = _details.table_current.totals_group[1]
-		end
-	end
-
 	--> is in combat yet?
 	function _details:EstaEmCombate()
 

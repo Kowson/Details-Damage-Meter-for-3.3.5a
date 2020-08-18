@@ -675,8 +675,6 @@ do
 				
 				local dps = _math_floor(total / combatTime)
 				
-				--print(total, combatTime, dps)
-				
 				local textStyle = child.options.textStyle
 				if (textStyle == 1) then
 					child.text:SetText(_details:ToK(dps))

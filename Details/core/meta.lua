@@ -1,8 +1,3 @@
---File Revision: 1
---Last Modification: 27/07/2013
--- Change Log:
-	-- 27/07/2013: Finished alpha version.
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	local _details = 		_G._details
@@ -146,8 +141,6 @@
 									end
 								end
 
-								--shadow:FazLinkagem(this_class)
-
 							end
 						end
 						
@@ -266,16 +259,10 @@
 									local owner_actor = _combat(class_type, owner.name)
 									if (owner_actor) then 
 										if (owner.group or owner.boss or owner.boss_fight_component) then
-											--if (class_type == 1) then
-											--	print("SAVE",  _iter.data.name, "| owner:",_iter.data.owner.name, table_index)
-											--end
 											can_erase = false
 										end
 									end
 								else
-									--if (class_type == 1) then
-									--	print("DELETANDO",  _iter.data.name, table_index)
-									--end
 								end
 							end
 							
@@ -290,15 +277,9 @@
 											_combat.totals_group[myself.type] = _combat.totals_group[myself.type] - myself.total
 										end
 									elseif (myself.type == class_type_e_energy) then
-										_combat.totals[myself.type]["mana"] = _combat.totals[myself.type]["mana"] - myself.mana
-										_combat.totals[myself.type]["e_rage"] = _combat.totals[myself.type]["e_rage"] - myself.e_rage
-										_combat.totals[myself.type]["e_energy"] = _combat.totals[myself.type]["e_energy"] - myself.e_energy
-										_combat.totals[myself.type]["runepower"] = _combat.totals[myself.type]["runepower"] - myself.runepower
+										_combat.totals[myself.type][myself.powertype] = _combat.totals[myself.type][myself.powertype] - myself.total
 										if (myself.group) then
-											_combat.totals_group[myself.type]["mana"] = _combat.totals_group[myself.type]["mana"] - myself.mana
-											_combat.totals_group[myself.type]["e_rage"] = _combat.totals_group[myself.type]["e_rage"] - myself.e_rage
-											_combat.totals_group[myself.type]["e_energy"] = _combat.totals_group[myself.type]["e_energy"] - myself.e_energy
-											_combat.totals_group[myself.type]["runepower"] = _combat.totals_group[myself.type]["runepower"] - myself.runepower
+											_combat.totals_group[myself.type][myself.powertype] = _combat.totals_group[myself.type][myself.powertype] - myself.total
 										end
 									elseif (myself.type == class_type_misc) then
 										if (myself.cc_break) then 
@@ -356,9 +337,7 @@
 						
 					end
 
-					for _, this_class in _ipairs(content) do 
-					
-						--> limpa o displayName, não precisa salvar
+					for _, this_class in _ipairs(content) do
 						this_class.displayName = nil
 						this_class.owner = nil
 						
@@ -370,138 +349,6 @@
 							_details.clear:c_attribute_energy(this_class)
 						elseif (class_type == class_type_misc) then
 							_details.clear:c_attribute_misc(this_class)
-							
-							if (this_class.interrupt) then
-								for _, _dst in _ipairs(this_class.interrupt_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.buff_uptime) then
-								for _, _dst in _ipairs(this_class.buff_uptime_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.debuff_uptime) then
-								for _, _dst in _ipairs(this_class.debuff_uptime_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.cooldowns_defensive) then
-								for _, _dst in _ipairs(this_class.cooldowns_defensive_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.ress) then
-								for _, _dst in _ipairs(this_class.ress_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.dispell) then
-								for _, _dst in _ipairs(this_class.dispell_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-							
-							if (this_class.cc_break) then
-								for _, _dst in _ipairs(this_class.cc_break_targets._ActorTable) do 
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-						end
-						
-						if (class_type ~= class_type_misc) then
-							for _, _dst in _ipairs(this_class.targets._ActorTable) do 
-								_details.clear:c_dst_of_ability(_dst)
-							end
-							
-							for _, ability in _pairs(this_class.spell_tables._ActorTable) do
-								if (class_type == class_type_damage) then
-									_details.clear:c_ability_damage(ability)
-								elseif (class_type == class_type_heal) then
-									_details.clear:c_ability_heal(ability)
-								elseif (class_type == class_type_e_energy) then
-									_details.clear:c_ability_e_energy(ability)
-								end
-								
-								for _, _dst in ipairs(ability.targets._ActorTable) do
-									_details.clear:c_dst_of_ability(_dst)
-								end
-							end
-						else
-							if (this_class.interrupt) then
-								for _, ability in _pairs(this_class.interrupt_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.buff_uptime) then
-								for _, ability in _pairs(this_class.buff_uptime_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.debuff_uptime) then
-								for _, ability in _pairs(this_class.debuff_uptime_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.cooldowns_defensive) then
-								for _, ability in _pairs(this_class.cooldowns_defensive_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.ress) then
-								for _, ability in _pairs(this_class.ress_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.dispell) then
-								for _, ability in _pairs(this_class.dispell_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
-							
-							if (this_class.cc_break) then
-								for _, ability in _pairs(this_class.cc_break_spell_tables._ActorTable) do
-									_details.clear:c_ability_misc(ability)
-									
-									for _, _dst in ipairs(ability.targets._ActorTable) do
-										_details.clear:c_dst_of_ability(_dst)
-									end
-								end
-							end
 						end
 						
 					end
@@ -757,21 +604,6 @@
 				if (not _actor.owner) then --> pet
 					_actor:subtract_total(_combat)
 				end
-			
-				--> fix para a weak table
-				--[[
-				local shadow = _actor.shadow
-				local _it = {index = 1, link = shadow.links[1]}
-				while(_it.link) do
-					if (_it.link == _actor) then
-						_table_remove(shadow.links, _it.index)
-						_it.link = shadow.links[_it.index]
-					else
-						_it.index = _it.index+1
-						_it.link = shadow.links[_it.index]
-					end
-				end
-				--]]
 				
 				_iter.cleaned = _iter.cleaned+1
 				
@@ -831,31 +663,12 @@
 		
 			local _actor = _iter.data
 		
-		--[[
-			local mine_links = _rawget(_actor, "links")
-			local can_garbage = true
-			local new_weak_table = _setmetatable({}, _details.weaktable) --> precisa da new weak table para remover os NILS da table antiga
-			
-			if (mine_links) then
-				for _, ref in _pairs(mine_links) do --> trocando pairs por _ipairs
-					if (ref) then
-						can_garbage = false
-						new_weak_table[#new_weak_table+1] = ref
-					end
-				end
-				_table_wipe(mine_links)
-			end
-		--]]
-		
 			local can_garbage = false
 			if (not _actor.group and not _actor.owner and not _actor.boss_fight_component and not _actor.fight_component) then
 				can_garbage = true
 			end
-		
-			--if (can_garbage or not mine_links) then --> não há referências a this objeto
+
 			if (can_garbage) then --> não há referências a this objeto
-				
-				--print("garbaged:", _actor.name)
 				
 				if (not _actor.owner) then --> pet
 					_actor:subtract_total(_overall_combat)
@@ -863,21 +676,11 @@
 
 				--> apaga a referência dthis player na table overall
 				_iter.cleaned = _iter.cleaned+1
-				
-				--if (_details.debug) then
-				--	if (#_actor.links > 0) then
-				--		_details:Msg("(debug) " .. _actor.name, " has been garbaged but have links: ", #_actor.links)
-				--	end
-				--end
-				
-				if (_actor.type == 1 or _actor.type == 2) then
-					_actor:UnregisterInTimeMachine()
-				end
+
 				_table_remove(content, _iter.index)
 
 				_iter.data = content[_iter.index]
 			else
-				--_actor.links = new_weak_table
 				_iter.index = _iter.index + 1
 				_iter.data = content[_iter.index]
 			end

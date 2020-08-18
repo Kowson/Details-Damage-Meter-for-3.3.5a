@@ -76,97 +76,103 @@
 --> exported functions
 
 --[[exported]]	function _details:CreateActorLastEventTable()
-				local t = { {}, {}, {}, {}, {}, {}, {}, {} }
-				t.n = 1
-				return t
+					local t = { {}, {}, {}, {}, {}, {}, {}, {} }
+					t.n = 1
+					return t
+				end
+
+				function attribute_damage:CreateFFTable(target_name)
+				local new_table = {total = 0, spells = {}}
+				self.friendlyfire[target_name] = new_table
+				return new_table
 			end
 			
 --[[exported]]	function _details:CreateActorAvoidanceTable(no_overall)
-				if (no_overall) then
-					local t = {["ALL"] = 0,["DODGE"] = 0,["PARRY"] = 0,["HITS"] = 0,["ABSORB"] = 0, --quantas vezes foi dodge, parry, quandos hits tomou, quantos absorbs teve
-					["FULL_HIT"] = 0,["FULL_ABSORBED"] = 0,["PARTIAL_ABSORBED"] = 0, --full hit full absorbed and partial absortion
-					["FULL_HIT_AMT"] = 0,["PARTIAL_ABSORB_AMT"] = 0,["ABSORB_AMT"] = 0,["FULL_ABSORB_AMT"] = 0} --amounts
-					return t
-				else
-					local t = {overall = {["ALL"] = 0,["DODGE"] = 0,["PARRY"] = 0,["HITS"] = 0,["ABSORB"] = 0, --quantas vezes foi dodge, parry, quandos hits tomou, quantos absorbs teve
-					["FULL_HIT"] = 0,["FULL_ABSORBED"] = 0,["PARTIAL_ABSORBED"] = 0, --full hit full absorbed and partial absortion
-					["FULL_HIT_AMT"] = 0,["PARTIAL_ABSORB_AMT"] = 0,["ABSORB_AMT"] = 0,["FULL_ABSORB_AMT"] = 0}} --amounts
-					return t
+					if (no_overall) then
+						local t = {["ALL"] = 0,["DODGE"] = 0,["PARRY"] = 0,["HITS"] = 0,["ABSORB"] = 0, --quantas vezes foi dodge, parry, quandos hits tomou, quantos absorbs teve
+						["FULL_HIT"] = 0,["FULL_ABSORBED"] = 0,["PARTIAL_ABSORBED"] = 0, --full hit full absorbed and partial absortion
+						["FULL_HIT_AMT"] = 0,["PARTIAL_ABSORB_AMT"] = 0,["ABSORB_AMT"] = 0,["FULL_ABSORB_AMT"] = 0} --amounts
+						return t
+					else
+						local t = {overall = {["ALL"] = 0,["DODGE"] = 0,["PARRY"] = 0,["HITS"] = 0,["ABSORB"] = 0, --quantas vezes foi dodge, parry, quandos hits tomou, quantos absorbs teve
+						["FULL_HIT"] = 0,["FULL_ABSORBED"] = 0,["PARTIAL_ABSORBED"] = 0, --full hit full absorbed and partial absortion
+						["FULL_HIT_AMT"] = 0,["PARTIAL_ABSORB_AMT"] = 0,["ABSORB_AMT"] = 0,["FULL_ABSORB_AMT"] = 0}} --amounts
+						return t
+					end
 				end
-			end
 
 --[[exported]]	function _details.SortGroup(container, keyName2)
-				keyName = keyName2
-				return _table_sort(container, _details.SortKeyGroup)
-			end
+					keyName = keyName2
+					return _table_sort(container, _details.SortKeyGroup)
+				end
 
 --[[exported]]	function _details.SortKeyGroup(table1, table2)
-				if (table1.group and table2.group) then
-					return table1[keyName] > table2[keyName]
-				elseif (table1.group and not table2.group) then
-					return true
-				elseif (not table1.group and table2.group) then
-					return false
-				else
-					return table1[keyName] > table2[keyName]
+					if (table1.group and table2.group) then
+						return table1[keyName] > table2[keyName]
+					elseif (table1.group and not table2.group) then
+						return true
+					elseif (not table1.group and table2.group) then
+						return false
+					else
+						return table1[keyName] > table2[keyName]
+					end
 				end
-			end
 
 --[[exported]] 	function _details.SortKeySimple(table1, table2)
-				return table1[keyName] > table2[keyName]
-			end
+					return table1[keyName] > table2[keyName]
+				end
 			
 --[[exported]] 	function _details:ContainerSort(container, amount, keyName2)
-				keyName = keyName2
-				_table_sort(container,  _details.SortKeySimple)
-				
-				if (amount) then 
-					for i = amount, 1, -1 do --> de tr�s pra frente
-						if (container[i][keyName] < 1) then
-							amount = amount-1
-						else
-							break
+					keyName = keyName2
+					_table_sort(container,  _details.SortKeySimple)
+
+					if (amount) then
+						for i = amount, 1, -1 do --> de tr�s pra frente
+							if (container[i][keyName] < 1) then
+								amount = amount-1
+							else
+								break
+							end
 						end
+
+						return amount
 					end
-					
-					return amount
 				end
-			end
 
 --[[ exported]]	function _details:IsGroupPlayer()
-				return self.group
-			end
+					return self.group
+				end
 			
 --[[ exported]] function _details:IsPlayer()
-				if (self.flag_original) then
-					if (_bit_band(self.flag_original, OBJECT_TYPE_PLAYER) ~= 0) then
-						return true
+					if (self.flag_original) then
+						if (_bit_band(self.flag_original, OBJECT_TYPE_PLAYER) ~= 0) then
+							return true
+						end
 					end
+					return false
 				end
-				return false
-			end
 
 --[[ exported]]	function _details:IsNeutralOrEnemy()
-				if (self.flag_original) then
-					if (_bit_band(self.flag_original, 0x00000060) ~= 0) then
-						return true
+					if (self.flag_original) then
+						if (_bit_band(self.flag_original, 0x00000060) ~= 0) then
+							return true
+						end
 					end
+					return false
 				end
-				return false
-			end
 
 --[[ exported]]	function _details:IsEnemy()
-				if (self.flag_original) then
-					if (_bit_band (self.flag_original, 0x00000060) ~= 0) then
-						return true
+					if (self.flag_original) then
+						if (_bit_band (self.flag_original, 0x00000060) ~= 0) then
+							return true
+						end
 					end
+					return false
 				end
-				return false
-			end
 
 --[[ exported]]	function _details:GetSpellList()
-				return self.spell_tables._ActorTable
-			end
+					return self.spells._ActorTable
+				end
 
 			-- enemies(sort function)
 			local sortEnemies = function(t1, t2)
@@ -186,28 +192,28 @@
 
 --[[exported]] 	function _details:ContainerSortEnemies(container, amount, keyName2)
 
-				keyName = keyName2
-				
-				_table_sort(container, sortEnemies)
-				
-				local total = 0
-				
-				for index, player in _ipairs(container) do
-					if (_bit_band(player.flag_original, 0x00000060) ~= 0) then --> � um enemy
-						total = total + player[keyName]
-					else
-						amount = index-1
-						break
+					keyName = keyName2
+
+					_table_sort(container, sortEnemies)
+
+					local total = 0
+
+					for index, player in _ipairs(container) do
+						if (_bit_band(player.flag_original, 0x00000060) ~= 0) then --> � um enemy
+							total = total + player[keyName]
+						else
+							amount = index-1
+							break
+						end
 					end
+
+					return amount, total
 				end
-				
-				return amount, total
-			end
 
 --[[Exported]] 	function _details:TooltipForCustom(bar)
-				GameCooltip:AddLine(Loc["STRING_LEFT_CLICK_SHARE"])
-				return true
-			end
+					GameCooltip:AddLine(Loc["STRING_LEFT_CLICK_SHARE"])
+					return true
+				end
 			
 --[[ Void Zone Sort]]
 			local void_zone_sort = function(t1, t2)
@@ -220,51 +226,51 @@
 
 
 --[[exported]]	function _details.Sort1(table1, table2)
-				return table1[1] > table2[1]
-			end
+					return table1[1] > table2[1]
+				end
 			
 --[[exported]]	function _details.Sort2(table1, table2)
-				return table1[2] > table2[2]
-			end
+					return table1[2] > table2[2]
+				end
 			
 --[[exported]]	function _details.Sort3(table1, table2)
-				return table1[3] > table2[3]
-			end
+					return table1[3] > table2[3]
+				end
 			
 --[[exported]]	function _details.Sort4(table1, table2)
-				return table1[4] > table2[4]
-			end
+					return table1[4] > table2[4]
+				end
 			
 --[[exported]]	function _details.Sort4Reverse(table1, table2)
-				if (not table2) then
-					return true
+					if (not table2) then
+						return true
+					end
+					return table1[4] < table2[4]
 				end
-				return table1[4] < table2[4]
-			end
 			
 --[[exported]]	function _details:GetBarColor(actor)
-				actor = actor or self
-				
-				if (actor.owner) then
-					return _unpack(_details.class_colors[actor.owner.class])
-					
-				elseif (actor.monster) then
-					return _unpack(_details.class_colors.ENEMY)
+					actor = actor or self
 
-				elseif (actor.arena_enemy) then
-					return _unpack(_details.class_colors.ARENA_ENEMY)
-				
-				elseif (actor.arena_ally) then
-					return _unpack(_details.class_colors.ARENA_ALLY)
-				
-				else
-					if (not is_player_class[actor.class] and actor.flag_original and _bit_band(actor.flag_original, 0x00000020) ~= 0) then --> neutral
-						return _unpack(_details.class_colors.NEUTRAL)
+					if (actor.owner) then
+						return _unpack(_details.class_colors[actor.owner.class])
+
+					elseif (actor.monster) then
+						return _unpack(_details.class_colors.ENEMY)
+
+					elseif (actor.arena_enemy) then
+						return _unpack(_details.class_colors.ARENA_ENEMY)
+
+					elseif (actor.arena_ally) then
+						return _unpack(_details.class_colors.ARENA_ALLY)
+
 					else
-						return _unpack(_details.class_colors[actor.class])
+						if (not is_player_class[actor.class] and actor.flag_original and _bit_band(actor.flag_original, 0x00000020) ~= 0) then --> neutral
+							return _unpack(_details.class_colors.NEUTRAL)
+						else
+							return _unpack(_details.class_colors[actor.class])
+						end
 					end
 				end
-			end
 			
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> class constructor
@@ -298,22 +304,13 @@
 			pets = {},
 			
 			friendlyfire_total = 0,
-			friendlyfire = container_combatants:NewContainer(container_friendlyfire),
+			friendlyfire = {},
 
-			targets = container_combatants:NewContainer(container_damage_target),
-			spell_tables = container_abilities:NewContainer(container_damage)
+			targets = {},
+			spells = container_abilities:NewContainer(container_damage)
 		}
 		
 		_setmetatable(_new_damageActor, attribute_damage)
-		
-		if (link) then
-			--_new_damageActor.last_events_table = _details:CreateActorLastEventTable()
-			--_new_damageActor.last_events_table.original = true
-			
-			_new_damageActor.targets.shadow = link.targets
-			_new_damageActor.spell_tables.shadow = link.spell_tables
-			_new_damageActor.friendlyfire.shadow = link.friendlyfire
-		end
 		
 		return _new_damageActor
 	end
@@ -368,15 +365,12 @@
 
 			for aggressor, _ in _pairs(took_damage_from) do
 			
-				local damager_actor = damage_container._ActorTable[damage_container._NameIndexTable[ aggressor ]]
+				local damager_actor = damage_container._ActorTable[damage_container._NameIndexTable[aggressor]]
 				
-				if (damager_actor and not damager_actor.owner) then --> checagem por causa do total e do garbage collector que n�o limpa os names que deram damage
-				
-					local targets = damager_actor.targets
-					
-					local specific_target = targets._ActorTable[targets._NameIndexTable[ name ]] --> � ele mesmo
-					if (specific_target) then
-						damage_taken_table[#damage_taken_table+1] = {aggressor, specific_target.total, damager_actor.class}
+				if (damager_actor and not damager_actor.owner) then --> checking because of the total and the garbage collector doesn’t clean the names that did damage
+					local target_amount = damager_actor.targets[name]
+					if (target_amount) then
+						damage_taken_table[#damage_taken_table+1] = {aggressor, target_amount, damager_actor.class}
 					end
 				end
 			end
@@ -559,7 +553,7 @@
 		local targets
 		
 		if (damage_actor) then
-			ability = damage_actor.spell_tables._ActorTable[actor.damage_spellid]
+			ability = damage_actor.spells._ActorTable[actor.damage_spellid]
 		end
 		
 		if (ability) then
@@ -570,10 +564,9 @@
 		
 		for _, dst in _ipairs(container) do
 			if (targets) then
-				local damage_dst = targets._NameIndexTable[dst.name]
+				local damage_dst = targets[dst.name]
 				if (damage_dst) then
-					damage_dst = targets._ActorTable[damage_dst]
-					dst.damage = damage_dst.total
+					dst.damage = damage_dst
 				else
 					dst.damage = 0
 				end
@@ -865,14 +858,14 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 					local index = twin_damage_actor
 					twin_damage_actor = showing._ActorTable[twin_damage_actor]
 
-					local spell = twin_damage_actor.spell_tables._ActorTable[actor.damage_spellid]
+					local spell = twin_damage_actor.spells._ActorTable[actor.damage_spellid]
 					
 					if (spell) then
 					
 						--> fix spell, sometimes there is two spells with the same name, one is the cast and other is the debuff
 						if (spell.total == 0 and not actor.damage_spellid_fixed) then
 							local curname = _GetSpellInfo(actor.damage_spellid)
-							for spellid, spelltable in _pairs(twin_damage_actor.spell_tables._ActorTable) do
+							for spellid, spelltable in _pairs(twin_damage_actor.spells._ActorTable) do
 								if (spelltable.total > spell.total) then
 									local name = _GetSpellInfo(spellid)
 									if (name == curname) then
@@ -891,7 +884,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 						--> fix spell, if the spellid passed for debuff uptime is actully the spell id of a ability and not if the aura it self
 						actor.damage_spellid_fixed = true
 						local found = false
-						for spellid, spelltable in _pairs(twin_damage_actor.spell_tables._ActorTable) do
+						for spellid, spelltable in _pairs(twin_damage_actor.spells._ActorTable) do
 							local name = _GetSpellInfo(spellid)
 							if (actor.damage_twin:find(name)) then
 								actor.damage = spelltable.total
@@ -954,14 +947,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 		
 	else
 	
-		if (instance.attribute == 5) then --> custom
-			--> faz o sort da categoria e retorna o amount corrigido
-			amount = _details:ContainerSort(content, amount, keyName)
-			
-			--> grava o total
-			instance.top = content[1][keyName]
-			
-		elseif (keyName == "enemies") then 
+		if (keyName == "enemies") then
 		
 			amount, total = _details:ContainerSortEnemies(content, amount, "total")
 			--keyName = "enemies"
@@ -1044,7 +1030,6 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 					end
 				end
 			end
-
 		end
 	end
 	
@@ -1235,17 +1220,6 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 	if (use_animations) then
 		instance:do_animations()
 	end
-
-	if (instance.attribute == 5) then --> custom
-		--> zerar o .custom dos Actors
-		for index, player in _ipairs(content) do
-			if (player.custom > 0) then 
-				player.custom = 0
-			else
-				break
-			end
-		end
-	end
 	
 	--> beta, hidar bars n�o usadas durante um refresh for�ado
 	if (force) then
@@ -1260,39 +1234,6 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 
 end
 
-function attribute_damage:Custom(_customName, _combat, sub_attribute, spell, dst)
-	--> vai ter s� o que a spell causou em algu�m
-	--print(spell)
-	--print(self.name)
-	--print(self.spell_tables._ActorTable)
-	
-	--if (self.name == "Ditador") then 
-		--for spellid, table in pairs(self.spell_tables._ActorTable) do 
-			--print(spellid)
-		--end
-		local _Skill = self.spell_tables._ActorTable[tonumber(spell)]
-		--print(_Skill)
-		if (_Skill) then
-			local spellName = _GetSpellInfo(tonumber(spell))
-			--print(spell)
-			--print(spellName)
-			
-			local SkillTargets = _Skill.targets._ActorTable
-			
-			for _, TargetActor in _ipairs(SkillTargets) do 
-				--print(TargetActor.name)
-				local TargetActorSelf = _combat(class_type, TargetActor.name)
-				if (TargetActorSelf) then
-					--print(TargetActor.total)
-					TargetActorSelf.custom = TargetActor.total + TargetActorSelf.custom
-					--print(TargetActorSelf.custom)
-					_combat.totals[_customName] = _combat.totals[_customName] + TargetActor.total
-					--print(self.name .. " " ..TargetActor.total)
-				end
-			end
-		end
-	--end
-end
 
 function _details:FastRefreshWindow(instance)
 	if (instance.attribute == 1) then --> damage
@@ -1364,76 +1305,70 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 	end
 	
 	-- >>>>>>>>>>>>>>> text da right
-	if (instance.attribute == 5) then --> custom
-		this_bar.text_right:SetText(_details:ToK(self.custom) .."(" .. percentage .. "%)") --seta o text da right
-		this_percentage = _math_floor((self.custom/instance.top) * 100) --> determina which o tamanho da bar
-	else
-	
-		if (sub_attribute == 1) then --> showing damage done
-		
-			dps = _math_floor(dps)
-			local formated_damage = SelectedToKFunction(_, damage_total)
-			local formated_dps = SelectedToKFunction(_, dps)
+	if (sub_attribute == 1) then --> showing damage done
 
-			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
-			else
-				this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
-			end
-			this_percentage = _math_floor((damage_total/instance.top) * 100) --> determina which o tamanho da bar
+		dps = _math_floor(dps)
+		local formated_damage = SelectedToKFunction(_, damage_total)
+		local formated_dps = SelectedToKFunction(_, dps)
 
-		elseif (sub_attribute == 2) then --> showing dps
-		
-			dps = _math_floor(dps)
-			local formated_damage = SelectedToKFunction(_, damage_total)
-			local formated_dps = SelectedToKFunction(_, dps)
-		
-			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_dps, formated_damage, percentage, self))
-			else		
-				this_bar.text_right:SetText(formated_dps .. "(" .. formated_damage .. ", " .. percentage .. "%)") --seta o text da right
-			end
-			this_percentage = _math_floor((dps/instance.top) * 100) --> determina which o tamanho da bar
-			
-		elseif (sub_attribute == 3) then --> showing damage taken
-
-			local dtps = self.damage_taken / combat_time
-		
-			local formated_damage_taken = SelectedToKFunction(_, self.damage_taken)
-			local formated_dtps = SelectedToKFunction(_, dtps)
-
-			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentage, self))
-			else
-				this_bar.text_right:SetText(formated_damage_taken .."(" .. formated_dtps .. ", " .. percentage .. "%)") --seta o text da right --
-			end
-			this_percentage = _math_floor((self.damage_taken/instance.top) * 100) --> determina which o tamanho da bar
-			
-		elseif (sub_attribute == 4) then --> showing friendly fire
-		
-			local formated_friendly_fire = SelectedToKFunction(_, self.friendlyfire_total)
-
-			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_friendly_fire, "", percentage, self))
-			else			
-				this_bar.text_right:SetText(formated_friendly_fire .. "(" .. percentage .. "%)") --seta o text da right --
-			end
-			this_percentage = _math_floor((self.friendlyfire_total/instance.top) * 100) --> determina which o tamanho da bar
-		
-		elseif (sub_attribute == 6) then --> showing enemies
-		
-			dps = _math_floor(dps)
-			local formated_damage = SelectedToKFunction(_, damage_total)
-			local formated_dps = SelectedToKFunction(_, dps)
-		
-			if (UsingCustomRightText) then
-				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
-			else		
-				this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
-			end
-			this_percentage = _math_floor((damage_total/instance.top) * 100) --> determina which o tamanho da bar
-			
+		if (UsingCustomRightText) then
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
+		else
+			this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
 		end
+		this_percentage = _math_floor((damage_total/instance.top) * 100) --> determina which o tamanho da bar
+
+	elseif (sub_attribute == 2) then --> showing dps
+
+		dps = _math_floor(dps)
+		local formated_damage = SelectedToKFunction(_, damage_total)
+		local formated_dps = SelectedToKFunction(_, dps)
+
+		if (UsingCustomRightText) then
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_dps, formated_damage, percentage, self))
+		else
+			this_bar.text_right:SetText(formated_dps .. "(" .. formated_damage .. ", " .. percentage .. "%)") --seta o text da right
+		end
+		this_percentage = _math_floor((dps/instance.top) * 100) --> determina which o tamanho da bar
+
+	elseif (sub_attribute == 3) then --> showing damage taken
+
+		local dtps = self.damage_taken / combat_time
+
+		local formated_damage_taken = SelectedToKFunction(_, self.damage_taken)
+		local formated_dtps = SelectedToKFunction(_, dtps)
+
+		if (UsingCustomRightText) then
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentage, self))
+		else
+			this_bar.text_right:SetText(formated_damage_taken .."(" .. formated_dtps .. ", " .. percentage .. "%)") --seta o text da right --
+		end
+		this_percentage = _math_floor((self.damage_taken/instance.top) * 100) --> determina which o tamanho da bar
+
+	elseif (sub_attribute == 4) then --> showing friendly fire
+
+		local formated_friendly_fire = SelectedToKFunction(_, self.friendlyfire_total)
+
+		if (UsingCustomRightText) then
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_friendly_fire, "", percentage, self))
+		else
+			this_bar.text_right:SetText(formated_friendly_fire .. "(" .. percentage .. "%)") --seta o text da right --
+		end
+		this_percentage = _math_floor((self.friendlyfire_total/instance.top) * 100) --> determina which o tamanho da bar
+
+	elseif (sub_attribute == 6) then --> showing enemies
+
+		dps = _math_floor(dps)
+		local formated_damage = SelectedToKFunction(_, damage_total)
+		local formated_dps = SelectedToKFunction(_, dps)
+
+		if (UsingCustomRightText) then
+			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
+		else
+			this_bar.text_right:SetText(formated_damage .. "(" .. formated_dps .. ", " .. percentage .. "%)") --seta o text da right
+		end
+		this_percentage = _math_floor((damage_total/instance.top) * 100) --> determina which o tamanho da bar
+
 	end
 
 	if (this_bar.mouse_over and not instance.baseframe.isMoving) then --> precisa atualizar o tooltip
@@ -1693,7 +1628,7 @@ function attribute_damage:ToolTip_DamageDone(instance, number, bar, keydown)
 			if (ActorDamage == 0) then
 				ActorDamage = 0.00000001
 			end
-			local ActorSkillsContainer = self.spell_tables._ActorTable
+			local ActorSkillsContainer = self.spells._ActorTable
 			local ActorSkillsSortTable = {}
 			
 			--get time type
@@ -1714,12 +1649,11 @@ function attribute_damage:ToolTip_DamageDone(instance, number, bar, keydown)
 		
 		--> TOP INIMIGOS
 			--get variables
-			local ActorTargetsContainer = self.targets._ActorTable
 			local ActorTargetsSortTable = {}
 			
 			--add and sort
-			for _, _target in _ipairs(ActorTargetsContainer) do
-				ActorTargetsSortTable[#ActorTargetsSortTable+1] = {_target.name, _target.total}
+			for target_name, amount in _pairs(self.targets) do
+				ActorTargetsSortTable[#ActorTargetsSortTable+1] = {target_name, amount}
 			end
 			_table_sort(ActorTargetsSortTable, _details.Sort2)
 
@@ -1818,7 +1752,7 @@ function attribute_damage:ToolTip_DamageDone(instance, number, bar, keydown)
 				local my_self = instance.showing[class_type]:CatchCombatant(nil, name)
 				if (my_self) then
 					local mine_total = my_self.total_without_pet
-					local table = my_self.spell_tables._ActorTable
+					local table = my_self.spells._ActorTable
 					local mine_damages = {}
 					
 					--totais[name] = my_self.total_without_pet
@@ -1838,9 +1772,9 @@ function attribute_damage:ToolTip_DamageDone(instance, number, bar, keydown)
 					damages[name] = mine_damages
 					
 					local mine_enemies = {}
-					table = my_self.targets._ActorTable
-					for _, table in _ipairs(table) do
-						_table_insert(mine_enemies, {table.name, table.total, table.total/mine_total*100})
+					table = my_self.targets
+					for target_name, amount in _pairs(table) do
+						_table_insert(mine_enemies, {target_name, amount, amount/mine_total*100})
 					end
 					_table_sort(mine_enemies,_details.Sort2)
 					targets[name] = mine_enemies
@@ -1932,14 +1866,14 @@ function attribute_damage:ToolTip_DamageTaken(instance, number, bar, keydown)
 		local this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
 		if (this_agressor) then --> checagem por causa do total e do garbage collector que n�o limpa os names que deram damage
 			local targets = this_agressor.targets
-			local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
+			local this_dst = targets[self.name]
 			if (this_dst) then
-				mine_agressores[#mine_agressores+1] = {name, this_dst.total, this_agressor.class}
+				mine_agressores[#mine_agressores+1] = {name, this_dst, this_agressor.class}
 			end
 		end
 	end
 
-	_table_sort(mine_agressores, function(a, b) return a[2] > b[2] end)
+	_table_sort(mine_agressores, _details.Sort2)
 	
 	local max = #mine_agressores
 	if (max > 6) then
@@ -2019,22 +1953,20 @@ function attribute_damage:ToolTip_FriendlyFire(instance, number, bar, keydown)
 		r, g, b = unpack(_details.class_colors[self.class])
 	end
 
-	local FriendlyFire = self.friendlyfire --> container de players
+	local FriendlyFire = self.friendlyfire
 	local FriendlyFireTotal = self.friendlyfire_total
+	local combat = instance:GetShowingCombat()
 
 	local combat_table = instance.showing
-	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
+	local showing = combat_table[class_type]
 	
 	local DamagedPlayers = {}
 	local Skills = {}
 
-	for name, index in _pairs(FriendlyFire._NameIndexTable) do
-		local TargetActor = FriendlyFire._ActorTable[index]
-		DamagedPlayers[#DamagedPlayers+1] = {name, TargetActor.total, TargetActor.class}
-		
-		local SkillTable = TargetActor.spell_tables --> container das abilities
-		for spellid, table in _pairs(SkillTable._ActorTable) do
-			Skills[#Skills+1] = {spellid, table.total, table.counter}
+	for target_name, ff_table in _pairs(FriendlyFire) do
+		DamagedPlayers[#DamagedPlayers+1] = {target_name, ff_table.total, combat(1, target_name).class}
+		for spellid, amount in _pairs(ff_table.spells) do
+			Skills[#Skills+1] = {spellid, amount}
 		end
 	end
 	
@@ -2099,7 +2031,7 @@ function attribute_damage:ToolTip_FriendlyFire(instance, number, bar, keydown)
 	
 	for i = 1, _math_min(max_abilities2, #Skills) do
 		local name, _, icon = _GetSpellInfo(Skills[i][1])
-		GameCooltip:AddLine(name.."(x".. Skills[i][3].."): ", FormatTooltipNumber(_, Skills[i][2]).."(".._cstr("%.1f", Skills[i][2]/FriendlyFireTotal*100).."%)")
+		GameCooltip:AddLine(name .. ": ", FormatTooltipNumber(_, Skills[i][2]).."(".._cstr("%.1f", Skills[i][2]/FriendlyFireTotal*100).."%)")
 		GameCooltip:AddIcon(icon, nil, nil, 14, 14)
 		_details:AddTooltipBackgroundStatusbar()
 	end	
@@ -2142,33 +2074,22 @@ end
 ------ Friendly Fire
 function attribute_damage:SetInfoFriendlyFire()
 
-	-- ESQUERDA -> JOGADORES ATINGIDOS - players que o player atingiu com o fogo amigo
-	-- DIREITA -> MAGIAS USADAS - spells que o player usou para causar damage no amigo
-	-- ALVOS -> overall de todas as spells, total de damage que elas causaram
-
-	local FriendlyFireTotal = self.friendlyfire_total --> total de fogo amigo dado por this player
-	local content = self.friendlyfire._ActorTable --> _ipairs[] com os names dos players em que this player deu damage
-	
+	local instance = info.instance
+	local combat = instance:GetShowingCombat()
 	local bars = info.bars1
 	local bars2 = info.bars2
 	local bars3 = info.bars3
 	
-	local instance = info.instance
+	local FriendlyFireTotal = self.friendlyfire_total
 	
 	local DamagedPlayers = {}
 	local Skills = {}
 	
-	for name, index in _pairs(self.friendlyfire._NameIndexTable) do --> da foreach em cada spellid do container
-		local TargetActor = content[index]
-		local TargetActorDamage = TargetActor.total
-		_table_insert(DamagedPlayers, {name, TargetActorDamage, TargetActorDamage/FriendlyFireTotal*100, TargetActor.class})
+	for target_name, ff_table in _pairs(self.friendlyfire) do
+		_table_insert(DamagedPlayers, {target_name, ff_table.total, ff_table.total / FriendlyFireTotal * 100, combat(1, target_name).class})
 		
-		for spellid, ability in _pairs(TargetActor.spell_tables._ActorTable) do
-			if (not Skills[spellid]) then 
-				Skills[spellid] = ability.total
-			else
-				Skills[spellid] = Skills[spellid] + ability.total
-			end
+		for spellid, amount in _pairs(ff_table.spells) do
+			Skills[spellid] = (Skills[spellid] or 0) + amount
 		end
 	end
 	
@@ -2295,9 +2216,9 @@ function attribute_damage:SetInfoDamageTaken()
 		this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
 		if (this_agressor) then
 			local targets = this_agressor.targets
-			local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
+			local this_dst = targets[self.name]
 			if (this_dst) then
-				mine_agressores[#mine_agressores+1] = {name, this_dst.total, this_dst.total/damage_taken*100, this_agressor.class}
+				mine_agressores[#mine_agressores+1] = {name, this_dst, this_dst/damage_taken*100, this_agressor.class}
 			end
 		end
 	end
@@ -2402,7 +2323,7 @@ function attribute_damage:SetInfoDamageDone()
 	
 	local ActorTotalDamage = self.total
 	local ActorSkillsSortTable = {}
-	local ActorSkillsContainer = self.spell_tables._ActorTable
+	local ActorSkillsContainer = self.spells._ActorTable
 	
 	--get time type
 	local mine_time
@@ -2424,7 +2345,7 @@ function attribute_damage:SetInfoDamageDone()
 	for _, PetName in _ipairs(ActorPets) do
 		local PetActor = instance.showing(class_type, PetName)
 		if (PetActor) then 
-			local PetSkillsContainer = PetActor.spell_tables._ActorTable
+			local PetSkillsContainer = PetActor.spells._ActorTable
 			for _spellid, _skill in _pairs(PetSkillsContainer) do --> da foreach em cada spellid do container
 				local name, _, icon = _GetSpellInfo(_spellid)
 				_table_insert(ActorSkillsSortTable, {_spellid, _skill.total, _skill.total/ActorTotalDamage*100, name .. "(|c" .. class_color .. PetName:gsub((" <.*"), "") .. "|r)", icon, PetActor})
@@ -2472,10 +2393,9 @@ function attribute_damage:SetInfoDamageDone()
 		for name, _ in _pairs(agressores) do
 			this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
 			if (this_agressor) then
-				local targets = this_agressor.targets
-				local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
+				local this_dst = this_agressor.targets[self.name]
 				if (this_dst) then
-					mine_agressores[#mine_agressores+1] = {name, this_dst.total, this_dst.total/damage_taken*100, this_agressor.class}
+					mine_agressores[#mine_agressores+1] = {name, this_dst, this_dst/damage_taken*100, this_agressor.class}
 				end
 			end
 		end
@@ -2542,15 +2462,15 @@ function attribute_damage:SetInfoDamageDone()
 		end
 	else
 		local mine_enemies = {}
-		
+
 		--> my target container
-		content = self.targets._ActorTable
-		for _, table in _ipairs(content) do
-			_table_insert(mine_enemies, {table.name, table.total, table.total/total*100})
+		local content = self.targets
+		for target_name, amount in _pairs(content) do
+			_table_insert(mine_enemies, {target_name, amount, amount/total*100})
 		end
 		
 		--> sort
-		_table_sort(mine_enemies, function(a, b) return a[2] > b[2] end )	
+		_table_sort(mine_enemies, _details.Sort2)
 		
 		local amt_targets = #mine_enemies
 		if (amt_targets < 1) then
@@ -2618,25 +2538,24 @@ function attribute_damage:SetDetailsFriendlyFire(name, bar)
 	
 	local combat_table = info.instance.showing
 	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
-
-	--> ser� apresentada as spells que deram damage no player dst
 	
 	local friendlyfire = self.friendlyfire
 
-	local total = friendlyfire._ActorTable[friendlyfire._NameIndexTable[name]].total
-	local content = friendlyfire._ActorTable[friendlyfire._NameIndexTable[name]].spell_tables._ActorTable --> assumindo que name � o name do Target que tomou damage // bastaria pegar a table de abilities dele
+	local ff_table = self.friendlyfire[name]
+	if (not ff_table) then
+		return
+	end
+	local total = ff_table.total
+
 
 	local my_spells = {}
 
-	for spellid, table in _pairs(content) do --> da foreach em cada spellid do container
+	for spellid, amount in _pairs(ff_table.spells) do --> da foreach em cada spellid do container
 		local name, _, icon = _GetSpellInfo(spellid)
-		_table_insert(my_spells, {spellid, table.total, table.total/total*100, name, icon})
+		_table_insert(my_spells, {spellid, amount, amount / total * 100, name, icon})
 	end
 
-	_table_sort(my_spells, function(a, b) return a[2] > b[2] end)
-
-	--local amt = #my_spells
-	--gump:JI_UpdateContainerBars(amt)
+	_table_sort(my_spells, _details.Sort2)
 
 	local max_ = my_spells[1] and my_spells[1][2] or 0 --> damage que a primeiro spell vez
 	
@@ -2680,21 +2599,21 @@ function attribute_damage:SetDetailsEnemy(spellid, bar)
 	local container = info.instance.showing[1]
 	local bars = info.bars3
 	local instance = info.instance
-	local spell = self.spell_tables:CatchSpell(spellid)
+	local spell = self.spells:CatchSpell(spellid)
 	if (not spell) then return; end
-	local targets = spell.targets._ActorTable
+	local targets = spell.targets
 	local target_pool = {}
 	
-	for _, target in _ipairs(targets) do	
+	for target_name, amount in _pairs(targets) do
 		local class
-		local this_actor = info.instance.showing(1, target.name)
+		local this_actor = info.instance.showing(1, target_name)
 		if (this_actor) then
 			class = this_actor.class or "UNKNOW"
 		else
 			class = "UNKNOW"
 		end
 
-		target_pool[#target_pool+1] = {target.name, target.total, class}
+		target_pool[#target_pool+1] = {target_name, amount, class}
 	end
 	
 	_table_sort(target_pool, _details.Sort2)
@@ -2757,37 +2676,28 @@ function attribute_damage:SetDetailsDamageTaken(name, bar)
 
 	local this_agressor = showing._ActorTable[showing._NameIndexTable[name]]
 	
-	if (not this_agressor ) then 
-		--print("EROO this agressor eh NIL")
+	if (not this_agressor ) then
 		return
 	end
 	
-	local content = this_agressor.spell_tables._ActorTable --> _pairs[] com os IDs das spells
+	local content = this_agressor.spells._ActorTable --> _pairs[] com os IDs das spells
 	
 	local actor = info.player.name
 	
-	local total = this_agressor.targets._ActorTable[this_agressor.targets._NameIndexTable[actor]].total
+	local total = this_agressor.targets[actor] or 0
 
 	local my_spells = {}
 
 	for spellid, table in _pairs(content) do --> da foreach em cada spellid do container
-	
-		--> preciso pegar os targets que this spell atingiu
-		local targets = table.targets
-		local index = targets._NameIndexTable[actor]
-		
-		if (index) then --> this spell deu damage no actor
-			local this_dst = targets._ActorTable[index] --> pega a class_target
+		local this_dst = table.targets[actor]
+		if (this_dst) then --> this magic damaged the actor
 			local spell_name, rank, icon = _GetSpellInfo(spellid)
-			_table_insert(my_spells, {spellid, this_dst.total, this_dst.total/total*100, spell_name, icon})
+			_table_insert(my_spells, {spellid, this_dst, this_dst/total*100, spell_name, icon})
 		end
 
 	end
 
-	_table_sort(my_spells, function(a, b) return a[2] > b[2] end)
-
-	--local amt = #my_spells
-	--gump:JI_UpdateContainerBars(amt)
+	_table_sort(my_spells, _details.Sort2)
 
 	local max_ = my_spells[1] and my_spells[1][2] or 0 --> damage que a primeiro spell vez
 	
@@ -2803,10 +2713,10 @@ function attribute_damage:SetDetailsDamageTaken(name, bar)
 		if (index == 1) then
 			bar.texture:SetValue(100)
 		else
-			bar.texture:SetValue(table[2]/max_*100) --> muito mais rapido...
+			bar.texture:SetValue(table[2]/max_*100)
 		end
 
-		bar.text_left:SetText(index..instance.dividers.placing..table[4]) --seta o text da esqueda
+		bar.text_left:SetText(index .. "." .. table[4]) -- set left text
 		_details:name_space_info(bar)
 		
 		bar.text_right:SetText(_details:comma_value(table[2]) .." ".. instance.dividers.open .._cstr("%.1f", table[3]) .."%".. instance.dividers.close) --seta o text da right
@@ -2900,9 +2810,9 @@ function attribute_damage:SetDetailsDamageDone(spellid, bar, instance)
 	
 	local this_spell
 	if (bar.other_actor) then
-		this_spell = bar.other_actor.spell_tables._ActorTable[spellid]
+		this_spell = bar.other_actor.spells._ActorTable[spellid]
 	else
-		this_spell = self.spell_tables._ActorTable[spellid]
+		this_spell = self.spells._ActorTable[spellid]
 	end
 
 	if (not this_spell) then
@@ -3056,28 +2966,28 @@ end
 function attribute_damage:SetTooltipDamageTaken(this_bar, index)
 	
 	local aggressor = info.instance.showing[1]:CatchCombatant(_, this_bar.name_enemy)
-	local container = aggressor.spell_tables._ActorTable
+	local container = aggressor.spells._ActorTable
 	local abilities = {}
 
 	local total = 0
 	
 	for spellid, spell in _pairs(container) do 
-		for _, actor in _ipairs(spell.targets._ActorTable) do 
-			if (actor.name == self.name) then
-				total = total + actor.total
-				abilities[#abilities+1] = {spellid, actor.total, actor.name}
+		for target_name, amount in _pairs(spell.targets) do
+			if (target_name == self.name) then
+				total = total + amount
+				abilities[#abilities+1] = {spellid, amount}
 			end
 		end
 	end
 
-	table.sort(abilities, function(a, b) return a[2] > b[2] end)
+	_table_sort(abilities, _details.Sort2)
 	
 	GameTooltip:AddLine(index..". "..this_bar.name_enemy)
 	GameTooltip:AddLine(Loc["STRING_DAMAGE_TAKEN_FROM2"]..":")
 	GameTooltip:AddLine(" ")
 	
 	for index, table in _ipairs(abilities) do
-		local name, rank, icon = _GetSpellInfo(table[1])
+		local name, _, icon = _GetSpellInfo(table[1])
 		if (index < 8) then
 			GameTooltip:AddDoubleLine(index..". |T"..icon..":0|t "..name, _details:comma_value(table[2]).."(".._cstr("%.1f", table[2]/total*100).."%)", 1, 1, 1, 1, 1, 1)
 			--GameTooltip:AddTexture(icon)
@@ -3091,42 +3001,61 @@ function attribute_damage:SetTooltipDamageTaken(this_bar, index)
 	
 end
 
+local targets_tooltips_table = {}
+
 function attribute_damage:SetTooltipTargets(this_bar, index, instance)
 	
 	local enemy = this_bar.name_enemy
-	local container = self.spell_tables._ActorTable
-	local abilities = {}
+	local abilities = targets_tooltips_table
+
+	for i = 1, #abilities do
+		local t = abilities[i]
+		t[1], t[2], t[3] = "", 0, "" -- name, total, icon
+	end
+
 	local total = self.total
-	
-	for spellid, table in _pairs(container) do
-		local targets = table.targets._ActorTable
-		for _, table in _ipairs(targets) do
-			if (table.name == enemy) then
+
+	local i = 1
+
+	for spellid, spell in _pairs(self.spells._ActorTable) do
+		for target_name, amount in _pairs(spell.targets) do
+			if (target_name == enemy) then
 				local name, _, icon = _GetSpellInfo(spellid)
-				abilities[#abilities+1] = {name, table.total, icon}
+				local t = abilities[i]
+				if (not t) then
+					abilities[i] = {}
+					t = abilities[i]
+				end
+				t[1], t[2], t[3] = name, amount, icon
+				i = i + 1
 			end
 		end
 	end
 	
 	--> add pets
-	local ActorPets = self.pets
-	for _, PetName in _ipairs(ActorPets) do
+	for _, PetName in _ipairs(self.pets) do
 		local PetActor = instance.showing(class_type, PetName)
 		if (PetActor) then 
-			local PetSkillsContainer = PetActor.spell_tables._ActorTable
+			local PetSkillsContainer = PetActor.spells._ActorTable
 			for _spellid, _skill in _pairs(PetSkillsContainer) do
-				local targets = _skill.targets._ActorTable
-				for _, table in _ipairs(targets) do
-					if (table.name == enemy) then
+				local targets = _skill.targets
+				for target_name, amount in _pairs(targets) do
+					if (target_name == enemy) then
+						local t = abilities[i]
+						if (not t) then
+							abilities[i] = {}
+							t = abilities[i]
+						end
 						local name, _, icon = _GetSpellInfo(_spellid)
-						abilities[#abilities+1] = {name .. "(" .. PetName:gsub((" <.*"), "") .. ")", table.total, icon}
+						t[1], t[2], t[3] = name .. " (" .. PetName:gsub ((" <.*"), "") .. ")", amount, icon
+						i = i + 1
 					end
 				end
 			end
 		end
 	end	
 	
-	table.sort(abilities, function(a, b) return a[2] > b[2] end)
+	_table_sort(abilities, _details.Sort2)
 	
 	--get time type
 	local mine_time
@@ -3149,7 +3078,11 @@ function attribute_damage:SetTooltipTargets(this_bar, index, instance)
 	end
 
 	for index, table in _ipairs(abilities) do
-		
+
+		if (table[2] < 1) then
+			break
+		end
+
 		if (index < 8) then
 			if (is_dps) then
 				GameTooltip:AddDoubleLine(index..". |T"..table[3]..":0|t "..table[1], _details:comma_value( _math_floor(table[2] / mine_time) ).."(".._cstr("%.1f", table[2]/total*100).."%)", 1, 1, 1, 1, 1, 1)
@@ -3166,8 +3099,7 @@ function attribute_damage:SetTooltipTargets(this_bar, index, instance)
 	end
 	
 	return true
-	--GameTooltip:AddDoubleLine(mine_damages[i][4][1]..": ", mine_damages[i][2].."(".._cstr("%.1f", mine_damages[i][3]).."%)", 1, 1, 1, 1, 1, 1)
-	
+
 end
 
 --controla se o dps do player this travado ou destravado
@@ -3252,45 +3184,34 @@ end
 			_details.refresh:r_attribute_damage(actor, shadow)
 			
 			--> copia o container de targets(captura de dados)
-				for index, dst in _ipairs(actor.targets._ActorTable) do 
+				for target_name, amount in _pairs(actor.targets) do
 					--> cria e soma o valor do total
-					local dst_shadow = shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-					--> refresh no dst
-					_details.refresh:r_dst_of_ability(dst, shadow.targets)
+					if (not shadow.targets[target_name]) then
+						shadow.targets[target_name] = 0
+					end
 				end
 				
 			--> copia o container de abilities(captura de dados)
-				for spellid, ability in _pairs(actor.spell_tables._ActorTable) do 
+				for spellid, ability in _pairs(actor.spells._ActorTable) do
 					--> cria e soma o valor
-					local ability_shadow = shadow.spell_tables:CatchSpell(spellid, true, nil, true)
+					local ability_shadow = shadow.spells:CatchSpell(spellid, true, nil, true)
 					--> refresh e soma os valores dos targets
-					for index, dst in _ipairs(ability.targets._ActorTable) do 
+					for target_name, amount in _pairs(ability.targets) do
 						--> cria e soma o valor do total
-						local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-						--> refresh no dst da ability
-						_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
+						if (not ability_shadow.targets[target_name]) then
+							ability_shadow.targets[target_name] = 0
+						end
 					end
-					
-					--> refresh na ability
-					_details.refresh:r_ability_damage(ability, shadow.spell_tables)
 				end
 				
 			--> copia o container de friendly fire(captura de dados)
-				for index, friendlyFire in _ipairs(actor.friendlyfire._ActorTable) do 
+				for target_name, ff_table in _pairs(actor.friendlyfire) do
 					--> cria ou pega a shadow
-					local friendlyFire_shadow = shadow.friendlyfire:CatchCombatant(nil, friendlyFire.name, nil, true)
-					--> refresh na table e no container de abilities
-					_setmetatable(friendlyFire, _details)
-					friendlyFire.shadow = friendlyFire_shadow
-
-					for spellid, ability in _pairs(friendlyFire.spell_tables._ActorTable) do
-						--> cria ou pega a ability no container de ability
-						local ability_shadow = friendlyFire_shadow.spell_tables:CatchSpell(spellid, true, nil, true)
-						--> refresh na ability
-						_details.refresh:r_ability_damage(ability, friendlyFire_shadow.spell_tables)
+					local friendlyFire_shadow = shadow.friendlyfire[target_name] or shadow:CreateFFTable(target_name)
+					--> some as spells
+					for spellid, amount in _pairs(ff_table.spells) do
+						friendlyFire_shadow.spells [spellid] = 0
 					end
-					--> refresh na meta e indexes
-					_details.refresh:r_container_abilities(friendlyFire.spell_tables, friendlyFire_shadow.spell_tables)
 				end
 			
 			return shadow
@@ -3341,29 +3262,17 @@ end
 				end
 			
 			--> copia o container de targets(captura de dados)
-				for index, dst in _ipairs(actor.targets._ActorTable) do 
-					--> cria e soma o valor do total
-					local dst_shadow = shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-					dst_shadow.total = dst_shadow.total + dst.total
-					--> refresh no dst
-					if (not no_refresh) then
-						_details.refresh:r_dst_of_ability(dst, shadow.targets)
-					end
+				for target_name, amount in _pairs(actor.targets) do
+					shadow.targets[target_name] = (shadow.targets[target_name] or 0) + amount
 				end
 				
 			--> copia o container de abilities(captura de dados)
-				for spellid, ability in _pairs(actor.spell_tables._ActorTable) do 
+				for spellid, ability in _pairs(actor.spells._ActorTable) do
 					--> cria e soma o valor
-					local ability_shadow = shadow.spell_tables:CatchSpell(spellid, true, nil, true)
+					local ability_shadow = shadow.spells:CatchSpell(spellid, true, nil, true)
 					--> refresh e soma os valores dos targets
-					for index, dst in _ipairs(ability.targets._ActorTable) do 
-						--> cria e soma o valor do total
-						local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-						dst_shadow.total = dst_shadow.total + dst.total
-						--> refresh no dst da ability
-						if (not no_refresh) then
-							_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
-						end
+					for target_name, amount in _pairs(ability.targets) do
+						ability_shadow.targets[target_name] = (ability_shadow.targets[target_name] or 0) + amount
 					end
 					--> soma todos os demais valores
 					for key, value in _pairs(ability) do 
@@ -3376,98 +3285,28 @@ end
 							end
 						end
 					end
-					
-					--> refresh na ability
-					if (not no_refresh) then
-						_details.refresh:r_ability_damage(ability, shadow.spell_tables)
-					end
 				end
 				
 			--> copia o container de friendly fire(captura de dados)
-				for index, friendlyFire in _ipairs(actor.friendlyfire._ActorTable) do 
+				for target_name, ff_table in _pairs(actor.friendlyfire) do
 					--> cria ou pega a shadow
-					local friendlyFire_shadow = shadow.friendlyfire:CatchCombatant(nil, friendlyFire.name, nil, true)
-					--> refresh na table e no container de abilities
-					_setmetatable(friendlyFire, _details)
-					friendlyFire.shadow = friendlyFire_shadow
+					local friendlyFire_shadow = shadow.friendlyfire[target_name] or shadow:CreateFFTable(target_name)
 					--> soma o total
-					friendlyFire_shadow.total = friendlyFire_shadow.total + friendlyFire.total
-
-					for spellid, ability in _pairs(friendlyFire.spell_tables._ActorTable) do
-						--> cria ou pega a ability no container de ability
-						local ability_shadow = friendlyFire_shadow.spell_tables:CatchSpell(spellid, true, nil, true)
-						--> soma os valores
-						ability_shadow.counter = ability_shadow.counter + ability.counter
-						ability_shadow.total = ability_shadow.total + ability.total
-						--> refresh na ability
-						if (not no_refresh) then
-							_details.refresh:r_ability_damage(ability, friendlyFire_shadow.spell_tables)
-						end
-					end
-					--> refresh na meta e indexes
-					if (not no_refresh) then
-						_details.refresh:r_container_abilities(friendlyFire.spell_tables, friendlyFire_shadow.spell_tables)
+					friendlyFire_shadow.total = friendlyFire_shadow.total + ff_table.total
+					--> some as spells
+					for spellid, amount in _pairs(ff_table.spells) do
+						friendlyFire_shadow.spells[spellid] = (friendlyFire_shadow.spells[spellid] or 0) + amount
 					end
 				end
 			
 			return shadow
 		end
 
-function attribute_damage:FF_creation_func(_, _, link)
-	local table = _setmetatable({}, _details) --> mudei de _details para attribute_damage
-	table.total = 0
-	table.spell_tables = container_abilities:NewContainer(container_damage)
-	if (link) then
-		table.spell_tables.shadow = link.spell_tables
-	end
-	return table
-end
 
 function attribute_damage:CollectGarbage(lastevent)
 	return _details:CollectGarbage(class_type, lastevent)
 end
 
-function _details.refresh:r_attribute_damage(this_player, shadow)
-
-	--> restore metas do ator
-		_setmetatable(this_player, _details.attribute_damage)
-		this_player.__index = _details.attribute_damage
-	--> atribui a shadow a ele
-		this_player.shadow = shadow
-	--> restore as metas dos container de targets, abilities e ff
-		_details.refresh:r_container_combatants(this_player.targets, shadow.targets)
-		_details.refresh:r_container_combatants(this_player.friendlyfire, shadow.friendlyfire)
-		_details.refresh:r_container_abilities(this_player.spell_tables, shadow.spell_tables)
-end
-
-function _details.clear:c_attribute_damage(this_player)
-	--this_player.__index = {}
-	this_player.__index = nil
-	this_player.shadow = nil
-	this_player.links = nil
-	this_player.my_bar = nil
-	
-	_details.clear:c_container_combatants(this_player.targets)
-	_details.clear:c_container_abilities(this_player.spell_tables)
-	_details.clear:c_attribute_damage_FF(this_player.friendlyfire)
-end
-
-function _details.clear:c_attribute_damage_FF(container)
-	_details.clear:c_container_combatants(container)
-	
-	for _, _table in _ipairs(container._ActorTable) do 
-		_table.__index = {}
-		_table.shadow = nil
-		
-		local abilities = _table.spell_tables
-		_details.clear:c_container_abilities(abilities)
-		
-		for _, ability in _pairs(abilities._ActorTable) do
-			_details.clear:c_ability_damage(ability)
-			--pode parar aqui, o container de targets n�o � usado no friendly fire
-		end
-	end	
-end
 
 attribute_damage.__add = function(table1, table2)
 
@@ -3490,21 +3329,17 @@ attribute_damage.__add = function(table1, table2)
 		end
 	
 	--> soma os containers de targets
-		for index, dst in _ipairs(table2.targets._ActorTable) do 
-			--> pega o dst no ator
-			local dst_table1 = table1.targets:CatchCombatant(nil, dst.name, nil, true)
-			--> soma o valor
-			dst_table1.total = dst_table1.total + dst.total
+		for target_name, amount in _pairs(table2.targets) do
+			table1.targets[target_name] = (table1.targets[target_name] or 0) + amount
 		end
 		
 	--> soma o container de abilities
-		for spellid, ability in _pairs(table2.spell_tables._ActorTable) do 
+		for spellid, ability in _pairs(table2.spells._ActorTable) do
 			--> pega a ability no primeiro ator
-			local ability_table1 = table1.spell_tables:CatchSpell(spellid, true, "SPELL_DAMAGE", false)
+			local ability_table1 = table1.spells:CatchSpell(spellid, true, "SPELL_DAMAGE", false)
 			--> soma os targets
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets = (ability_table1.targets[target_name] or 0) + amount
 			end
 			--> soma os valores da ability
 			for key, value in _pairs(ability) do 
@@ -3520,16 +3355,14 @@ attribute_damage.__add = function(table1, table2)
 		end
 	
 	--> soma o container de friendly fire
-		for index, friendlyFire in _ipairs(table2.friendlyfire._ActorTable) do 
+		for target_name, ff_table in _pairs(table2.friendlyfire) do
 			--> pega o ator ff no ator main
-			local friendlyFire_table1 = table1.friendlyfire:CatchCombatant(nil, friendlyFire.name, nil, true)
+			local friendlyFire_table1 = table1.friendlyfire[target_name] or table1:CreateFFTable(target_name)
 			--> soma o total
-			friendlyFire_table1.total = friendlyFire_table1.total + friendlyFire.total
+			friendlyFire_table1.total = friendlyFire_table1.total + ff_table.total
 			--> soma as abilities
-			for spellid, ability in _pairs(friendlyFire.spell_tables._ActorTable) do
-				local ability_table1 = friendlyFire_table1.spell_tables:CatchSpell(spellid, true, nil, false)
-				ability_table1.counter = ability_table1.counter + ability.counter
-				ability_table1.total = ability_table1.total + ability.total
+			for spellid, amount in _pairs(ff_table.spells) do
+				friendlyFire_table1.spells[spellid] = (friendlyFire_table1.spells[spellid] or 0) + amount
 			end
 		end
 
@@ -3552,21 +3385,23 @@ attribute_damage.__sub = function(table1, table2)
 		table1.friendlyfire_total = table1.friendlyfire_total - table2.friendlyfire_total
 		
 	--> reduz os containers de targets
-		for index, dst in _ipairs(table2.targets._ActorTable) do 
-			--> pega o dst no ator
-			local dst_table1 = table1.targets:CatchCombatant(nil, dst.name, nil, true)
-			--> subtrai o valor
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.targets) do
+			local dst_table1 = table1.targets[target_name]
+			if (dst_table1) then
+				table1.targets[target_name] = table1.targets[target_name] - amount
+			end
 		end
 		
 	--> reduz o container de abilities
-		for spellid, ability in _pairs(table2.spell_tables._ActorTable) do 
+		for spellid, ability in _pairs(table2.spells._ActorTable) do
 			--> pega a ability no primeiro ator
-			local ability_table1 = table1.spell_tables:CatchSpell(spellid, true, "SPELL_DAMAGE", false)
+			local ability_table1 = table1.spells:CatchSpell(spellid, true, "SPELL_DAMAGE", false)
 			--> soma os targets
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets._ActorTable) do
+				local dst_table1 = ability_table1.targets[target_name]
+				if (dst_table1) then
+					ability_table1.targets[target_name] = ability_table1.targets[target_name] - amount
+				end
 			end
 			--> subtrai os valores da ability
 			for key, value in _pairs(ability) do 
@@ -3582,34 +3417,37 @@ attribute_damage.__sub = function(table1, table2)
 		end
 		
 	--> reduz o container de friendly fire
-		for index, friendlyFire in _ipairs(table2.friendlyfire._ActorTable) do 
+		for target_name, ff_table in _pairs(table2.friendlyfire._ActorTable) do
 			--> pega o ator ff no ator main
-			local friendlyFire_table1 = table1.friendlyfire:CatchCombatant(nil, friendlyFire.name, nil, true)
-			--> soma o total
-			friendlyFire_table1.total = friendlyFire_table1.total - friendlyFire.total
-			--> soma as abilities
-			for spellid, ability in _pairs(friendlyFire.spell_tables._ActorTable) do
-				local ability_table1 = friendlyFire_table1.spell_tables:CatchSpell(spellid, true, nil, false)
-				ability_table1.counter = ability_table1.counter - ability.counter
-				ability_table1.total = ability_table1.total - ability.total
+			local friendlyFire_table1 = table1.friendlyfire[target_name]
+			if (friendlyFire_table1) then
+				friendlyFire_table1.total = friendlyFire_table1.total - ff_table.total
+				for spellid, amount in _pairs(ff_table.spells) do
+					if (friendlyFire_table1.spells[spellid]) then
+						friendlyFire_table1.spells[spellid] = friendlyFire_table1.spells[spellid] - amount
+					end
+				end
 			end
 		end
 	
 	return table1
 end
+		
+function _details.refresh:r_attribute_damage(this_player, shadow)
+	--> restaura metas do ator
+		_setmetatable(this_player, _details.attribute_damage)
+		this_player.__index = _details.attribute_damage
+	--> atribui a shadow a ele
+		this_player.shadow = shadow
+	--> restaura as metas dos containers
+		_details.refresh:r_container_abilities(this_player.spells, shadow.spells)
+end
 
-		--local cor = self.cor
-		
-		--this_bar.statusbar:SetStatusBarColor(cor[1], cor[2], cor[3], cor[4])
-		
-		--print(cor[1], cor[2], cor[3])
-		--this_bar.texture:SetVertexColor(cor[1], cor[2], cor[3], cor[4])
-		
-		--local grayscale =(cor[1] + cor[2] + cor[3]) / 3.0 -- lightness
-		
-		-- local grayscale =(_math_max(cor[1], cor[2], cor[3]) + _math_min(cor[1], cor[2], cor[3])) / 2 -- average
-		-- local grayscale = cor[1]*0.21 + cor[2]*0.71  + cor[3]*0.07
-		--(max(R, G, B) + min(R, G, B)) / 2
+function _details.clear:c_attribute_damage(this_player)
+	this_player.__index = nil
+	this_player.shadow = nil
+	this_player.links = nil
+	this_player.my_bar = nil
 
-		
-		
+	_details.clear:c_container_abilities(this_player.spells)
+end

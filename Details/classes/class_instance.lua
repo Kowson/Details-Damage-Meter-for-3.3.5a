@@ -201,6 +201,10 @@ function _details:IsNormalMode()
 	end
 end
 
+function _details:GetShowingCombat()
+	return self.showing
+end
+
 function _details:GetCustomObject()
 	return _details.custom[self.sub_attribute]
 end

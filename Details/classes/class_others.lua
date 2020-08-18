@@ -159,6 +159,14 @@ function attribute_misc:Newtable(serial, name, link)
 	return _new_miscActor
 end
 
+function attribute_misc:CreateBuffTargetObject()
+	return {
+		uptime = 0,
+		actived = false,
+		activedamt = 0,
+	}
+end
+
 function _details:ToolTipDead(instance, death, this_bar, keydown)
 	
 	local eventos = death[1]
@@ -555,7 +563,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 		--estra showing ALL ent�o posso seguir o padr�o correto? primeiro, atualiza a scroll bar...
 		instance:ActualizeScrollBar(total)
 		
-		--depois faz a atualiza��o normal dele atrav�s dos iterators
+		--depois faz a atualiza��o normal dele atrav�s dos_ iterators
 		local which_bar = 1
 		local bars_container = instance.bars
 		local percentage_type = instance.row_info.percent_type
@@ -659,7 +667,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 	--estra showing ALL ent�o posso seguir o padr�o correto? primeiro, atualiza a scroll bar...
 	instance:ActualizeScrollBar(amount)
 	
-	--depois faz a atualiza��o normal dele atrav�s dos iterators
+	--depois faz a atualiza��o normal dele atrav�s dos_ iterators
 	local which_bar = 1
 	local bars_container = instance.bars
 	local percentage_type = instance.row_info.percent_type
@@ -691,7 +699,7 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 	end
 	
 	if (instance.attribute == 5) then --> custom
-		--> zerar o .custom dos Actors
+		--> zerar o .custom dos_ Actors
 		for index, player in _ipairs(content) do
 			if (player.custom > 0) then 
 				player.custom = 0
@@ -714,27 +722,10 @@ function attribute_misc:RefreshWindow(instance, combat_table, force, export, ref
 
 end
 
---self = this class de damage
-
-function attribute_misc:Custom(_customName, _combat, sub_attribute, spell, dst)
-	local _Skill = self.spell_tables._ActorTable[tonumber(spell)]
-	if (_Skill) then
-		local spellName = _GetSpellInfo(tonumber(spell))
-		local SkillTargets = _Skill.targets._ActorTable
-		
-		for _, TargetActor in _ipairs(SkillTargets) do 
-			local TargetActorSelf = _combat(class_type, TargetActor.name)
-			TargetActorSelf.custom = TargetActor.total + TargetActorSelf.custom
-			_combat.totals[_customName] = _combat.totals[_customName] + TargetActor.total
-		end
-	end
-end
 
 local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 function attribute_misc:UpdateBar(instance, bars_container, which_bar, place, total, sub_attribute, force, keyName, is_dead, percentage_type, use_animations)
-
-	--print(self.ress)
 
 	local this_bar = instance.bars[which_bar] --> pega a refer�ncia da bar na window
 	
@@ -1009,7 +1000,7 @@ function attribute_misc:ToolTipCC(instance, number, bar)
 	end	
 
 	local mine_total = self["cc_break"]
-	local abilities = self.cc_break_spell_tables._ActorTable
+	local abilities = self.cc_break_spells._ActorTable
 	
 	--> ability usada para tirar o CC
 
@@ -1064,7 +1055,7 @@ function attribute_misc:ToolTipDispell(instance, number, bar)
 	end	
 
 	local mine_total = self["dispell"]
-	local abilities = self.dispell_spell_tables._ActorTable
+	local abilities = self.dispell_spells._ActorTable
 	
 --> ability usada para dispelar
 	local mine_dispells = {}
@@ -1113,8 +1104,8 @@ function attribute_misc:ToolTipDispell(instance, number, bar)
 	end
 	
 	local targets_dispelled = {}
-	for _, TargetTable in _ipairs(self.dispell_targets._ActorTable) do
-		targets_dispelled[#targets_dispelled + 1] = {TargetTable.name, TargetTable.total, TargetTable.total/mine_total*100}
+	for target_name, amount in _pairs(self.dispell_targets) do
+		targets_dispelled[#targets_dispelled + 1] = {target_name, amount, amount / mine_total * 100}
 	end
 	_table_sort(targets_dispelled, _details.Sort2)
 
@@ -1209,7 +1200,7 @@ function _details:CloseEnemyDebuffsUptime()
 	
 	for _, actor in _ipairs(misc_container) do 
 		if (actor.boss_debuff) then
-			for index, target in _ipairs(actor.debuff_uptime_targets._ActorTable) do 
+			for target_name, target in _ipairs(actor.debuff_uptime_targets) do
 				if (target.actived and target.actived_at) then
 					target.uptime = target.uptime + _details._time - target.actived_at
 					actor.debuff_uptime = actor.debuff_uptime + _details._time - target.actived_at
@@ -1231,7 +1222,7 @@ function _details:CatchRaidDebuffUptime(in_or_out) -- "DEBUFF_UPTIME_IN"
 		
 		for _, actor in _ipairs(misc_container) do 
 			if (actor.debuff_uptime) then
-				for spellid, spell in _pairs(actor.debuff_uptime_spell_tables._ActorTable) do 
+				for spellid, spell in _pairs(actor.debuff_uptime_spells._ActorTable) do
 					if (spell.actived and spell.actived_at) then
 						spell.uptime = spell.uptime + _details._time - spell.actived_at
 						actor.debuff_uptime = actor.debuff_uptime + _details._time - spell.actived_at
@@ -1490,7 +1481,7 @@ function attribute_misc:ToolTipDebuffUptime(instance, number, bar)
 	end	
 	
 	local mine_total = self["debuff_uptime"]
-	local my_table = self.debuff_uptime_spell_tables._ActorTable
+	local my_table = self.debuff_uptime_spells._ActorTable
 	
 --> ability usada para interromper
 	local debuffs_used = {}
@@ -1547,7 +1538,7 @@ function attribute_misc:ToolTipBuffUptime(instance, number, bar)
 	end	
 	
 	local mine_total = self["buff_uptime"]
-	local my_table = self.buff_uptime_spell_tables._ActorTable
+	local my_table = self.buff_uptime_spells._ActorTable
 	
 --> ability usada para interromper
 	local buffs_used = {}
@@ -1604,7 +1595,7 @@ function attribute_misc:ToolTipDefensiveCooldowns(instance, number, bar)
 	end	
 	
 	local mine_total = self["cooldowns_defensive"]
-	local my_table = self.cooldowns_defensive_spell_tables._ActorTable
+	local my_table = self.cooldowns_defensive_spells._ActorTable
 	
 --> ability usada para interromper
 	local cooldowns_used = {}
@@ -1631,11 +1622,11 @@ function attribute_misc:ToolTipDefensiveCooldowns(instance, number, bar)
 	end
 
 --> quem foi que o cara reviveu
-	local mine_targets = self.cooldowns_defensive_targets._ActorTable
+	local mine_targets = self.cooldowns_defensive_targets
 	local targets = {}
 	
-	for _, _table in _ipairs(mine_targets) do
-		targets[#targets+1] = {_table.name, _table.total}
+	for target_name, amount in _pairs(mine_targets) do
+		targets[#targets+1] = {target_name, amount}
 	end
 	_table_sort(targets, _details.Sort2)
 	
@@ -1680,7 +1671,7 @@ function attribute_misc:ToolTipRess(instance, number, bar)
 	end	
 
 	local mine_total = self["ress"]
-	local my_table = self.ress_spell_tables._ActorTable
+	local my_table = self.ress_spells._ActorTable
 	
 --> ability usada para interromper
 	local mine_ress = {}
@@ -1707,11 +1698,11 @@ function attribute_misc:ToolTipRess(instance, number, bar)
 	end
 
 --> quem foi que o cara reviveu
-	local mine_targets = self.ress_targets._ActorTable
+	local mine_targets = self.ress_targets
 	local targets = {}
 	
-	for _, _table in _ipairs(mine_targets) do
-		targets[#targets+1] = {_table.name, _table.total}
+	for target_name, amount in _pairs(mine_targets) do
+		targets[#targets+1] = {target_name, amount}
 	end
 	_table_sort(targets, _details.Sort2)
 	
@@ -1755,7 +1746,7 @@ function attribute_misc:ToolTipInterrupt(instance, number, bar)
 	end	
 
 	local mine_total = self["interrupt"]
-	local my_table = self.interrupt_spell_tables._ActorTable
+	local my_table = self.interrupt_spells._ActorTable
 	
 --> ability usada para interromper
 	local mine_interrupts = {}
@@ -1881,7 +1872,7 @@ end
 function attribute_misc:SetInfoInterrupt()
 
 	local mine_total = self["interrupt"]
-	local my_table = self.interrupt_spell_tables._ActorTable
+	local my_table = self.interrupt_spells._ActorTable
 
 	local bars = info.bars1
 	local instance = info.instance
@@ -1899,7 +1890,7 @@ function attribute_misc:SetInfoInterrupt()
 	for _, PetName in _ipairs(ActorPets) do
 		local PetActor = instance.showing(class_type, PetName)
 		if (PetActor and PetActor.interrupt and PetActor.interrupt > 0) then 
-			local PetSkillsContainer = PetActor.interrupt_spell_tables._ActorTable
+			local PetSkillsContainer = PetActor.interrupt_spells._ActorTable
 			for _spellid, _skill in _pairs(PetSkillsContainer) do --> da foreach em cada spellid do container
 				local name, _, icon = _GetSpellInfo(_spellid)
 				_table_insert(mine_interrupts, {_spellid, _skill.counter, _skill.counter/mine_total*100, name .. "(|c" .. class_color .. PetName:gsub((" <.*"), "") .. "|r)", icon, PetActor})
@@ -1961,19 +1952,15 @@ function attribute_misc:SetInfoInterrupt()
 		bar.show = table[1] --> grava o spellid na bar
 		bar:Show() --> mostra a bar
 
-		-- player . details ?? 
 		if (self.details and self.details == bar.show) then
 			self:SetDetails(self.details, bar) --> poderia deixar isso pro final e preparer uma tail call??
 		end
 	end
-	
-	
-	
-	--[
-	--> Targets do interrupt
+
+	--> Targets of interrupt
 	local mine_targets = {}
-	for _, table in _pairs(self.interrupt_targets._ActorTable) do
-		mine_targets[#mine_targets+1] = {table.name, table.total}
+	for target_name, amount in _pairs(self.interrupt_targets) do
+		mine_targets[#mine_targets+1] = {target_name, amount}
 	end
 	_table_sort(mine_targets, _details.Sort2)
 	
@@ -2014,24 +2001,12 @@ function attribute_misc:SetInfoInterrupt()
 				GameTooltip:Show()
 			end
 		end	
-		
-		--gump:TextBarOnInfo2(index, , )
-		-- o que mostrar no local do �cone?
-		--bar.icon:SetTexture(table[4][3])
-		
+
 		bar.my_table = self --> grava o player na table
 		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso � necess�rio?
-		
-		-- no place do spell id colocar o que?
-		--bar.spellid = table[5]
-		bar:Show()
-		
-		--if (self.details and self.details == bar.spellid) then
-		--	self:SetDetails(self.details, bar)
-		--end
-	end
-	--]]
 
+		bar:Show()
+	end
 end
 
 
@@ -2042,7 +2017,7 @@ function attribute_misc:SetDetailsInterrupt(spellid, bar)
 		bar:Hide()
 	end
 
-	local this_spell = self.interrupt_spell_tables._ActorTable[spellid]
+	local this_spell = self.interrupt_spells._ActorTable[spellid]
 	if (not this_spell) then
 		return
 	end
@@ -2108,7 +2083,7 @@ function attribute_misc:SetTooltipTargets(this_bar, index)
 	
 	local container
 	if (info.instance.sub_attribute == 3) then --interrupt
-		container = self.interrupt_spell_tables._ActorTable
+		container = self.interrupt_spells._ActorTable
 	end
 	
 	local abilities = {}
@@ -2116,16 +2091,16 @@ function attribute_misc:SetTooltipTargets(this_bar, index)
 	
 	for spellid, table in _pairs(container) do
 		--> table = class_damage_ability
-		local targets = table.targets._ActorTable
-		for _, table in _ipairs(targets) do
+		local targets = table.targets
+		for target_name, amount in _pairs(targets) do
 			--> table = class_target
-			if (table.name == enemy) then
-				abilities[#abilities+1] = {spellid, table.total}
+			if (target_name == enemy) then
+				abilities[#abilities+1] = {spellid, amount}
 			end
 		end
 	end
 	
-	table.sort(abilities, function(a, b) return a[2] > b[2] end)
+	_table_sort(abilities, _details.Sort2)
 	
 	GameTooltip:AddLine(index..". "..enemy)
 	GameTooltip:AddLine(Loc["STRING_SPELL_INTERRUPTED"] .. ":") 
@@ -2135,497 +2110,364 @@ function attribute_misc:SetTooltipTargets(this_bar, index)
 		local name, rank, icon = _GetSpellInfo(table[1])
 		if (index < 8) then
 			GameTooltip:AddDoubleLine(index..". |T"..icon..":0|t "..name, table[2].."(".._cstr("%.1f", table[2]/total*100).."%)", 1, 1, 1, 1, 1, 1)
-			--GameTooltip:AddTexture(icon)
 		else
 			GameTooltip:AddDoubleLine(index..". "..name, table[2].."(".._cstr("%.1f", table[2]/total*100).."%)", .65, .65, .65, .65, .65, .65)
 		end
 	end
 	
 	return true
-	--GameTooltip:AddDoubleLine(mine_damages[i][4][1]..": ", mine_damages[i][2].."(".._cstr("%.1f", mine_damages[i][3]).."%)", 1, 1, 1, 1, 1, 1)
-	
+
 end
 
-
---if (this_spell.counter == this_spell.c_amt) then --> s� teve critical
---	gump:SetaDetailInfoText(1, nil, nil, nil, nil, nil, "DPS: "..crit_dps)
---end
 
 --controla se o dps do player this travado ou destravado
 function attribute_misc:Initialize(initialize)
 	return false --retorna se o dps this aberto ou closedo para this player
 end
 
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> core functions
 
-	--> atualize a func de opsendcao
-		function attribute_misc:UpdateSelectedToKFunction()
-			SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
-			FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
-			TooltipMaximizedMethod = _details.tooltip.maximize_method
-			headerColor = _details.tooltip.header_text_color
-		end
-		
+--> atualize a func de opsendcao
+function attribute_misc:UpdateSelectedToKFunction()
+	SelectedToKFunction = ToKFunctions[_details.ps_abbreviation]
+	FormatTooltipNumber = ToKFunctions[_details.tooltip.abbreviation]
+	TooltipMaximizedMethod = _details.tooltip.maximize_method
+	headerColor = _details.tooltip.header_text_color
+end
 
-	local sub_list = {"cc_break", "ress", "interrupt", "cooldowns_defensive", "dispell", "dead"}
 
-	--> subtract total from a combat table
-		function attribute_misc:subtract_total(combat_table)
-			for _, sub_attribute in _ipairs(sub_list) do 
-				if (self[sub_attribute]) then
-					combat_table.totals[class_type][sub_attribute] = combat_table.totals[class_type][sub_attribute] - self[sub_attribute]
-					if (self.group) then
-						combat_table.totals_group[class_type][sub_attribute] = combat_table.totals_group[class_type][sub_attribute] - self[sub_attribute]
-					end
-				end
+local sub_list = {"cc_break", "ress", "interrupt", "cooldowns_defensive", "dispell", "dead"}
+
+--> subtract total from a combat table
+function attribute_misc:subtract_total(combat_table)
+	for _, sub_attribute in _ipairs(sub_list) do
+		if (self[sub_attribute]) then
+			combat_table.totals[class_type][sub_attribute] = combat_table.totals[class_type][sub_attribute] - self[sub_attribute]
+			if (self.group) then
+				combat_table.totals_group[class_type][sub_attribute] = combat_table.totals_group[class_type][sub_attribute] - self[sub_attribute]
 			end
 		end
-		function attribute_misc:add_total(combat_table)
-			for _, sub_attribute in _ipairs(sub_list) do 
-				if (self[sub_attribute]) then
-					combat_table.totals[class_type][sub_attribute] = combat_table.totals[class_type][sub_attribute] + self[sub_attribute]
-					if (self.group) then
-						combat_table.totals_group[class_type][sub_attribute] = combat_table.totals_group[class_type][sub_attribute] + self[sub_attribute]
-					end
-				end
+	end
+end
+function attribute_misc:add_total(combat_table)
+	for _, sub_attribute in _ipairs(sub_list) do
+		if (self[sub_attribute]) then
+			combat_table.totals[class_type][sub_attribute] = combat_table.totals[class_type][sub_attribute] + self[sub_attribute]
+			if (self.group) then
+				combat_table.totals_group[class_type][sub_attribute] = combat_table.totals_group[class_type][sub_attribute] + self[sub_attribute]
 			end
 		end
-		
-	--> restore e liga o ator com a sua shadow durante a inicializa��o
-	
-		function attribute_misc:r_onlyrefresh_shadow(actor)
-		
-			--> create uma shadow desse ator se ainda n�o tiver uma
-				local overall_misc = _details.table_overall[4]
-				local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
-			
-				if (not actor.name) then
-					actor.name = "unknown"
-				end
-				
-				if (not shadow) then 
-					shadow = overall_misc:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
-					shadow.class = actor.class
-					shadow.group = actor.group
-				end
+	end
+end
 
-			--> aplica a meta e indexes
-				_details.refresh:r_attribute_misc(actor, shadow)
+local refresh_targets = function(container1, container2)
+	for target_name, amount in _pairs(container2) do
+		container1[target_name] = container1[target_name] or 0
+	end
+end
 
-			--> somar os targets do ator
-				local somar_targets = function(container)
-					for index, dst in _ipairs(actor[container]._ActorTable) do
-						--> cria e soma o valor do total
-						local dst_shadow = shadow[container]:CatchCombatant(nil, dst.name, nil, true)
-						--> refresh no dst
-						_details.refresh:r_dst_of_ability(dst, shadow[container])
-					end
-				end
-			--> somar as abilities do ator
-				local somar_abilities = function(container, shadow)
-					for spellid, ability in _pairs(actor[container]._ActorTable) do 
-						--> cria e soma o valor
-						local ability_shadow = shadow[container]:CatchSpell(spellid, true, nil, true)
-						--> refresh e soma os valores dos targets
-						for index, dst in _ipairs(ability.targets._ActorTable) do 
-							--> cria e soma o valor do total
-							local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-							--> refresh no dst da ability
-							_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
-						end
-						--> refresh na ability
-						_details.refresh:r_ability_misc(ability, shadow[container])
-					end
-				end
-				
-			--> cooldowns
-				if (actor.cooldowns_defensive) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("cooldowns_defensive_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("cooldowns_defensive_spell_tables", shadow)
-				end
-				
-			--> buff uptime
-				if (actor.buff_uptime) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("buff_uptime_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("buff_uptime_spell_tables", shadow)
-				end
-				
-			--> debuff uptime
-				if (actor.debuff_uptime) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("debuff_uptime_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("debuff_uptime_spell_tables", shadow)
-				end
-				
-			--> interrupt
-				if (actor.interrupt) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("interrupt_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("interrupt_spell_tables", shadow)
-					--> copia o que cada ability interrompeu
-						for spellid, ability in _pairs(actor.interrupt_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.interrupt_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities interrompidas
-							ability_shadow.interrompeu_oque = ability_shadow.interrompeu_oque or {}
-						end
-				end
+local refresh_spells = function(container1, container2)
+	for spellid, ability in _pairs(container2._ActorTable) do
+		local ability_shadow = container1:CatchSpell(spellid, true, nil, true)
+		refresh_targets(ability_shadow.targets, ability.targets)
+	end
+end
 
-			--> ress
-				if (actor.ress) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("ress_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("ress_spell_tables", shadow)
-				end
+function attribute_misc:r_onlyrefresh_shadow(actor)
+	local overall_misc = _details.table_overall[4]
+	local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
 
-			--> dispell
-				if (actor.dispell) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("dispell_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("dispell_spell_tables", shadow)
-					--> copia o que cada ability dispelou
-						for spellid, ability in _pairs(actor.dispell_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.dispell_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities dispeladas
-							ability_shadow.dispell_oque = ability_shadow.dispell_oque or {}
-						end
-				end
-			--> cc break
-				if (actor.cc_break) then
-					--> copia o container de targets(captura de dados)
-						somar_targets("cc_break_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("cc_break_spell_tables", shadow)
-					--> copia o que cada ability quebrou
-						for spellid, ability in _pairs(actor.cc_break_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.cc_break_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities quebradas
-							ability_shadow.cc_break_oque = ability_shadow.cc_break_oque or {}
-						end
-				end
+	if (not actor.name) then
+		actor.name = "unknown"
+	end
 
-			return shadow
-		
+	if (not shadow) then
+		shadow = overall_misc:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
+		shadow.class = actor.class
+		shadow.group = actor.group
+	end
+
+	--> aplica a meta e indexes
+	_details.refresh:r_attribute_misc(actor, shadow)
+
+	--> cooldowns
+	if (actor.cooldowns_defensive) then
+		refresh_targets(shadow.cooldowns_defensive_targets, actor.cooldowns_defensive_targets)
+		refresh_spells(shadow.cooldowns_defensive_spells, actor.cooldowns_defensive_spells)
+	end
+
+	--> buff uptime
+	if (actor.buff_uptime) then
+		refresh_targets(shadow.buff_uptime_targets, actor.buff_uptime_targets)
+		refresh_spells(shadow.buff_uptime_spells, actor.buff_uptime_spells)
+	end
+
+	--> debuff uptime
+	if (actor.debuff_uptime) then
+		refresh_spells(shadow.debuff_uptime_spells, actor.debuff_uptime_spells)
+		if (actor.boss_debuff) then
+			--
+		else
+			refresh_targets(shadow.debuff_uptime_targets, actor.debuff_uptime_targets)
 		end
-	
-		function attribute_misc:r_connect_shadow(actor, no_refresh)
-		
-			--> create uma shadow desse ator se ainda n�o tiver uma
-				local overall_misc = _details.table_overall[4]
-				local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
-			
-				if (not actor.name) then
-					actor.name = "unknown"
-				end
-				
-				if (not shadow) then 
-					shadow = overall_misc:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
-					shadow.class = actor.class
-					shadow.group = actor.group
-				end
+	end
 
-			--> aplica a meta e indexes
-				if (not no_refresh) then
-					_details.refresh:r_attribute_misc(actor, shadow)
-				end
-
-			--> somar as keys das abilities
-				local somar_keys = function(ability, ability_shadow)
-					for key, value in _pairs(ability) do 
-						if (_type(value) == "number") then
-							if (key ~= "id") then
-								if (not ability_shadow[key]) then 
-									ability_shadow[key] = 0
-								end
-								ability_shadow[key] = ability_shadow[key] + value
-							end
-						end
-					end
-				end
-			--> somar os targets do ator
-				local somar_targets = function(container)
-					for index, dst in _ipairs(actor[container]._ActorTable) do
-						--> cria e soma o valor do total
-						--if (shadow[container]) then -- index ?? a nil value
-							local dst_shadow = shadow[container]:CatchCombatant(nil, dst.name, nil, true)
-							dst_shadow.total = dst_shadow.total + dst.total
-							if (dst.uptime) then --> boss debuff
-								dst_shadow.uptime = dst_shadow.uptime + dst.uptime
-								dst_shadow.activedamt = dst_shadow.activedamt + dst.activedamt
-							end
-						--end
-						--> refresh no dst
-						if (not no_refresh) then
-							_details.refresh:r_dst_of_ability(dst, shadow[container])
-						end
-						
-					end
-				end
-			--> somar as abilities do ator
-				local somar_abilities = function(container, shadow)
-					for spellid, ability in _pairs(actor[container]._ActorTable) do 
-						--> cria e soma o valor
-						local ability_shadow = shadow[container]:CatchSpell(spellid, true, nil, true)
-						--> refresh e soma os valores dos targets
-						for index, dst in _ipairs(ability.targets._ActorTable) do 
-							--> cria e soma o valor do total
-							local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-							dst_shadow.total = dst_shadow.total + dst.total
-							--> refresh no dst da ability
-							if (not no_refresh) then
-								_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
-							end
-						end
-						--> soma todos os demais valores
-						somar_keys(ability, ability_shadow)
-						--> refresh na ability
-						if (not no_refresh) then
-							_details.refresh:r_ability_misc(ability, shadow[container])
-						end
-					end
-				end
-				
-			--> cooldowns
-				if (actor.cooldowns_defensive) then
-				
-					--> verifica se tem o container
-						if (not shadow.cooldowns_defensive_targets) then
-							shadow.cooldowns_defensive = 0
-							shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target)
-							shadow.cooldowns_defensive_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.cooldowns_defensive = shadow.cooldowns_defensive + actor.cooldowns_defensive
-					--> total no combat overall(captura de dados)
-						_details.table_overall.totals[4].cooldowns_defensive = _details.table_overall.totals[4].cooldowns_defensive + actor.cooldowns_defensive
-						if (actor.group) then
-							_details.table_overall.totals_group[4].cooldowns_defensive = _details.table_overall.totals_group[4].cooldowns_defensive + actor.cooldowns_defensive
-						end
-					--> copia o container de targets(captura de dados)
-						somar_targets("cooldowns_defensive_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("cooldowns_defensive_spell_tables", shadow)
-				end
-				
-			--> buff uptime
-				if (actor.buff_uptime) then
-				
-					--> verifica se tem o container
-						if (not shadow.buff_uptime_spell_targets) then
-							shadow.buff_uptime = 0
-							shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-							shadow.buff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.buff_uptime = shadow.buff_uptime + actor.buff_uptime
-					--> copia o container de targets(captura de dados)
-						somar_targets("buff_uptime_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("buff_uptime_spell_tables", shadow)
-				end
-				
-			--> debuff uptime
-				if (actor.debuff_uptime) then
-				
-					--> verifica se tem o container
-						if (not shadow.debuff_uptime_targets) then
-							shadow.debuff_uptime = 0
-							if (actor.boss_debuff) then
-								shadow.debuff_uptime_targets = container_combatants:NewContainer(_details.container_type.CONTAINER_ENEMYDEBUFFTARGET_CLASS)
-								shadow.boss_debuff = true
-								shadow.damage_twin = actor.damage_twin
-								shadow.spellschool = actor.spellschool
-								shadow.damage_spellid = actor.damage_spellid
-								shadow.debuff_uptime = 0
-							else
-								shadow.debuff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-							end
-							shadow.debuff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.debuff_uptime = shadow.debuff_uptime + actor.debuff_uptime
-					--> copia o container de targets(captura de dados)
-						somar_targets("debuff_uptime_targets", shadow)
-					--> copia o container de abilities(captura de dados)
-						somar_abilities("debuff_uptime_spell_tables", shadow)
-				end
-				
-			--> interrupt
-				if (actor.interrupt) then
-				
-					--verifica se tem o container
-						if (not shadow.interrupt_targets) then
-							shadow.interrupt = 0
-							shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-							shadow.interrupt_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-							shadow.interrompeu_oque = {}
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.interrupt = shadow.interrupt + actor.interrupt
-					--> total no combat overall(captura de dados)
-						_details.table_overall.totals[4].interrupt = _details.table_overall.totals[4].interrupt + actor.interrupt
-						if (actor.group) then
-							_details.table_overall.totals_group[4].interrupt = _details.table_overall.totals_group[4].interrupt + actor.interrupt
-						end
-					--> copia o container de targets(captura de dados)
-						somar_targets("interrupt_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("interrupt_spell_tables", shadow)
-					--> copia o que cada ability interrompeu
-						for spellid, ability in _pairs(actor.interrupt_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.interrupt_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities interrompidas
-							ability_shadow.interrompeu_oque = ability_shadow.interrompeu_oque or {}
-							for _spellid, amount in _pairs(ability.interrompeu_oque) do
-								if (ability_shadow.interrompeu_oque[_spellid]) then
-									ability_shadow.interrompeu_oque[_spellid] = ability_shadow.interrompeu_oque[_spellid] + amount
-								else
-									ability_shadow.interrompeu_oque[_spellid] = amount
-								end
-							end
-						end
-					--> copia o que ator interrompeu
-						for spellid, amount in _pairs(actor.interrompeu_oque) do 
-							if (not shadow.interrompeu_oque[spellid]) then 
-								shadow.interrompeu_oque[spellid] = 0
-							end
-							shadow.interrompeu_oque[spellid] = shadow.interrompeu_oque[spellid] + amount
-						end
-				end
-
-			--> ress
-				if (actor.ress) then
-					
-					--> verifica se tem o container
-						if (not shadow.ress_targets) then
-							shadow.ress = 0
-							shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-							shadow.ress_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.ress = shadow.ress + actor.ress
-					--> total no combat overall(captura de dados)
-						_details.table_overall.totals[4].ress = _details.table_overall.totals[4].ress + actor.ress
-						if (actor.group) then
-							_details.table_overall.totals_group[4].ress = _details.table_overall.totals_group[4].ress + actor.ress
-						end
-					--> copia o container de targets(captura de dados)
-						somar_targets("ress_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("ress_spell_tables", shadow)
-				end
-
-			--> dispell
-				if (actor.dispell) then
-				
-					--> verifica se tem o container
-						if (not shadow.dispell_targets) then
-							shadow.dispell = 0
-							shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-							shadow.dispell_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-							shadow.dispell_oque = {}
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.dispell = shadow.dispell + actor.dispell
-					--> total no combat overall(captura de dados)	
-						_details.table_overall.totals[4].dispell = _details.table_overall.totals[4].dispell + actor.dispell
-						if (actor.group) then
-							_details.table_overall.totals_group[4].dispell = _details.table_overall.totals_group[4].dispell + actor.dispell
-						end
-					--> copia o container de targets(captura de dados)
-						somar_targets("dispell_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("dispell_spell_tables", shadow)
-					--> copia o que cada ability dispelou
-						for spellid, ability in _pairs(actor.dispell_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.dispell_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities dispeladas
-							ability_shadow.dispell_oque = ability_shadow.dispell_oque or {}
-							for _spellid, amount in _pairs(ability.dispell_oque) do
-								if (ability_shadow.dispell_oque[_spellid]) then
-									ability_shadow.dispell_oque[_spellid] = ability_shadow.dispell_oque[_spellid] + amount
-								else
-									ability_shadow.dispell_oque[_spellid] = amount
-								end
-							end
-						end
-					--> copia o que ator dispelou
-						for spellid, amount in _pairs(actor.dispell_oque) do 
-							if (not shadow.dispell_oque[spellid]) then 
-								shadow.dispell_oque[spellid] = 0
-							end
-							shadow.dispell_oque[spellid] = shadow.dispell_oque[spellid] + amount
-						end					
-					
-				end
-			--> cc break
-				if (actor.cc_break) then
-				
-					--> verifica se tem o container
-						if (not shadow.cc_break) then
-							shadow.cc_break = 0
-							shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-							shadow.cc_break_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-							shadow.cc_break_oque = {}
-						end
-				
-					--> soma o total(captura de dados)
-						shadow.cc_break = shadow.cc_break + actor.cc_break
-					--> total no combat overall(captura de dados)	
-						_details.table_overall.totals[4].cc_break = _details.table_overall.totals[4].cc_break + actor.cc_break
-						if (actor.group) then
-							_details.table_overall.totals_group[4].cc_break = _details.table_overall.totals_group[4].cc_break + actor.cc_break
-						end
-					--> copia o container de targets(captura de dados)
-						somar_targets("cc_break_targets", shadow)
-					--> copia o container de abilities(captura de dados)	
-						somar_abilities("cc_break_spell_tables", shadow)
-					--> copia o que cada ability quebrou
-						for spellid, ability in _pairs(actor.cc_break_spell_tables._ActorTable) do 
-							--> pega o actor da shadow
-							local ability_shadow = shadow.cc_break_spell_tables:CatchSpell(spellid, true, nil, true)
-							--> copia as abilities quebradas
-							ability_shadow.cc_break_oque = ability_shadow.cc_break_oque or {}
-							for _spellid, amount in _pairs(ability.cc_break_oque) do
-								if (ability_shadow.cc_break_oque[_spellid]) then
-									ability_shadow.cc_break_oque[_spellid] = ability_shadow.cc_break_oque[_spellid] + amount
-								else
-									ability_shadow.cc_break_oque[_spellid] = amount
-								end
-							end
-						end
-					--> copia o que ator quebrou
-						for spellid, amount in _pairs(actor.cc_break_oque) do 
-							if (not shadow.cc_break_oque[spellid]) then 
-								shadow.cc_break_oque[spellid] = 0
-							end
-							shadow.cc_break_oque[spellid] = shadow.cc_break_oque[spellid] + amount
-						end
-				end
-
-			return shadow
-		
+	--> interrupt
+	if (actor.interrupt) then
+		refresh_targets(shadow.interrupt_targets, actor.interrupt_targets)
+		refresh_spells(shadow.interrupt_spells, actor.interrupt_spells)
+		for spellid, ability in _pairs(actor.interrupt_spells._ActorTable) do
+			local ability_shadow = shadow.interrupt_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.interrompeu_oque = ability_shadow.interrompeu_oque or {}
 		end
+	end
+
+	--> dispell
+	if (actor.dispell) then
+		refresh_targets(shadow.dispell_targets, actor.dispell_targets)
+		refresh_spells(shadow.dispell_spells, actor.dispell_spells)
+		for spellid, ability in _pairs(actor.dispell_spells._ActorTable) do
+			local ability_shadow = shadow.dispell_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.dispell_oque = ability_shadow.dispell_oque or {}
+		end
+	end
+
+	--> cc break
+	if (actor.cc_break) then
+		refresh_targets(shadow.cc_break_targets, actor.cc_break_targets)
+		refresh_spells(shadow.cc_break_spells, actor.cc_break_spells)
+		for spellid, ability in _pairs(actor.cc_break_spells._ActorTable) do
+			local ability_shadow = shadow.cc_break_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.cc_break_oque = ability_shadow.cc_break_oque or {}
+		end
+	end
+
+	return shadow
+end
+
+local add_keys = function(ability, ability_table1)
+	for key, value in _pairs(ability) do
+		if (_type(value) == "number") then
+			if (key ~= "id" and key ~= "spellschool") then
+				ability_table1[key] = (ability_table1[key] or 0) + value
+			end
+		end
+	end
+end
+
+local add_targets = function(container1, container2)
+	for target_name, amount in _pairs(container2) do
+		container1[target_name] = (container1[target_name] or 0) + amount
+	end
+end
+
+local add_abilities = function(container1, container2)
+	for spellid, ability in _pairs(container2._ActorTable) do
+		local ability_table1 = container1:CatchSpell(spellid, true, nil, false)
+		add_targets(ability.targets, ability_table1.targets)
+		add_keys(ability, ability_table1)
+	end
+end
+
+function attribute_misc:r_connect_shadow(actor, no_refresh)
+
+	local overall_misc = _details.table_overall[4]
+	local shadow = overall_misc._ActorTable[overall_misc._NameIndexTable[actor.name]]
+
+	if (not actor.name) then
+		actor.name = "unknown"
+	end
+
+	if (not shadow) then
+		shadow = overall_misc:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
+		shadow.class = actor.class
+		shadow.group = actor.group
+	end
+
+	--> aplica a meta e indexes
+	if (not no_refresh) then
+		_details.refresh:r_attribute_misc(actor, shadow)
+	end
+
+	--> defensive spells
+	if (actor.cooldowns_defensive) then
+		if (not shadow.cooldowns_defensive_targets) then
+			shadow.cooldowns_defensive =  _details:GetOrderNumber(actor.name)
+			shadow.cooldowns_defensive_targets = {}
+			shadow.cooldowns_defensive_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+
+		shadow.cooldowns_defensive = shadow.cooldowns_defensive + actor.cooldowns_defensive
+		_details.table_overall.totals[4].cooldowns_defensive = _details.table_overall.totals[4].cooldowns_defensive + actor.cooldowns_defensive
+		if (actor.group) then
+			_details.table_overall.totals_group[4].cooldowns_defensive = _details.table_overall.totals_group[4].cooldowns_defensive + actor.cooldowns_defensive
+		end
+
+		add_targets(shadow.cooldowns_defensive_targets, actor.cooldowns_defensive_targets)
+		add_abilities(shadow.cooldowns_defensive_spells, actor.cooldowns_defensive_spells)
+	end
+
+	--> buffs
+	if (actor.buff_uptime) then
+		if (not shadow.buff_uptime_spell_targets) then
+			shadow.buff_uptime = 0
+			shadow.buff_uptime_spell_targets = {}
+			shadow.buff_uptime_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+
+		shadow.buff_uptime = shadow.buff_uptime + actor.buff_uptime
+		add_targets(shadow.buff_uptime_targets, actor.buff_uptime_targets)
+		add_abilities(shadow.buff_uptime_spells, actor.buff_uptime_spells)
+	end
+
+	--> debuff
+	if (actor.debuff_uptime) then
+		if (not shadow.debuff_uptime_targets) then
+			shadow.debuff_uptime = 0
+			if (actor.boss_debuff) then
+				shadow.debuff_uptime_targets = {}
+				shadow.boss_debuff = true
+				shadow.damage_twin = actor.damage_twin
+				shadow.spellschool = actor.spellschool
+				shadow.damage_spellid = actor.damage_spellid
+				shadow.debuff_uptime = 0
+			else
+				shadow.debuff_uptime_targets = {}
+			end
+			shadow.debuff_uptime_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+
+		shadow.debuff_uptime = shadow.debuff_uptime + actor.debuff_uptime
+
+		for target_name, amount in _pairs(actor.debuff_uptime_targets) do
+			if (_type(amount) == "table") then --> boss debuff
+				local t = shadow.debuff_uptime_targets[target_name]
+				if (not t) then
+					shadow.debuff_uptime_targets[target_name] = attribute_misc:CreateBuffTargetObject()
+					t = shadow.debuff_uptime_targets[target_name]
+				end
+				t.uptime = t.uptime + amount.uptime
+				t.activedamt = t.activedamt + amount.activedamt
+			else
+				shadow.debuff_uptime_targets[target_name] = (shadow.debuff_uptime_targets[target_name] or 0) + amount
+			end
+		end
+
+		add_abilities(shadow.debuff_uptime_spells, actor.debuff_uptime_spells)
+	end
+
+	--> interrupt
+	if (actor.interrupt) then
+		if (not shadow.interrupt_targets) then
+			shadow.interrupt = 0
+			shadow.interrupt_targets = {}
+			shadow.interrupt_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.interrompeu_oque = {}
+		end
+
+		shadow.interrupt = shadow.interrupt + actor.interrupt
+		_details.table_overall.totals[4].interrupt = _details.table_overall.totals[4].interrupt + actor.interrupt
+		if (actor.group) then
+			_details.table_overall.totals_group[4].interrupt = _details.table_overall.totals_group[4].interrupt + actor.interrupt
+		end
+		add_targets(shadow.interrupt_targets, actor.interrupt_targets)
+		add_abilities(shadow.interrupt_spells, actor.interrupt_spells)
+
+		for spellid, ability in _pairs(actor.interrupt_spells._ActorTable) do
+			local ability_shadow = shadow.interrupt_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.interrompeu_oque = ability_shadow.interrompeu_oque or {}
+
+			for _spellid, amount in _pairs(ability.interrompeu_oque) do
+				ability_shadow.interrompeu_oque[_spellid] = (ability_shadow.interrompeu_oque[_spellid] or 0) + amount
+			end
+		end
+		for spellid, amount in _pairs(actor.interrompeu_oque) do
+			shadow.interrompeu_oque[spellid] = (shadow.interrompeu_oque[spellid] or 0) + amount
+		end
+	end
+
+	--> ress
+	if (actor.ress) then
+		if (not shadow.ress_targets) then
+			shadow.ress = 0
+			shadow.ress_targets = {}
+			shadow.ress_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+
+		shadow.ress = shadow.ress + actor.ress
+		_details.table_overall.totals[4].ress = _details.table_overall.totals[4].ress + actor.ress
+		if (actor.group) then
+			_details.table_overall.totals_group[4].ress = _details.table_overall.totals_group[4].ress + actor.ress
+		end
+
+		add_targets(shadow.ress_targets, actor.ress_targets)
+		add_abilities(shadow.ress_spells, actor.ress_spells)
+	end
+
+	--> dispell
+	if (actor.dispell) then
+		if (not shadow.dispell_targets) then
+			shadow.dispell = 0
+			shadow.dispell_targets = {}
+			shadow.dispell_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.dispell_oque = {}
+		end
+
+		shadow.dispell = shadow.dispell + actor.dispell
+		_details.table_overall.totals[4].dispell = _details.table_overall.totals[4].dispell + actor.dispell
+		if (actor.group) then
+			_details.table_overall.totals_group[4].dispell = _details.table_overall.totals_group[4].dispell + actor.dispell
+		end
+
+		add_targets(shadow.dispell_targets, actor.dispell_targets)
+		add_abilities(shadow.dispell_spells, actor.dispell_spells)
+		for spellid, ability in _pairs(actor.dispell_spells._ActorTable) do
+			local ability_shadow = shadow.dispell_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.dispell_oque = ability_shadow.dispell_oque or {}
+			for _spellid, amount in _pairs(ability.dispell_oque) do
+				ability_shadow.dispell_oque[_spellid] = (ability_shadow.dispell_oque[_spellid] or 0) + amount
+			end
+		end
+
+		for spellid, amount in _pairs(actor.dispell_oque) do
+			shadow.dispell_oque[spellid] = (shadow.dispell_oque[spellid] or 0) + amount
+		end
+	end
+
+	--> cc break
+	if (actor.cc_break) then
+		if (not shadow.cc_break) then
+			shadow.cc_break = 0
+			shadow.cc_break_targets = {}
+			shadow.cc_break_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.cc_break_oque = {}
+		end
+		shadow.cc_break = shadow.cc_break + actor.cc_break
+		_details.table_overall.totals[4].cc_break = _details.table_overall.totals[4].cc_break + actor.cc_break
+		if (actor.group) then
+			_details.table_overall.totals_group[4].cc_break = _details.table_overall.totals_group[4].cc_break + actor.cc_break
+		end
+
+		add_targets(shadow.cc_break_targets, actor.cc_break_targets)
+		add_abilities(shadow.cc_break_spells, actor.cc_break_spells)
+
+		for spellid, ability in _pairs(actor.cc_break_spells._ActorTable) do
+			local ability_shadow = shadow.cc_break_spells:CatchSpell(spellid, true, nil, true)
+			ability_shadow.cc_break_oque = ability_shadow.cc_break_oque or {}
+			for _spellid, amount in _pairs(ability.cc_break_oque) do
+				ability_shadow.cc_break_oque[_spellid] = (ability_shadow.cc_break_oque[_spellid] or 0) + amount
+			end
+		end
+		for spellid, amount in _pairs(actor.cc_break_oque) do
+			shadow.cc_break_oque[spellid] = (shadow.cc_break_oque[spellid] or 0) + amount
+		end
+	end
+
+	return shadow
+
+end
+
 
 function attribute_misc:CollectGarbage(lastevent)
 	return _details:CollectGarbage(class_type, lastevent)
@@ -2635,221 +2477,164 @@ end
 function _details.refresh:r_attribute_misc(this_player, shadow)
 	_setmetatable(this_player, _details.attribute_misc)
 	this_player.__index = _details.attribute_misc
-
 	this_player.shadow = shadow
 	
 	--> refresh interrupts
 	if (this_player.interrupt_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.interrupt_targets) then
-				shadow.interrupt = 0
-				shadow.interrupt_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				shadow.interrupt_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-				shadow.interrompeu_oque = {}
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.interrupt_targets, shadow.interrupt_targets)
-			_details.refresh:r_container_abilities(this_player.interrupt_spell_tables, shadow.interrupt_spell_tables)
+		if (not shadow.interrupt_targets) then
+			shadow.interrupt = 0
+			shadow.interrupt_targets = {}
+			shadow.interrupt_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.interrompeu_oque = {}
+		end
+		_details.refresh:r_container_abilities(this_player.interrupt_spells, shadow.interrupt_spells)
 	end
 	
 	--> refresh buff uptime
 	if (this_player.buff_uptime_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.buff_uptime_spell_targets) then
-				shadow.buff_uptime = 0
-				shadow.buff_uptime_spell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				shadow.buff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.buff_uptime_targets, shadow.buff_uptime_targets)
-			_details.refresh:r_container_abilities(this_player.buff_uptime_spell_tables, shadow.buff_uptime_spell_tables)
+		if (not shadow.buff_uptime_spell_targets) then
+			shadow.buff_uptime = 0
+			shadow.buff_uptime_spell_targets = {}
+			shadow.buff_uptime_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+		_details.refresh:r_container_abilities(this_player.buff_uptime_spells, shadow.buff_uptime_spells)
 	end
 	
-	--> refresh buff uptime
+	--> refresh debuff uptime
 	if (this_player.debuff_uptime_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.debuff_uptime_targets) then
+		if (not shadow.debuff_uptime_targets) then
+			shadow.debuff_uptime = 0
+			if (this_player.boss_debuff) then
+				shadow.debuff_uptime_targets = {}
+				shadow.boss_debuff = true
+				shadow.damage_twin = this_player.damage_twin
+				shadow.spellschool = this_player.spellschool
+				shadow.damage_spellid = this_player.damage_spellid
 				shadow.debuff_uptime = 0
-				if (this_player.boss_debuff) then
-					shadow.debuff_uptime_targets = container_combatants:NewContainer(_details.container_type.CONTAINER_ENEMYDEBUFFTARGET_CLASS)
-					shadow.boss_debuff = true
-					shadow.damage_twin = this_player.damage_twin
-					shadow.spellschool = this_player.spellschool
-					shadow.damage_spellid = this_player.damage_spellid
-					shadow.debuff_uptime = 0
-				else
-					shadow.debuff_uptime_targets = container_combatants:NewContainer(container_damage_target)
-				end
-				shadow.debuff_uptime_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			else
+				shadow.debuff_uptime_targets = {}
 			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.debuff_uptime_targets, shadow.debuff_uptime_targets)
-			_details.refresh:r_container_abilities(this_player.debuff_uptime_spell_tables, shadow.debuff_uptime_spell_tables)
+		shadow.debuff_uptime_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+		_details.refresh:r_container_abilities(this_player.debuff_uptime_spells, shadow.debuff_uptime_spells)
 	end
 	
 	--> refresh cooldowns defensive
 	if (this_player.cooldowns_defensive_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.cooldowns_defensive_targets) then
-				shadow.cooldowns_defensive = 0
-				shadow.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target)
-				shadow.cooldowns_defensive_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.cooldowns_defensive_targets, shadow.cooldowns_defensive_targets)
-			_details.refresh:r_container_abilities(this_player.cooldowns_defensive_spell_tables, shadow.cooldowns_defensive_spell_tables)
+		if (not shadow.cooldowns_defensive_targets) then
+			shadow.cooldowns_defensive = 0
+			shadow.cooldowns_defensive_targets = {}
+			shadow.cooldowns_defensive_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+		_details.refresh:r_container_abilities(this_player.cooldowns_defensive_spells, shadow.cooldowns_defensive_spells)
 	end
 	
 	--> refresh ressers
 	if (this_player.ress_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.ress_targets) then
-				shadow.ress = 0
-				shadow.ress_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				shadow.ress_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.ress_targets, shadow.ress_targets)
-			_details.refresh:r_container_abilities(this_player.ress_spell_tables, shadow.ress_spell_tables)
+		if (not shadow.ress_targets) then
+			shadow.ress = 0
+			shadow.ress_targets = {}
+			shadow.ress_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+		end
+		_details.refresh:r_container_abilities(this_player.ress_spells, shadow.ress_spells)
 	end
 	
 	--> refresh dispells
 	if (this_player.dispell_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.dispell_targets) then
-				shadow.dispell = 0
-				shadow.dispell_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				shadow.dispell_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-				shadow.dispell_oque = {}
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.dispell_targets, shadow.dispell_targets)
-			_details.refresh:r_container_abilities(this_player.dispell_spell_tables, shadow.dispell_spell_tables)
+		if (not shadow.dispell_targets) then
+			shadow.dispell = 0
+			shadow.dispell_targets = {}
+			shadow.dispell_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.dispell_oque = {}
+		end
+		_details.refresh:r_container_abilities(this_player.dispell_spells, shadow.dispell_spells)
 	end
 	
 	--> refresh cc_breaks
 	if (this_player.cc_break_targets) then
-		--> constr�i os containers na shadow se n�o existir
-			if (not shadow.cc_break) then
-				shadow.cc_break = 0
-				shadow.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-				shadow.cc_break_spell_tables = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS) --> cria o container das abilities usadas para interromper
-				shadow.cc_break_oque = {}
-			end
-		--> recupera metas e indexes
-			_details.refresh:r_container_combatants(this_player.cc_break_targets, shadow.cc_break_targets)
-			_details.refresh:r_container_abilities(this_player.cc_break_spell_tables, shadow.cc_break_spell_tables)
+		if (not shadow.cc_break) then
+			shadow.cc_break = 0
+			shadow.cc_break_targets = {}
+			shadow.cc_break_spells = container_abilities:NewContainer(_details.container_type.CONTAINER_MISC_CLASS)
+			shadow.cc_break_oque = {}
+		end
+		_details.refresh:r_container_abilities(this_player.cc_break_spells, shadow.cc_break_spells)
 	end
-
 end
 
 function _details.clear:c_attribute_misc(this_player)
-
-	--this_player.__index = {}
 	this_player.__index = nil
 	this_player.shadow = nil
 	this_player.links = nil
 	this_player.my_bar = nil
 	
 	if (this_player.interrupt_targets) then
-		_details.clear:c_container_combatants(this_player.interrupt_targets)
-		_details.clear:c_container_abilities(this_player.interrupt_spell_tables)
+		_details.clear:c_container_abilities(this_player.interrupt_spells)
 	end
 	
 	if (this_player.cooldowns_defensive_targets) then
-		_details.clear:c_container_combatants(this_player.cooldowns_defensive_targets)
-		_details.clear:c_container_abilities(this_player.cooldowns_defensive_spell_tables)
+		_details.clear:c_container_abilities(this_player.cooldowns_defensive_spells)
 	end
 	
 	if (this_player.buff_uptime_targets) then
-		_details.clear:c_container_combatants(this_player.buff_uptime_targets)
-		_details.clear:c_container_abilities(this_player.buff_uptime_spell_tables)
+		_details.clear:c_container_abilities(this_player.buff_uptime_spells)
 	end
 	
 	if (this_player.debuff_uptime_targets) then
-		_details.clear:c_container_combatants(this_player.debuff_uptime_targets)
-		_details.clear:c_container_abilities(this_player.debuff_uptime_spell_tables)
+		_details.clear:c_container_abilities(this_player.debuff_uptime_spells)
 	end
 	
 	if (this_player.ress_targets) then
-		_details.clear:c_container_combatants(this_player.ress_targets)
-		_details.clear:c_container_abilities(this_player.ress_spell_tables)
+		_details.clear:c_container_abilities(this_player.ress_spells)
 	end
 	
 	if (this_player.cc_break_targets) then
-		_details.clear:c_container_combatants(this_player.cc_break_targets)
-		_details.clear:c_container_abilities(this_player.cc_break_spell_tables)
+		_details.clear:c_container_abilities(this_player.cc_break_spells)
 	end
 	
 	if (this_player.dispell_targets) then
-		_details.clear:c_container_combatants(this_player.dispell_targets)
-		_details.clear:c_container_abilities(this_player.dispell_spell_tables)
+		_details.clear:c_container_abilities(this_player.dispell_spells)
 	end
-	
 end
 
 attribute_misc.__add = function(table1, table2)
-
-	local somar_keys = function(ability, ability_table1)
-		for key, value in _pairs(ability) do 
-			if (_type(value) == "number") then
-				if (key ~= "id") then
-					if (not ability_table1[key]) then 
-						ability_table1[key] = 0
-					end
-					ability_table1[key] = ability_table1[key] + value
-				end
-			end
-		end
-	end
 
 	if (table2.interrupt) then
 	
 		if (not table1.interrupt) then
 			table1.interrupt = 0
-			table1.interrupt_targets = container_combatants:NewContainer(container_damage_target)
-			table1.interrupt_spell_tables = container_abilities:NewContainer(container_misc)
+			table1.interrupt_targets = {}
+			table1.interrupt_spells = container_abilities:NewContainer(container_misc)
 			table1.interrompeu_oque = {}
 		end
 	
 		--> total de interrupts
 			table1.interrupt = table1.interrupt + table2.interrupt
+
 		--> soma o interrompeu o que
 			for spellid, amount in _pairs(table2.interrompeu_oque) do 
-				if (not table1.interrompeu_oque[spellid]) then 
-					table1.interrompeu_oque[spellid] = 0
-				end
-				table1.interrompeu_oque[spellid] = table1.interrompeu_oque[spellid] + amount
+				table1.interrompeu_oque[spellid] = (table1.interrompeu_oque[spellid] or 0) + amount
 			end
+
 		--> soma os containers de targets
-			for index, dst in _ipairs(table2.interrupt_targets._ActorTable) do 
-				--> pega o dst no ator
-				local dst_table1 = table1.interrupt_targets:CatchCombatant(nil, dst.name, nil, true)
-				--> soma o valor
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(table2.interrupt_targets) do
+				table1.interrupt_targets[target_name] = (table1.interrupt_targets[target_name] or 0) + amount
 			end
 		
 		--> soma o container de abilities
-			for spellid, ability in _pairs(table2.interrupt_spell_tables._ActorTable) do 
-				--> pega a ability no primeiro ator
-				local ability_table1 = table1.interrupt_spell_tables:CatchSpell(spellid, true, nil, false)
-				--> soma o que essa ability interrompeu
+			for spellid, ability in _pairs(table2.interrupt_spells._ActorTable) do
+				local ability_table1 = table1.interrupt_spells:CatchSpell(spellid, true, nil, false)
 				ability_table1.interrompeu_oque = ability_table1.interrompeu_oque or {}
 				for _spellid, amount in _pairs(ability.interrompeu_oque) do
-					if (ability_table1.interrompeu_oque[_spellid]) then
-						ability_table1.interrompeu_oque[_spellid] = ability_table1.interrompeu_oque[_spellid] + amount
-					else
-						ability_table1.interrompeu_oque[_spellid] = amount
-					end
+					ability_table1.interrompeu_oque[_spellid] = (ability_table1.interrompeu_oque[_spellid] or 0) + amount
 				end
-				--> soma os targets
-				for index, dst in _ipairs(ability.targets._ActorTable) do 
-					local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-					dst_table1.total = dst_table1.total + dst.total
+
+				for target_name, amount in _pairs(ability.targets) do
+					ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 				end
 				
-				somar_keys(ability, ability_table1)
-			end	
+				add_keys(ability, ability_table1)
+			end
 
 	end
 	
@@ -2857,96 +2642,92 @@ attribute_misc.__add = function(table1, table2)
 	
 		if (not table1.buff_uptime) then
 			table1.buff_uptime = 0
-			table1.buff_uptime_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			table1.buff_uptime_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
+			table1.buff_uptime_targets = {}
+			table1.buff_uptime_spells = container_abilities:NewContainer(container_misc)
 		end
 	
 		table1.buff_uptime = table1.buff_uptime + table2.buff_uptime
-		
-		for index, dst in _ipairs(table2.buff_uptime_targets._ActorTable) do 
-			local dst_table1 = table1.buff_uptime_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
+
+		--> targets
+		for target_name, amount in _pairs(table2.buff_uptime_targets) do
+			table1.buff_uptime_targets[target_name] = (table1.buff_uptime_targets[target_name] or 0) + amount
 		end
-		
-		for spellid, ability in _pairs(table2.buff_uptime_spell_tables._ActorTable) do 
-			local ability_table1 = table1.buff_uptime_spell_tables:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+		--> spells
+		for spellid, ability in _pairs(table2.buff_uptime_spells._ActorTable) do
+			local ability_table1 = table1.buff_uptime_spells:CatchSpell(spellid, true, nil, false)
+
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
-
-			somar_keys(ability, ability_table1)
+			add_keys(ability, ability_table1)
 		end	
 		
 	end
 	
 	if (table2.debuff_uptime) then
-	
 		if (not table1.debuff_uptime) then
-		
 			if (table2.boss_debuff) then
-				table1.debuff_uptime_targets = container_combatants:NewContainer(_details.container_type.CONTAINER_ENEMYDEBUFFTARGET_CLASS)
 				table1.boss_debuff = true
 				table1.damage_twin = table2.damage_twin
 				table1.spellschool = table2.spellschool
 				table1.damage_spellid = table2.damage_spellid
-			else
-				table1.debuff_uptime_targets = container_combatants:NewContainer(container_damage_target)
 			end
-			
+
+			table1.debuff_uptime_targets = {}
 			table1.debuff_uptime = 0
-			table1.debuff_uptime_spell_tables = container_abilities:NewContainer(container_misc)
+			table1.debuff_uptime_spells = container_abilities:NewContainer(container_misc)
 		end
 	
 		table1.debuff_uptime = table1.debuff_uptime + table2.debuff_uptime
 		
-		for index, dst in _ipairs(table2.debuff_uptime_targets._ActorTable) do 
-			local dst_table1 = table1.debuff_uptime_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
-			if (dst.uptime) then --> boss debuff
-				dst_table1.uptime = dst_table1.uptime + dst.uptime
-				dst_table1.activedamt = dst_table1.activedamt + dst.activedamt
+		for target_name, amount in _pairs(table2.debuff_uptime_targets) do
+			if (_type(amount) == "table") then --> boss debuff
+				local t = table1.debuff_uptime_targets[target_name]
+				if (not t) then
+					table1.debuff_uptime_targets[target_name] = attribute_misc:CreateBuffTargetObject()
+					t = table1.debuff_uptime_targets[target_name]
+				end
+				t.uptime = t.uptime + amount.uptime
+				t.activedamt = t.activedamt + amount.activedamt
+			else
+				table1.debuff_uptime_targets[target_name] = (table1.debuff_uptime_targets[target_name] or 0) + amount
 			end
 		end
 		
-		for spellid, ability in _pairs(table2.debuff_uptime_spell_tables._ActorTable) do 
-			local ability_table1 = table1.debuff_uptime_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.debuff_uptime_spells._ActorTable) do
+			local ability_table1 = table1.debuff_uptime_spells:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
 			
-			somar_keys(ability, ability_table1)
-		end	
-		
+			add_keys(ability, ability_table1)
+		end
 	end
 	
 	if (table2.cooldowns_defensive) then
 	
 		if (not table1.cooldowns_defensive) then
 			table1.cooldowns_defensive = 0
-			table1.cooldowns_defensive_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			table1.cooldowns_defensive_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas
+			table1.cooldowns_defensive_targets = {}
+			table1.cooldowns_defensive_spells = container_abilities:NewContainer(container_misc)
 		end
 	
 		table1.cooldowns_defensive = table1.cooldowns_defensive + table2.cooldowns_defensive
 		
-		for index, dst in _ipairs(table2.cooldowns_defensive_targets._ActorTable) do 
-			local dst_table1 = table1.cooldowns_defensive_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
+		for target_name, amount in _pairs(table2.cooldowns_defensive_targets) do
+			table1.cooldowns_defensive_targets[target_name] = (table1.cooldowns_defensive_targets[target_name] or 0) + amount
 		end
 		
-		for spellid, ability in _pairs(table2.cooldowns_defensive_spell_tables._ActorTable) do 
-			local ability_table1 = table1.cooldowns_defensive_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.cooldowns_defensive_spells._ActorTable) do
+			local ability_table1 = table1.cooldowns_defensive_spells:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
 			
-			somar_keys(ability, ability_table1)
+			add_keys(ability, ability_table1)
 		end	
 		
 	end
@@ -2955,137 +2736,113 @@ attribute_misc.__add = function(table1, table2)
 	
 		if (not table1.ress) then
 			table1.ress = 0
-			table1.ress_targets = container_combatants:NewContainer(container_damage_target)
-			table1.ress_spell_tables = container_abilities:NewContainer(container_misc)
+			table1.ress_targets = {}
+			table1.ress_spells = container_abilities:NewContainer(container_misc)
 		end
 	
 		table1.ress = table1.ress + table2.ress
 		
-		for index, dst in _ipairs(table2.ress_targets._ActorTable) do 
-			local dst_table1 = table1.ress_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
+		for target_name, amount in _pairs(table2.ress_targets) do
+			table1.ress_targets[target_name] = (table1.ress_targets[target_name] or 0) + amount
 		end
 		
-		for spellid, ability in _pairs(table2.ress_spell_tables._ActorTable) do 
-			local ability_table1 = table1.ress_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.ress_spells._ActorTable) do
+			local ability_table1 = table1.ress_spells:CatchSpell(spellid, true, nil, false)
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
 			
-			somar_keys(ability, ability_table1)
-		end	
-		
+			add_keys(ability, ability_table1)
+		end
 	end
 	
 	if (table2.dispell) then
 	
 		if (not table1.dispell) then
 			table1.dispell = 0
-			table1.dispell_targets = container_combatants:NewContainer(container_damage_target)
-			table1.dispell_spell_tables = container_abilities:NewContainer(container_misc)
+			table1.dispell_targets = {}
+			table1.dispell_spells = container_abilities:NewContainer(container_misc)
 			table1.dispell_oque = {}
 		end
 	
 		table1.dispell = table1.dispell + table2.dispell
 		
-		for index, dst in _ipairs(table2.dispell_targets._ActorTable) do 
-			local dst_table1 = table1.dispell_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
+		for target_name, amount in _pairs(table2.dispell_targets) do
+			table1.dispell_targets[target_name] = (table1.dispell_targets[target_name] or 0) + amount
 		end
 		
-		for spellid, ability in _pairs(table2.dispell_spell_tables._ActorTable) do 
-			local ability_table1 = table1.dispell_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.dispell_spells._ActorTable) do
+			local ability_table1 = table1.dispell_spells:CatchSpell(spellid, true, nil, false)
 			
 			ability_table1.dispell_oque = ability_table1.dispell_oque or {}
 
 			for _spellid, amount in _pairs(ability.dispell_oque) do
-				if (ability_table1.dispell_oque[_spellid]) then
-					ability_table1.dispell_oque[_spellid] = ability_table1.dispell_oque[_spellid] + amount
-				else
-					ability_table1.dispell_oque[_spellid] = amount
-				end
+				ability_table1.dispell_oque[_spellid] = (ability_table1.dispell_oque[_spellid] or 0) + amount
 			end
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
 			
-			somar_keys(ability, ability_table1)
+			add_keys(ability, ability_table1)
 		end
 		
 		for spellid, amount in _pairs(table2.dispell_oque) do 
-			if (not table1.dispell_oque[spellid]) then 
-				table1.dispell_oque[spellid] = 0
-			end
-			table1.dispell_oque[spellid] = table1.dispell_oque[spellid] + amount
+			table1.dispell_oque[spellid] = (table1.dispell_oque[spellid] or 0) + amount
 		end
-		
 	end
 	
 	if (table2.cc_break) then
 	
 		if (not table1.cc_break) then
 			table1.cc_break = 0
-			table1.cc_break_targets = container_combatants:NewContainer(container_damage_target) --> pode ser um container de dst de damage, pois ir� usar apenas o .total
-			table1.cc_break_spell_tables = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
+			table1.cc_break_targets = {}
+			table1.cc_break_spells = container_abilities:NewContainer(container_misc) --> cria o container das abilities usadas para interromper
 			table1.cc_break_oque = {}
 		end
 	
 		table1.cc_break = table1.cc_break + table2.cc_break
 		
-		for index, dst in _ipairs(table2.cc_break_targets._ActorTable) do 
-			local dst_table1 = table1.cc_break_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total + dst.total
+		for target_name, amount in _pairs(table2.cc_break_targets) do
+			table1.cc_break_targets[target_name] = (table1.cc_break_targets[target_name] or 0) + amount
 		end
 		
-		for spellid, ability in _pairs(table2.cc_break_spell_tables._ActorTable) do 
-			local ability_table1 = table1.cc_break_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.cc_break_spells._ActorTable) do
+			local ability_table1 = table1.cc_break_spells:CatchSpell(spellid, true, nil, false)
 			
 			ability_table1.cc_break_oque = ability_table1.cc_break_oque or {}
 			for _spellid, amount in _pairs(ability.cc_break_oque) do
-				if (ability_table1.cc_break_oque[_spellid]) then
-					ability_table1.cc_break_oque[_spellid] = ability_table1.cc_break_oque[_spellid] + amount
-				else
-					ability_table1.cc_break_oque[_spellid] = amount
-				end
+				ability_table1.cc_break_oque[_spellid] = (ability_table1.cc_break_oque[_spellid] or 0) + amount
 			end
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
 			
-			somar_keys(ability, ability_table1)
+			add_keys(ability, ability_table1)
 		end
 
-		for spellid, amount in _pairs(table2.cc_break_oque) do 
-			if (not table1.cc_break_oque[spellid]) then 
-				table1.cc_break_oque[spellid] = 0
-			end
-			table1.cc_break_oque[spellid] = table1.cc_break_oque[spellid] + amount
+		for spellid, amount in _pairs(table2.cc_break_oque) do
+			table1.cc_break_oque[spellid] = (table1.cc_break_oque[spellid] or 0) + amount
 		end
 	end
 	
 	return table1
 end
 
-attribute_misc.__sub = function(table1, table2)
-
-	local subtrair_keys = function(ability, ability_table1)
-		for key, value in _pairs(ability) do 
-			if (_type(value) == "number") then
-				if (key ~= "id") then
-					if (not ability_table1[key]) then 
-						ability_table1[key] = 0
-					end
-					ability_table1[key] = ability_table1[key] - value
-				end
+local subtract_keys = function(ability, ability_table1)
+	for key, value in _pairs(ability) do
+		if (_type(value) == "number") then
+			if (key ~= "id" and key ~= "spellschool") then
+				ability_table1[key] = (ability_table1[key] or 0) - value
 			end
 		end
 	end
+end
+
+
+attribute_misc.__sub = function(table1, table2)
 
 	if (table2.interrupt) then
 	
@@ -3093,61 +2850,45 @@ attribute_misc.__sub = function(table1, table2)
 			table1.interrupt = table1.interrupt - table2.interrupt
 		--> soma o interrompeu o que
 			for spellid, amount in _pairs(table2.interrompeu_oque) do 
-				if (not table1.interrompeu_oque[spellid]) then 
-					table1.interrompeu_oque[spellid] = 0
-				end
-				table1.interrompeu_oque[spellid] = table1.interrompeu_oque[spellid] - amount
+				table1.interrompeu_oque[spellid] = (table1.interrompeu_oque[spellid] or 0) - amount
 			end
 		--> soma os containers de targets
-			for index, dst in _ipairs(table2.interrupt_targets._ActorTable) do 
-				--> pega o dst no ator
-				local dst_table1 = table1.interrupt_targets:CatchCombatant(nil, dst.name, nil, true)
-				--> soma o valor
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(table2.interrupt_targets) do
+				table1.interrupt_targets[target_name] = (table1.interrupt_targets[target_name] or 0) - amount
 			end
 		
 		--> soma o container de abilities
-			for spellid, ability in _pairs(table2.interrupt_spell_tables._ActorTable) do 
-				--> pega a ability no primeiro ator
-				local ability_table1 = table1.interrupt_spell_tables:CatchSpell(spellid, true, nil, false)
+			for spellid, ability in _pairs(table2.interrupt_spells._ActorTable) do
+				local ability_table1 = table1.interrupt_spells:CatchSpell(spellid, true, nil, false)
 				--> soma o que essa ability interrompeu
 				ability_table1.interrompeu_oque = ability_table1.interrompeu_oque or {}
 				for _spellid, amount in _pairs(ability.interrompeu_oque) do
-					if (ability_table1.interrompeu_oque[_spellid]) then
-						ability_table1.interrompeu_oque[_spellid] = ability_table1.interrompeu_oque[_spellid] - amount
-					else
-						ability_table1.interrompeu_oque[_spellid] = amount
-					end
+					ability_table1.interrompeu_oque[_spellid] = (ability_table1.interrompeu_oque[_spellid] or 0) - amount
 				end
 				--> soma os targets
-				for index, dst in _ipairs(ability.targets._ActorTable) do 
-					local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-					dst_table1.total = dst_table1.total - dst.total
+				for target_name, amount in _pairs(ability.targets) do
+					ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 				end
 				
-				subtrair_keys(ability, ability_table1)
-			end	
-
+				subtract_keys(ability, ability_table1)
+			end
 	end
 	
 	if (table2.buff_uptime) then
-	
 		table1.buff_uptime = table1.buff_uptime - table2.buff_uptime
 		
-		for index, dst in _ipairs(table2.buff_uptime_targets._ActorTable) do 
-			local dst_table1 = table1.buff_uptime_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.buff_uptime_targets) do
+			table1.buff_uptime_targets[target_name] = (table1.buff_uptime_targets[target_name] or 0) - amount
 		end
 		
-		for spellid, ability in _pairs(table2.buff_uptime_spell_tables._ActorTable) do 
-			local ability_table1 = table1.buff_uptime_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.buff_uptime_spells._ActorTable) do
+			local ability_table1 = table1.buff_uptime_spells:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 
-			subtrair_keys(ability, ability_table1)
+			subtract_keys(ability, ability_table1)
 		end	
 		
 	end
@@ -3156,24 +2897,28 @@ attribute_misc.__sub = function(table1, table2)
 	
 		table1.debuff_uptime = table1.debuff_uptime - table2.debuff_uptime
 		
-		for index, dst in _ipairs(table2.debuff_uptime_targets._ActorTable) do 
-			local dst_table1 = table1.debuff_uptime_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
-			if (dst.uptime) then --> boss debuff
-				dst_table1.uptime = dst_table1.uptime - dst.uptime
-				dst_table1.activedamt = dst_table1.activedamt - dst.activedamt
+		for target_name, amount in _pairs(table2.debuff_uptime_targets) do
+			if (_type(amount) == "table") then --> boss debuff
+				local t = table1.debuff_uptime_targets[target_name]
+				if (not t) then
+					table1.debuff_uptime_targets[target_name] = attribute_misc:CreateBuffTargetObject()
+					t = table1.debuff_uptime_targets[target_name]
+				end
+				t.uptime = t.uptime - amount.uptime
+				t.activedamt = t.activedamt - amount.activedamt
+			else
+				table2.debuff_uptime_targets[target_name] = (table2.debuff_uptime_targets[target_name] or 0) - amount
 			end
 		end
 		
-		for spellid, ability in _pairs(table2.debuff_uptime_spell_tables._ActorTable) do 
-			local ability_table1 = table1.debuff_uptime_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.debuff_uptime_spelles._ActorTable) do
+			local ability_table1 = table1.debuff_uptime_spells:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 			
-			subtrair_keys(ability, ability_table1)
+			subtract_keys(ability, ability_table1)
 		end	
 		
 	end
@@ -3182,119 +2927,92 @@ attribute_misc.__sub = function(table1, table2)
 	
 		table1.cooldowns_defensive = table1.cooldowns_defensive - table2.cooldowns_defensive
 		
-		for index, dst in _ipairs(table2.cooldowns_defensive_targets._ActorTable) do 
-			local dst_table1 = table1.cooldowns_defensive_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.cooldowns_defensive_targets) do
+			table1.cooldowns_defensive_targets[target_name] = (table1.cooldowns_defensive_targets[target_name] or 0) - amount
 		end
 		
-		for spellid, ability in _pairs(table2.cooldowns_defensive_spell_tables._ActorTable) do 
-			local ability_table1 = table1.cooldowns_defensive_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.cooldowns_defensive_spells._ActorTable) do
+			local ability_table1 = table1.cooldowns_defensive_spells:CatchSpell(spellid, true, nil, false)
 
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 			
-			subtrair_keys(ability, ability_table1)
-		end	
-		
+			subtract_keys(ability, ability_table1)
+		end
 	end
 	
 	if (table2.ress) then
-	
 		table1.ress = table1.ress - table2.ress
 		
-		for index, dst in _ipairs(table2.ress_targets._ActorTable) do 
-			local dst_table1 = table1.ress_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.ress_targets) do
+			table1.ress_targets[target_name] = (table1.ress_targets[target_name] or 0) - amount
 		end
 		
-		for spellid, ability in _pairs(table2.ress_spell_tables._ActorTable) do 
-			local ability_table1 = table1.ress_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.ress_spells._ActorTable) do
+			local ability_table1 = table1.ress_spells:CatchSpell(spellid, true, nil, false)
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 			
-			subtrair_keys(ability, ability_table1)
-		end	
-		
+			subtract_keys(ability, ability_table1)
+		end
 	end
 	
 	if (table2.dispell) then
-	
 		table1.dispell = table1.dispell - table2.dispell
 		
-		for index, dst in _ipairs(table2.dispell_targets._ActorTable) do 
-			local dst_table1 = table1.dispell_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.dispell_targets) do
+			table1.dispell_targets[target_name] = (table1.dispell_targets[target_name] or 0) - amount
 		end
 		
-		for spellid, ability in _pairs(table2.dispell_spell_tables._ActorTable) do 
-			local ability_table1 = table1.dispell_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.dispell_spells._ActorTable) do
+			local ability_table1 = table1.dispell_spells:CatchSpell(spellid, true, nil, false)
 			
 			ability_table1.dispell_oque = ability_table1.dispell_oque or {}
 
 			for _spellid, amount in _pairs(ability.dispell_oque) do
-				if (ability_table1.dispell_oque[_spellid]) then
-					ability_table1.dispell_oque[_spellid] = ability_table1.dispell_oque[_spellid] - amount
-				else
-					ability_table1.dispell_oque[_spellid] = amount
-				end
+				ability_table1.dispell_oque[_spellid] = (ability_table1.dispell_oque[_spellid] or 0) - amount
 			end
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 			
-			subtrair_keys(ability, ability_table1)
+			subtract_keys(ability, ability_table1)
 		end
 		
 		for spellid, amount in _pairs(table2.dispell_oque) do 
-			if (not table1.dispell_oque[spellid]) then 
-				table1.dispell_oque[spellid] = 0
-			end
-			table1.dispell_oque[spellid] = table1.dispell_oque[spellid] - amount
+			table1.dispell_oque[spellid] = (table1.dispell_oque[spellid] or 0) - amount
 		end
-		
 	end
 	
 	if (table2.cc_break) then
 	
 		table1.cc_break = table1.cc_break - table2.cc_break
 		
-		for index, dst in _ipairs(table2.cc_break_targets._ActorTable) do 
-			local dst_table1 = table1.cc_break_targets:CatchCombatant(nil, dst.name, nil, true)
-			dst_table1.total = dst_table1.total - dst.total
+		for target_name, amount in _pairs(table2.cc_break_targets) do
+			table1.cc_break_targets[target_name] = (table1.cc_break_targets[target_name] or 0) - amount
 		end
 		
-		for spellid, ability in _pairs(table2.cc_break_spell_tables._ActorTable) do 
-			local ability_table1 = table1.cc_break_spell_tables:CatchSpell(spellid, true, nil, false)
+		for spellid, ability in _pairs(table2.cc_break_spells._ActorTable) do
+			local ability_table1 = table1.cc_break_spells:CatchSpell(spellid, true, nil, false)
 			
 			ability_table1.cc_break_oque = ability_table1.cc_break_oque or {}
 			for _spellid, amount in _pairs(ability.cc_break_oque) do
-				if (ability_table1.cc_break_oque[_spellid]) then
-					ability_table1.cc_break_oque[_spellid] = ability_table1.cc_break_oque[_spellid] - amount
-				else
-					ability_table1.cc_break_oque[_spellid] = amount
-				end
+				ability_table1.cc_break_oque[_spellid] = (ability_table1.cc_break_oque[_spellid] or 0) - amount
 			end
 			
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) - amount
 			end
 			
-			subtrair_keys(ability, ability_table1)
+			subtract_keys(ability, ability_table1)
 		end
 
 		for spellid, amount in _pairs(table2.cc_break_oque) do 
-			if (not table1.cc_break_oque[spellid]) then 
-				table1.cc_break_oque[spellid] = 0
-			end
-			table1.cc_break_oque[spellid] = table1.cc_break_oque[spellid] - amount
+			table1.cc_break_oque[spellid] = (table1.cc_break_oque[spellid] or 0) - amount
 		end
 	end
 	

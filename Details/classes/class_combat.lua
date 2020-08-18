@@ -54,12 +54,16 @@
 	function combat:GetTimeData(name)
 		return self.TimeData[name]
 	end
+
+	function combat:GetContainer(attribute)
+		return self[attribute]
+	end
 	
 	function combat:IsTrash()
 		return _rawget(self, "is_trash")
 	end
 	
-	function combat:GetDifficult()
+	function combat:GetDifficulty()
 		return self.is_boss and self.is_boss.diff
 	end
 	
@@ -111,6 +115,7 @@
 	end
 
 	--return the total of a specific attribute
+	local power_table = {0, 1, 3, 6} -- 0 - MANA 1 - RAGE 2 - FOCUS 3 - ENERGY 6 - RUNIC_POWER
 	function combat:GetTotal(attribute, subAttribute, onlyGroup)
 		if (attribute == 1 or attribute == 2) then
 			if (onlyGroup) then
@@ -118,8 +123,16 @@
 			else
 				return self.totals[attribute]
 			end
-			
-		elseif (attribute == 3 or attribute == 4) then
+		elseif (attribute == 3) then
+			if (subAttribute == 5) then --> resources
+				return self.totals.resources or 0
+			end
+			if (onlyGroup) then
+				return self.totals_group[attribute][power_table[subAttribute]]
+			else
+				return self.totals[attribute][power_table[subAttribute]]
+			end
+		elseif (attribute == 4) then
 			local subName = _details:GetInternalSubAttributeName(attribute, subAttribute)
 			if (onlyGroup) then
 				return self.totals_group[attribute][subName]
@@ -127,6 +140,7 @@
 				return self.totals[attribute][subName]
 			end
 		end
+
 		return 0
 	end
 
@@ -217,10 +231,10 @@
 			0, --> damage
 			0, --> heal
 			{--> e_energy
-				mana = 0, --> mana
-				e_rage = 0, --> rage
-				e_energy = 0, --> energy(rogues cat)
-				runepower = 0 --> runepower(dk)
+				[0] = 0, --> mana
+				[1] = 0, --> rage
+				[3] = 0, --> energy (rogues cat)
+				[6] = 0 --> runepower (dk)
 			},
 			{--> misc
 				cc_break = 0, --> armazena quantas quebras de CC
@@ -243,10 +257,10 @@
 			0, --> damage
 			0, --> heal
 			{--> e_energy
-				mana = 0, --> mana
-				e_rage = 0, --> rage
-				e_energy = 0, --> energy(rogues cat)
-				runepower = 0 --> runepower(dk)
+				[0] = 0, --> mana
+				[1] = 0, --> rage
+				[3] = 0, --> energy (rogues cat)
+				[6] = 0 --> runepower (dk)
 			}, 
 			{--> misc
 				cc_break = 0, --> armazena quantas quebras de CC

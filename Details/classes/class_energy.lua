@@ -1,8 +1,3 @@
---[[ Esta class ir� abrigar todo a e_energy ganha de uma ability
-Parents:
-	addon -> combat atual -> e_energy-> container de players -> this class
-
-]]
 
 --lua locals
 local _cstr = string.format
@@ -40,11 +35,7 @@ local container_pets =		_details.container_pets
 local attribute_energy =		_details.attribute_energy
 local ability_energy = 	_details.ability_energy
 
---local container_damage_target = _details.container_type.CONTAINER_DAMAGETARGET_CLASS
-local container_playernpc = _details.container_type.CONTAINER_PLAYERNPC
 local container_energy = _details.container_type.CONTAINER_ENERGY_CLASS
-local container_energy_target = _details.container_type.CONTAINER_ENERGYTARGET_CLASS
---local container_friendlyfire = _details.container_type.CONTAINER_FRIENDLYFIRE
 
 --local mode_ALONE = _details.modes.alone
 local mode_GROUP = _details.modes.group
@@ -54,10 +45,6 @@ local class_type = _details.attributes.e_energy
 
 local DATA_TYPE_START = _details._details_props.DATA_TYPE_START
 local DATA_TYPE_END = _details._details_props.DATA_TYPE_END
-
-local div_open = _details.dividers.open
-local div_close = _details.dividers.close
-local div_place = _details.dividers.placing
 
 local ToKFunctions = _details.ToKFunctions
 local SelectedToKFunction = ToKFunctions[1]
@@ -69,7 +56,8 @@ local TooltipMaximizedMethod = 1
 
 local headerColor = "yellow"
 local key_overlay = {1, 1, 1, .1 }
-local key_overlay_press = {1, 1, 1, .2}
+local key_overlay_press = {1, 1, 1, .2 }
+local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 local info = _details.window_info
 local keyName
@@ -82,58 +70,34 @@ function attribute_energy:Newtable(serial, name, link)
 	local alphabetical = _details:GetOrderNumber(name)
 	
 	local _new_energyActor = {
-	
 		last_event = 0,
-		type = class_type, --> attribute 3 = e_energy
-		
-		mana = alphabetical,
-		e_rage = alphabetical,
-		e_energy = alphabetical,
-		runepower = alphabetical,
-		focus = alphabetical,
-		holypower = alphabetical,
+		type = class_type,
 
-		mana_r = alphabetical,
-		e_rage_r = alphabetical,
-		e_energy_r = alphabetical,
-		runepower_r = alphabetical,
-		focus_r = alphabetical,
-		holypower_r = alphabetical,
-		
-		mana_from = {},
-		e_rage_from = {},
-		e_energy_from = {},
-		runepower_from = {},
-		focus_from = {},
-		holypower_from = {},
-		
-		last_value = nil, --> ultimo valor que this player teve, sdst quando a bar dele � atualizada
+		total = alphabetical,
+		received = alphabetical,
+		resource = alphabetical,
+
+		last_value = nil,
 
 		pets = {},
-		
-		--container armazenar� os seriais dos targets que o player aplicou damage
-		targets = container_combatants:NewContainer(container_energy_target),
-		
-		--container armazenar� os IDs das abilities usadas por this player
-		spell_tables = container_abilities:NewContainer(container_energy),
+
+		targets = {},
+
+		spells = container_abilities:NewContainer(container_energy),
 	}
 	
 	_setmetatable(_new_energyActor, attribute_energy)
 	
-	if (link) then
-		_new_energyActor.targets.shadow = link.targets
-		_new_energyActor.spell_tables.shadow = link.spell_tables
-	end
-	
 	return _new_energyActor
 end
 
-function _details.SortGroupEnergy(container, keyName2)
+--> resources sort
+function _details.SortGroupResource(container, keyName2)
 	keyName = keyName2
-	return _table_sort(container, _details.SortKeyGroupEnergy)
+	return _table_sort(container, _details.SortKeyGroupResources)
 end
 
-function _details.SortKeyGroupEnergy(table1, table2)
+function _details.SortKeyGroupResources(table1, table2)
 	if (table1.group and table2.group) then
 		return table1[keyName] > table2[keyName]
 	elseif (table1.group and not table2.group) then
@@ -145,13 +109,13 @@ function _details.SortKeyGroupEnergy(table1, table2)
 	end
 end
 
-function _details.SortKeySimpleEnergy(table1, table2)
+function _details.SortKeySimpleResources(table1, table2)
 	return table1[keyName] > table2[keyName]
 end
 
-function _details:ContainerSortEnergy(container, amount, keyName2)
+function _details:ContainerSortResources(container, amount, keyName2)
 	keyName = keyName2
-	_table_sort(container,  _details.SortKeySimpleEnergy)
+	_table_sort(container,  _details.SortKeySimpleResources)
 	
 	if (amount) then 
 		for i = amount, 1, -1 do --> de tr�s pra frente
@@ -166,114 +130,291 @@ function _details:ContainerSortEnergy(container, amount, keyName2)
 	end
 end
 
+--> power types sort
+
+local power_table = {0, 1, 3, 6}
+local power_type
+
+local sort_energy = function(t1, t2)
+	if (t1.powertype == power_type and t2.powertype == power_type) then
+		return t1.received > t2.received
+	elseif (t1.powertype == power_type) then
+		return true
+	elseif (t2.powertype == power_type) then
+		return false
+	else
+		return t1.received > t2.received
+	end
+end
+
+local sort_energy_group = function(t1, t2)
+	if (t1.group and t2.group) then
+		if (t1.powertype == power_type and t2.powertype == power_type) then
+			return t1.received > t2.received
+		elseif (t1.powertype == power_type) then
+			return true
+		elseif (t2.powertype == power_type) then
+			return false
+		else
+			return t1.received > t2.received
+		end
+	else
+		if (t1.group) then
+			return true
+		elseif (t2.group) then
+			return false
+		else
+			return t1.received > t2.received
+		end
+	end
+end
+
+--> resource refresh
+
+local function RefreshBarResources(tab, bar, instance)
+	tab:UpdateResources(tab.my_bar, bar.placing, instance)
+end
+
+function attribute_energy:UpdateResources(bar_index, placing, instance)
+
+	local this_bar = instance.bars[bar_index]
+
+	if (not this_bar) then
+		print("DEBUG: problem with <instance.this_bar> " .. bar_index .. " " .. placing)
+		return
+	end
+
+	self._refresh_window = RefreshBarResources
+
+	this_bar.my_table = self
+	self.my_bar = bar_index
+	this_bar.placing = placing
+
+	local total = instance.showing.totals.resources
+
+	local combat_time = instance.showing:GetCombatTime()
+	local rps = _math_floor(self.resource / combat_time)
+
+	local formated_resource = SelectedToKFunction(_, self.resource)
+	--local formated_rps = SelectedToKFunction (_, rps)
+	local formated_rps = _cstr("%.2f", self.resource / combat_time)
+
+	local percentage
+
+	if (instance.row_info.percent_type == 1) then
+		percentage = _cstr("%.1f", self.resource / total * 100)
+	elseif (instance.row_info.percent_type == 2) then
+		percentage = _cstr("%.1f", self.resource / instance.top * 100)
+	end
+
+	if (UsingCustomRightText) then
+		this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_resource, formated_rps, percentage, self))
+	else
+		this_bar.text_right:SetText(formated_resource .. " (" .. formated_rps .. ", " .. percentage .. "%)")
+	end
+
+	this_bar.text_left:SetText(placing .. ". " .. self.name)
+	this_bar.text_left:SetSize(this_bar:GetWidth() - this_bar.text_right:GetStringWidth() - 20, 15)
+
+	this_bar.statusbar:SetValue(100)
+
+	if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
+		gump:Fade(this_bar, "out")
+	end
+
+	actor_class_color_r, actor_class_color_g, actor_class_color_b = self:GetBarColor()
+	this_bar.texture:SetVertexColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
+
+	if (self.class == "UNKNOW") then
+		this_bar.icon_class:SetTexture([[Interface\AddOns\Details\images\classes_plus]])
+		this_bar.icon_class:SetTexCoord(0.50390625, 0.62890625, 0, 0.125)
+		this_bar.icon_class:SetVertexColor(1, 1, 1)
+
+	elseif (self.class == "UNGROUPPLAYER") then
+		if (self.enemy) then
+			if (_details.faction_against == "Horde") then
+				this_bar.icon_class:SetTexture([[Interface\AddOns\Details\images\Achievement_Character_Orc_Male]])
+				this_bar.icon_class:SetTexCoord(0, 1, 0, 1)
+			else
+				this_bar.icon_class:SetTexture([[Interface\AddOns\Details\images\Achievement_Character_Human_Male]])
+				this_bar.icon_class:SetTexCoord(0, 1, 0, 1)
+			end
+		else
+			if (_details.faction_against == "Horde") then
+				this_bar.icon_class:SetTexture([[Interface\AddOns\Details\images\Achievement_Character_Human_Male]])
+				this_bar.icon_class:SetTexCoord(0, 1, 0, 1)
+			else
+				this_bar.icon_class:SetTexture([[Interface\AddOns\Details\images\Achievement_Character_Orc_Male]])
+				this_bar.icon_class:SetTexCoord(0, 1, 0, 1)
+			end
+		end
+		this_bar.icon_class:SetVertexColor(1, 1, 1)
+
+	elseif (self.class == "PET") then
+		this_bar.icon_class:SetTexture(instance.row_info.icon_file)
+		this_bar.icon_class:SetTexCoord(0.25, 0.49609375, 0.75, 1)
+		this_bar.icon_class:SetVertexColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
+
+	else
+		this_bar.icon_class:SetTexture(instance.row_info.icon_file)
+		this_bar.icon_class:SetTexCoord(_unpack(CLASS_ICON_TCOORDS[self.class])) --very slow method
+		this_bar.icon_class:SetVertexColor(1, 1, 1)
+	end
+
+	if (instance.row_info.textL_class_colors) then
+		this_bar.text_left:SetTextColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
+	end
+	if (instance.row_info.textR_class_colors) then
+		this_bar.text_right:SetTextColor(actor_class_color_r, actor_class_color_g, actor_class_color_b)
+	end
+end
+
+--> refresh function
+
+
 function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 
-	local showing = combat_table[class_type] --> o que this sendo mostrado ->[1] - damage[2] - heal --> pega o container com ._NameIndexTable ._ActorTable
+	local showing = combat_table[class_type]
 
-	if (#showing._ActorTable < 1) then --> n�o h� bars para mostrar
+	if (#showing._ActorTable < 1) then
 		return _details:HideBarsNotUsed(instance, showing) 
 	end
 	
-	local total = 0 --> total iniciado como ZERO
+	local total = 0
 	instance.top = 0
 	
-	local sub_attribute = instance.sub_attribute --> o que this sendo mostrado nthis inst�ncia
+	local sub_attribute = instance.sub_attribute
 	local content = showing._ActorTable
 	local amount = #content
 	local mode = instance.mode
-	
+
+	if (sub_attribute == 5) then
+		--> showing resources
+		keyName = "resource"
+
+		if (mode == mode_ALL) then
+			amount = _details:ContainerSortResources(content, amount, "resource")
+			instance.top = content[1].resource
+
+			for index, player in _ipairs(content) do
+				if (player.resource >= 1) then
+					total = total + player.resource
+				else
+					break
+				end
+			end
+
+		elseif (mode == mode_GROUP) then
+			_table_sort(content, _details.SortKeyGroupResources)
+
+			for index, player in _ipairs(content) do
+				if (player.group) then --> if is player and is in a group
+					if (player.resource < 1) then
+						amount = index - 1
+						break
+					end
+
+					total = total + player.resource
+				else
+					amount = index - 1
+					break
+				end
+			end
+
+			instance.top = content[1].resource
+		end
+
+		showing:remapear()
+
+		if (export) then
+			return total, keyName, instance.top, amount
+		end
+
+		if (total < 1) then
+			instance:HideScrollBar()
+			return _details:EndRefresh(instance, total, combat_table, showing)
+		end
+
+		combat_table.totals.resources = total
+
+		instance:ActualizeScrollBar(amount)
+
+		local bar_index = 1
+		local bars_container = instance.bars
+
+		for i = instance.barS[1], instance.barS[2], 1 do
+			content[i]:UpdateResources(bar_index, i, instance)
+			bar_index = bar_index+1
+		end
+
+		--> beta, hide bars not used during a forced refresh
+		if (force) then
+			if (instance.mode == 2) then --> group
+				for i = bar_index, instance.rows_fit_in_window do
+					gump:Fade(instance.bars[i], "in", 0.3)
+				end
+			end
+		end
+
+		return _details:EndRefresh(instance, total, combat_table, showing)
+
+	end
+
+	power_type = power_table[sub_attribute]
+
+	keyName = "received"
+
 	if (export) then
 		if (_type(export) == "boolean") then 		
-			if (sub_attribute == 1) then --> MANA RECUPERADA
-				keyName = "mana"
-			elseif (sub_attribute == 2) then --> e_rage GANHA
-				keyName = "e_rage"
-			elseif (sub_attribute == 3) then --> ENERGIA GANHA
-				keyName = "e_energy"
-			elseif (sub_attribute == 4) then --> RUNEPOWER GANHO
-				keyName = "runepower"
-			end
+			keyName = "received"
 		else
 			keyName = export.key
 			mode = export.mode		
 		end
-		
-	elseif (instance.attribute == 5) then --> custom
-		keyName = "custom"
-		total = combat_table.totals[instance.customName]
-		
 	else
-		if (sub_attribute == 1) then --> MANA RECUPERADA
-			keyName = "mana"
-		elseif (sub_attribute == 2) then --> e_rage GANHA
-			keyName = "e_rage"
-		elseif (sub_attribute == 3) then --> ENERGIA GANHA
-			keyName = "e_energy"
-		elseif (sub_attribute == 4) then --> RUNEPOWER GANHO
-			keyName = "runepower"
-		else
-			--> not sure why this is happening
-			return
-		end
+		keyName = "received"
 	end
 	
-	if (instance.attribute == 5) then --> custom
-		--> faz o sort da categoria e retorna o amount corrigido
-		amount = _details:ContainerSortEnergy(content, amount, keyName)
+	if (mode == mode_ALL) then --> showing ALL
+
+		_table_sort(content, sort_energy)
 		
-		--> grava o total
-		instance.top = content[1][keyName]
-	
-	elseif (mode == mode_ALL) then --> showing ALL
-	
-		--> faz o sort da categoria
-		_table_sort(content, function(a, b) return a[keyName] > b[keyName] end)
-		
-		--> n�o mostrar resultados com zero
-		for i = amount, 1, -1 do --> de tr�s pra frente
-			if (content[i][keyName] < 1) then
-				amount = amount-1
+		--> do not show results with zero
+		for i = amount, 1, -1 do
+			if (content[i].received < 1) then
+				amount = amount - 1
+			elseif (content[i].powertype ~= power_type) then -- TODO: change to or
+				amount = amount - 1
 			else
 				break
 			end
 		end
 		
-		total = combat_table.totals[class_type][keyName] --> pega o total de damage j� aplicado
+		total = combat_table.totals[class_type][power_type] --> pega o total de damage j� aplicado
 		
-		instance.top = content[1][keyName]
+		instance.top = content[1].received
 		
 	elseif (mode == mode_GROUP) then --> showing GROUP
 		
-		--print("energy", keyName)
-		
-		_table_sort(content, function(a, b)
-				if (a.group and b.group) then
-					return a[keyName] > b[keyName]
-				elseif (a.group and not b.group) then
-					return true
-				elseif (not a.group and b.group) then
-					return false
-				else
-					return a[keyName] > b[keyName]
-				end
-			end)
+		_table_sort(content, sort_energy_group)
 		
 		for index, player in _ipairs(content) do
-			if (player.group) then --> � um player e this em group
-				if (player[keyName] < 1) then --> damage menor que 1, interromper o loop
+			if (player.group) then
+				if (player.received < 1) then
 					amount = index - 1
 					break
-				elseif (index == 1) then --> esse IF aqui, precisa mesmo ser aqui? n�o daria pra pega-lo com uma chave[1] nad group == true?
-					instance.top = content[1][keyName]
+				elseif (player.powertype ~= power_type) then
+					amount = index - 1
+					break
 				end
 				
-				total = total + player[keyName]
+				total = total + player.received
 			else
 				amount = index-1
 				break
 			end
 		end
-		
+		instance.top = content[1].received
 	end
 
 	showing:remapear()
@@ -446,19 +587,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 	if (use_animations) then
 		instance:do_animations()
 	end
-	
-	if (instance.attribute == 5) then --> custom
-		--> zerar o .custom dos Actors
-		for index, player in _ipairs(content) do
-			if (player.custom > 0) then 
-				player.custom = 0
-			else
-				break
-			end
-		end
-	end
-	
-	--> beta, hidar bars n�o usadas durante um refresh for�ado
+
 	if (force) then
 		if (instance.mode == 2) then --> group
 			for i = which_bar, instance.rows_fit_in_window  do
@@ -470,22 +599,6 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 	return _details:EndRefresh(instance, total, combat_table, showing) --> retorna a table que precisa ganhar o refresh
 
 end
-
-function attribute_energy:Custom(_customName, _combat, sub_attribute, spell, dst)
-	local _Skill = self.spell_tables._ActorTable[tonumber(spell)]
-	if (_Skill) then
-		local spellName = _GetSpellInfo(tonumber(spell))
-		local SkillTargets = _Skill.targets._ActorTable
-		
-		for _, TargetActor in _ipairs(SkillTargets) do 
-			local TargetActorSelf = _combat(class_type, TargetActor.name)
-			TargetActorSelf.custom = TargetActor.total + TargetActorSelf.custom
-			_combat.totals[_customName] = _combat.totals[_customName] + TargetActor.total
-		end
-	end
-end
-
-local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 function attribute_energy:UpdateBar(instance, bars_container, which_bar, place, total, sub_attribute, force, keyName, combat_time, percentage_type, use_animations)
 
@@ -716,110 +829,84 @@ end
 
 --------------------------------------------- // TOOLTIPS // ---------------------------------------------
 function attribute_energy:KeyNames(sub_attribute)
-	if (sub_attribute == 1) then --> MANA RECUPERADA
-		return "mana", "mana_from"
-	elseif (sub_attribute == 2) then --> e_rage GANHA
-		return "e_rage", "e_rage_from"
-	elseif (sub_attribute == 3) then --> ENERGIA GANHA
-		return "e_energy", "e_energy_from"
-	elseif (sub_attribute == 4) then --> RUNEPOWER GANHO
-		return "runepower", "runepower_from"
-	end
+	return "total"
 end
-
-function attribute_energy:Sources_and_Spells(received_from, showing, keyName, ability_dst)
-
-	local abilities = {}
-	local sources = {}
-	local spells_dst = {}
-	local max = 0
-	
-	for name, _ in _pairs(received_from) do
-		local this_source = showing._ActorTable[showing._NameIndexTable[name]]
-		if (this_source) then
-		
-			local targets = this_source.targets
-			local _abilities = this_source.spell_tables
-			
-			local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
-			if (this_dst) then
-				sources[#sources+1] = {name, this_dst[keyName], this_source.class} --> mostra QUEM deu regen, a QUANTIDADE e a CLASSE
-				--print(name, this_dst[keyName], this_source.class)
-			end
-			
-			for spellid, ability in _pairs(_abilities._ActorTable) do 
-				local targets = ability.targets
-				local this_dst = targets._ActorTable[targets._NameIndexTable[self.name]]
-				if (this_dst) then
-					if (not abilities[spellid]) then
-						abilities[spellid] = 0 --> mostra A SPELL e a amount que ela deu regen
-					end
-					abilities[spellid] = abilities[spellid] + this_dst[keyName]
-					if (abilities[spellid] > max) then
-						max = abilities[spellid]
-					end
-					if (ability_dst and ability_dst == spellid) then
-						spells_dst[#spells_dst + 1] = {name, this_dst[keyName], this_source.class}
-					elseif (ability_dst == true) then
-						--print(name, name, this_dst[keyName], spellid)
-						spells_dst[#spells_dst + 1] = {name, this_dst[keyName], spellid}
-					end
-				end
-			end
-		end
-	end
-
-	local sorted_table = {}
-	for spellid, amt in _pairs(abilities) do 
-		local name, _, icon = _GetSpellInfo(spellid)
-		sorted_table[#sorted_table+1] = {spellid, amt, amt/max*100, name, icon}
-	end
-	_table_sort(sorted_table, function(a, b) return a[2] > b[2] end)
-	
-	_table_sort(sources, function(a, b) return a[2] > b[2] end)
-	
-	if (ability_dst) then
-		_table_sort(spells_dst, function(a, b) return a[2] > b[2] end)
-	end
-	
-	return sources, sorted_table, spells_dst
-end
-
 
 ---------> TOOLTIPS BIFURCA��O
 function attribute_energy:ToolTip(instance, number, bar, keydown)
-	--> seria possivel aqui colocar o icon da class dele?
-	--GameCooltip:AddLine(bar.placing..". "..self.name)
 	if (instance.sub_attribute <= 4) then
 		return self:ToolTipRegenReceived(instance, number, bar, keydown)
 	end
 end
+
 --> tooltip locals
 local r, g, b
 local barAlpha = .6
 
+local energy_tooltips_table = {}
+local energy_tooltips_hash = {}
+
+local reset_tooltips_table = function()
+	for i = 1, #energy_tooltips_table do
+		local t = energy_tooltips_table[i]
+		t[1], t[2], t[3] = "", 0, ""
+	end
+
+	for k, v in _pairs(energy_tooltips_hash) do
+		energy_tooltips_hash[k] = nil
+	end
+end
+
 function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
-	
+
+	reset_tooltips_table()
+
 	local owner = self.owner
 	if (owner and owner.class) then
 		r, g, b = unpack(_details.class_colors[owner.class])
 	else
 		r, g, b = unpack(_details.class_colors[self.class])
-	end	
-	
-	local combat_table = instance.showing
-	local showing = combat_table[class_type] 
-	
-	local keyName, keyName_from = attribute_energy:KeyNames(instance.sub_attribute)
-	
-	local total_regenerated = self[keyName]
-	local received_from = self[keyName_from]
-	
-	local sources, abilities = self:Sources_and_Spells(received_from, showing, keyName)
+	end
 
------------------------------------------------------------------	
+	local powertype = self.powertype
+	local combat_table = instance.showing
+	local container = combat_table[class_type]
+	local total_regenerated = self.received
+	local name = self.name
+
+	--> spells
+	local i = 1
+
+	for index, actor in _ipairs(container._ActorTable) do
+		if (actor.powertype == powertype) then
+
+			for spellid, spell in _pairs(actor.spells._ActorTable) do
+				local on_self = spell.targets[name]
+				if (on_self) then
+					local already_tracked = energy_tooltips_hash[spellid]
+					if (already_tracked) then
+						local t = energy_tooltips_table[already_tracked]
+						t[2] = t[2] + on_self
+					else
+						local t = energy_tooltips_table[i]
+						if (not t) then
+							energy_tooltips_table[i] = {}
+							t = energy_tooltips_table[i]
+						end
+						t[1], t[2], t[3] = spellid, on_self, ""
+						energy_tooltips_hash[spellid] = i
+						i = i + 1
+					end
+				end
+			end
+
+		end
+	end
+
+	i = i - 1
+	_table_sort(energy_tooltips_table, _details.Sort2)
 	
-	_details:AddTooltipSpellHeaderText(Loc["STRING_SPELLS"], headerColor, r, g, b, #abilities)
+	_details:AddTooltipSpellHeaderText(Loc["STRING_SPELLS"], headerColor, r, g, b, i)
 	GameCooltip:AddIcon([[Interface\AddOns\Details\images\ReportLagIcon-Spells]], 1, 1, 14, 14, 0.21875, 0.78125, 0.21875, 0.78125)
 	
 	local ismaximized = false
@@ -832,7 +919,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 		GameCooltip:AddStatusBar(100, 1, r, g, b, barAlpha)
 	end
 	
-	local max = #abilities
+	local max = i
 	if (max > 3) then
 		max = 3
 	end
@@ -841,16 +928,41 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 		max = 99
 	end
 
-	for i = 1, math.min(#abilities, max) do
-		local name_spell, _, icon_spell = _GetSpellInfo(abilities[i][1])
-		GameCooltip:AddLine(name_spell..": ", FormatTooltipNumber(_,  abilities[i][2]).."(".._cstr("%.1f",(abilities[i][2]/total_regenerated) * 100).."%)")
+	for j = 1, math.min(i, max) do
+		local spell = energy_tooltips_table[j]
+		if (spell[2] < 1) then
+			break
+		end
+		local name_spell, _, icon_spell = _GetSpellInfo(spell[1])
+		GameCooltip:AddLine(name_spell..": ", FormatTooltipNumber(_,  spell[2]) .. "(" .. _cstr("%.1f",(spell[2] / total_regenerated) * 100) .. "%)")
 		GameCooltip:AddIcon(icon_spell)
 		_details:AddTooltipBackgroundStatusbar()
 	end
 	
------------------------------------------------------------------
+	--> players
 
-	_details:AddTooltipSpellHeaderText(Loc["STRING_PLAYERS"], headerColor, r, g, b, #sources)
+	reset_tooltips_table()
+	i = 1
+
+	for index, actor in _ipairs(container._ActorTable) do
+		if (actor.powertype == powertype) then
+			local on_self = actor.targets[name]
+			if (on_self) then
+				local t = energy_tooltips_table[i]
+				if (not t) then
+					energy_tooltips_table[i] = {}
+					t = energy_tooltips_table[i]
+				end
+				t[1], t[2], t[3] = actor.name, on_self, actor.class
+				i = i + 1
+			end
+		end
+	end
+
+	i = i - 1
+	_table_sort(energy_tooltips_table, _details.Sort2)
+
+	_details:AddTooltipSpellHeaderText(Loc["STRING_PLAYERS"], headerColor, r, g, b, i)
 	GameCooltip:AddIcon([[Interface\AddOns\Details\images\HelpIcon-HotIssues]], 1, 1, 14, 14, 0.21875, 0.78125, 0.21875, 0.78125)
 	
 	local ismaximized = false
@@ -863,7 +975,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 		GameCooltip:AddStatusBar(100, 1, r, g, b, barAlpha)
 	end
 	
-	max = #sources
+	max = i
 	if (max > 3) then
 		max = 3
 	end
@@ -872,11 +984,17 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 		max = 99
 	end
 	
-	for i = 1, math.min(#sources, max) do
-		GameCooltip:AddLine(sources[i][1]..": ", FormatTooltipNumber(_,  sources[i][2]).."(".._cstr("%.1f",(sources[i][2]/total_regenerated) * 100).."%)")
+	for j = 1, math.min(i, max) do
+		local source = energy_tooltips_table[j]
+
+		if (source[2] < 1) then
+			break
+		end
+
+		GameCooltip:AddLine(source[1] .. ": ", FormatTooltipNumber(_,  source[2]) .. "(" .. _cstr("%.1f",(source[2] / total_regenerated) * 100) .. "%)")
 		_details:AddTooltipBackgroundStatusbar()
 		
-		local class = sources[i][3]
+		local class = source[3]
 		if (not class) then
 			class = "UNKNOW"
 		end
@@ -895,7 +1013,7 @@ end
 
 ---------> DETALHES BIFURCA��O
 function attribute_energy:SetInfo()
-	if (info.sub_attribute <= 4) then --> damage done & dps
+	if (info.sub_attribute <= 4) then
 		return self:SetInfoRegenReceived()
 	end
 end
@@ -909,48 +1027,79 @@ end
 
 function attribute_energy:SetInfoRegenReceived()
 
+	reset_tooltips_table()
+
 	local bars = info.bars1
 	local bars2 = info.bars2
 	local bars3 = info.bars3
 	
 	local instance = info.instance
-
-	local keyName, keyName_from = attribute_energy:KeyNames(instance.sub_attribute)
 	
 	local combat_table = instance.showing
-	local showing = combat_table[class_type] 
+	local container = combat_table[class_type]
 	
-	local total_regenerated = self[keyName]
-	local received_from = self[keyName_from]
-	
-	if (not received_from) then
-		return
+	local total_regenerated = self.received
+	local my_name = self.name
+	local powertype = self.powertype
+
+	--> spells:
+	local i = 1
+
+	for index, actor in _ipairs(container._ActorTable) do
+		if (actor.powertype == powertype) then
+			for spellid, spell in _pairs(actor.spells._ActorTable) do
+				local on_self = spell.targets[my_name]
+				if (on_self) then
+					local already_tracked = energy_tooltips_hash[spellid]
+					if (already_tracked) then
+						local t = energy_tooltips_table[already_tracked]
+						t[2] = t[2] + on_self
+					else
+						local t = energy_tooltips_table[i]
+						if (not t) then
+							energy_tooltips_table[i] = {}
+							t = energy_tooltips_table[i]
+						end
+						t[1], t[2], t[3] = spellid, on_self, ""
+						energy_tooltips_hash[spellid] = i
+						i = i + 1
+					end
+				end
+			end
+		end
 	end
+
+	i = i - 1
+	_table_sort(energy_tooltips_table, _details.Sort2)
+
+	local amt = i
 	
-	local sources, abilities = self:Sources_and_Spells(received_from, showing, keyName)
-	
-	local amt = #abilities
-	
-	if (amt < 1) then --> caso houve apenas friendly fire
+	if (amt < 1) then
 		return true
 	end
 	
 	gump:JI_UpdateContainerBars(amt)
-	local max_ = abilities[1][2]
+	local max_ = energy_tooltips_table[1][2]
 	
-	for index, table in _ipairs(abilities) do
-		
+	for index, table in _ipairs(energy_tooltips_table) do
+		if (table[2] < 1) then
+			break
+		end
+
 		local bar = bars[index]
 
 		if (not bar) then
 			bar = gump:CreateNewBarInfo1(instance, index)
 			bar.texture:SetStatusBarColor(1, 1, 1, 1)
-			
 			bar.on_focus = false
 		end
 
 		self:FocusLock(bar, table[1])
-		self:UpdadeInfoBar(bar, index, table[1], table[4], table[2], _details:comma_value(table[2]), max_, table[3], table[5], true)
+
+		local spellname, _, spellicon = _GetSpellInfo(table[1])
+		local percent = table[2] / total_regenerated * 100
+
+		self:UpdadeInfoBar(bar, index, table[1], spellname, table[2], _details:comma_value(table[2]), max_, percent, spellicon, true)
 
 		bar.my_table = self
 		bar.show = table[1]
@@ -962,15 +1111,41 @@ function attribute_energy:SetInfoRegenReceived()
 		
 	end
 	
+	--> players:
+	reset_tooltips_table()
+	i = 1
 
-	local amt_sources = #sources
+
+	for index, actor in _ipairs (container._ActorTable) do
+		if (actor.powertype == powertype) then
+			local on_self = actor.targets[my_name]
+			if (on_self) then
+				local t = energy_tooltips_table[i]
+				if (not t) then
+					energy_tooltips_table[i] = {}
+					t = energy_tooltips_table[i]
+				end
+				t[1], t[2], t[3] = actor.name, on_self, actor.class
+				i = i + 1
+			end
+		end
+	end
+
+	i = i - 1
+	_table_sort(energy_tooltips_table, _details.Sort2)
+
+	local amt_sources = i
 	gump:JI_UpdateContainerTargets(amt_sources)
 	
-	local max_sources = sources[1][2]
+	local max_sources = energy_tooltips_table[1][2]
 	
 	local bar
-	for index, table in _ipairs(sources) do
-	
+	for index, table in _ipairs(energy_tooltips_table) do
+
+		if (table[2] < 1) then
+			break
+		end
+
 		bar = info.bars2[index]
 		
 		if (not bar) then
@@ -984,8 +1159,8 @@ function attribute_energy:SetInfoRegenReceived()
 			bar.texture:SetValue(table[2]/max_sources*100)
 		end
 		
-		bar.text_left:SetText(index..instance.dividers.placing..table[1]) --seta o text da esqueda
-		bar.text_right:SetText(_details:comma_value(table[2]) .." ".. instance.dividers.open .._cstr("%.1f", table[2]/total_regenerated * 100) .. instance.dividers.close) --seta o text da right
+		bar.text_left:SetText(index..instance.dividers.placing..table[1])
+		bar.text_right:SetText(_details:comma_value(table[2]) .. _cstr("%.1f", table[2] / total_regenerated * 100))
 		
 		if (bar.mouse_over) then --> atualizar o tooltip
 			if (bar.isTarget) then
@@ -998,8 +1173,8 @@ function attribute_energy:SetInfoRegenReceived()
 			end
 		end	
 
-		bar.my_table = self --> grava o player na table
-		bar.name_enemy = table[1] --> salva o name do enemy na bar --> isso � necess�rio?
+		bar.my_table = self
+		bar.name_enemy = table[1]
 
 		bar:Show()
 	end	
@@ -1010,42 +1185,75 @@ function attribute_energy:SetDetailsRegenReceived(name, bar)
 	for _, bar in _ipairs(info.bars3) do 
 		bar:Hide()
 	end
+
+	reset_tooltips_table()
 	
 	local bars = info.bars3
 	local instance = info.instance
 
 	local combat_table = info.instance.showing
-	local showing = combat_table[class_type]
+	local container = combat_table[class_type]
+
+	local total_regenerated = self.received
 	
-	local keyName, keyName_from = attribute_energy:KeyNames(instance.sub_attribute)
-	local received_from = self[keyName_from]
-	local total_regenerated = self[keyName]
-	
-	local _, _, from = self:Sources_and_Spells(received_from, showing, keyName, name)
-	
-	if (not from[1] or not from[1][2]) then
+	local spellid = name
+	local who_name = self.name
+	local powertype = self.powertype
+
+	--> who is regenerating with the spell -> name
+
+	--> spells:
+	local i = 1
+
+	for index, actor in _ipairs(container._ActorTable) do
+		if (actor.powertype == powertype) then
+			local spell = actor.spells._ActorTable[spellid]
+			if (spell) then
+				local on_self = spell.targets[who_name]
+				if (on_self) then
+					local t = energy_tooltips_table[i]
+					if (not t) then
+						energy_tooltips_table[i] = {}
+						t = energy_tooltips_table[i]
+					end
+					t[1], t[2], t[3] = actor.name, on_self, actor.class
+					i = i + 1
+				end
+			end
+		end
+	end
+
+	i = i - 1
+
+	if (i < 1) then
 		return
 	end
-	
-	local max_ = from[1][2]
+
+	_table_sort(energy_tooltips_table, _details.Sort2)
+
+	local max_ = energy_tooltips_table[1][2]
 	
 	local bar
-	for index, table in _ipairs(from) do
+	for index, table in _ipairs(energy_tooltips_table) do
+		if (table[2] < 1) then
+			break
+		end
+
 		bar = bars[index]
 
 		if (not bar) then --> se a bar n�o existir, create ela ent�o
 			bar = gump:CreateNewBarInfo3(instance, index)
-			bar.texture:SetStatusBarColor(1, 1, 1, 1) --> isso aqui � a parte da sele��o e descele��o
+			bar.texture:SetStatusBarColor(1, 1, 1, 1)
 		end
 		
 		if (index == 1) then
 			bar.texture:SetValue(100)
 		else
-			bar.texture:SetValue(table[2]/max_*100) --> muito mais rapido...
+			bar.texture:SetValue(table[2] / max_ * 100)
 		end
 
-		bar.text_left:SetText(index..instance.dividers.placing..table[1]) --seta o text da esqueda
-		bar.text_right:SetText(_details:comma_value(table[2]) .." ".. instance.dividers.open .._cstr("%.1f", table[2] /total_regenerated *100) .."%".. instance.dividers.close) --seta o text da right
+		bar.text_left:SetText(index .. "." .. table[1])
+		bar.text_right:SetText(_details:comma_value(table[2]) .. " (" .. _cstr("%.1f", table[2] / total_regenerated * 100) .. "%)")
 		
 		bar.texture:SetStatusBarColor(_unpack(_details.class_colors[table[3]]))
 		bar.icon:SetTexture("Interface\\AddOns\\Details\\images\\classes_small")
@@ -1063,25 +1271,46 @@ end
 function attribute_energy:SetTooltipTargets(this_bar, index)
 	local instance = info.instance
 	local combat_table = instance.showing
-	local showing = combat_table[class_type] 
+	local container = combat_table[class_type]
 	
-	local keyName, keyName_from = attribute_energy:KeyNames(instance.sub_attribute)
-	
-	local total_regenerated = self[keyName]
-	local received_from = self[keyName_from]
-	
-	local _, _, spells_dst = self:Sources_and_Spells(received_from, showing, keyName, true)
+	local total_regenerated = self.received
+	local my_name = self.name
 
------------------------------------------------------------------	
-	GameTooltip:AddLine(Loc["STRING_SPELLS"]..":")
-	for _, table in _ipairs(spells_dst) do
-		if (table[1] == this_bar.name_enemy) then
-			local name_spell, _, icon_spell = _GetSpellInfo(table[3])
-			GameTooltip:AddDoubleLine(name_spell..": ", _details:comma_value(table[2]).."(".._cstr("%.1f",(table[2]/total_regenerated) * 100).."%)", 1, 1, 1, 1, 1, 1)
-			GameTooltip:AddTexture(icon_spell)
+	reset_tooltips_table()
+	
+	-- actor name
+	local actor = container._ActorTable[container._NameIndexTable[this_bar.name_enemy]]
+
+	if (actor) then
+		--> spells:
+		local i = 1
+
+		for spellid, spell in _pairs(actor.spells._ActorTable) do
+			local on_self = spell.targets[my_name]
+			if (on_self) then
+				local t = energy_tooltips_table[i]
+				if (not t) then
+					energy_tooltips_table[i] = {}
+					t = energy_tooltips_table[i]
+				end
+				t[1], t[2], t[3] = spellid, on_self, ""
+				i = i + 1
+			end
+		end
+
+		i = i - 1
+		_table_sort(energy_tooltips_table, _details.Sort2)
+
+		for index, spell in _ipairs(energy_tooltips_table) do
+			if (spell[2] < 1) then
+				break
+			end
+
+			local spellname, _, spellicon = _GetSpellInfo(spell[1])
+			GameTooltip:AddDoubleLine(spellname .. ": ", _details:comma_value(spell[2]) .. " (" .. _cstr("%.1f", (spell[2] / total_regenerated) * 100) .. "%)", 1, 1, 1, 1, 1, 1)
+			GameTooltip:AddTexture(spellicon)
 		end
 	end
-
 	return true
 end
 
@@ -1104,29 +1333,23 @@ end
 
 	--> subtract total from a combat table
 		function attribute_energy:subtract_total(combat_table)
-			combat_table.totals[class_type].mana = combat_table.totals[class_type].mana - self.mana
-			combat_table.totals[class_type].e_rage = combat_table.totals[class_type].e_rage - self.e_rage
-			combat_table.totals[class_type].e_energy = combat_table.totals[class_type].e_energy - self.e_energy
-			combat_table.totals[class_type].runepower = combat_table.totals[class_type].runepower - self.runepower
-
-			if (self.group) then
-				combat_table.totals_group[class_type].mana = combat_table.totals_group[class_type].mana - self.mana
-				combat_table.totals_group[class_type].e_rage = combat_table.totals_group[class_type].e_rage - self.e_rage
-				combat_table.totals_group[class_type].e_energy = combat_table.totals_group[class_type].e_energy - self.e_energy
-				combat_table.totals_group[class_type].runepower = combat_table.totals_group[class_type].runepower - self.runepower
+			--print ("reduce total:", combat_table.totals [class_type] [self.powertype], self.total, self.powertype, self.nome)
+			if (self.powertype and combat_table.totals[class_type][self.powertype]) then
+				combat_table.totals[class_type][self.powertype] = combat_table.totals[class_type][self.powertype] - self.total
+				if (self.group) then
+					combat_table.totals_group[class_type][self.powertype] = combat_table.totals_group[class_type][self.powertype] - self.total
+				end
 			end
 		end
-		function attribute_energy:add_total(combat_table)
-			combat_table.totals[class_type].mana = combat_table.totals[class_type].mana + self.mana
-			combat_table.totals[class_type].e_rage = combat_table.totals[class_type].e_rage + self.e_rage
-			combat_table.totals[class_type].e_energy = combat_table.totals[class_type].e_energy + self.e_energy
-			combat_table.totals[class_type].runepower = combat_table.totals[class_type].runepower + self.runepower
 
-			if (self.group) then
-				combat_table.totals_group[class_type].mana = combat_table.totals_group[class_type].mana + self.mana
-				combat_table.totals_group[class_type].e_rage = combat_table.totals_group[class_type].e_rage + self.e_rage
-				combat_table.totals_group[class_type].e_energy = combat_table.totals_group[class_type].e_energy + self.e_energy
-				combat_table.totals_group[class_type].runepower = combat_table.totals_group[class_type].runepower + self.runepower
+		function attribute_energy:add_total(combat_table)
+			--print ("add total:", combat_table.totals [class_type] [self.powertype], self.total)
+			if (self.powertype and combat_table.totals[class_type][self.powertype]) then
+				combat_table.totals[class_type][self.powertype] = combat_table.totals[class_type][self.powertype] + self.total
+
+				if (self.group) then
+					combat_table.totals_group[class_type][self.powertype] = combat_table.totals_group[class_type][self.powertype] + self.total
+				end
 			end
 		end
 		
@@ -1146,29 +1369,20 @@ end
 			
 			--> restore a meta e indexes ao ator
 				_details.refresh:r_attribute_energy(actor, shadow)
+				shadow.powertype = actor.powertype
 			
-			--> copia o container de targets(captura de dados)
-				for index, dst in _ipairs(actor.targets._ActorTable) do
-					--> cria e soma o valor do total
-					local dst_shadow = shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-					--> refresh no dst
-					_details.refresh:r_dst_of_ability(dst, shadow.targets)
+			--> targets
+				for target_name, amount in _pairs(actor.targets) do
+					shadow.targets[target_name] = 0
 				end
 			
-			--> copia o container de abilities(captura de dados)
-				for spellid, ability in _pairs(actor.spell_tables._ActorTable) do
-					--> cria e soma o valor
-					local ability_shadow = shadow.spell_tables:CatchSpell(spellid, true, nil, true)
-					--> refresh e soma os valores dos targets
-					for index, dst in _ipairs(ability.targets._ActorTable) do 
-						--> cria e soma o valor do total
-						local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-						--> refresh no dst da ability
-						_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
+			--> spells
+				for spellid, ability in _pairs(actor.spells._ActorTable) do
+					local ability_shadow = shadow.spells:CatchSpell(spellid, true, "SPELL_ENERGY", false)
+					--> spell targets
+					for target_name, amount in _pairs(ability.targets) do
+						ability_shadow.targets[target_name] = 0
 					end
-
-					--> refresh na meta e indexes
-					_details.refresh:r_ability_e_energy(ability, shadow.spell_tables)
 				end
 
 			return shadow
@@ -1192,72 +1406,38 @@ end
 				end
 			
 			--> total das energias(captura de dados)
-				shadow.mana = shadow.mana + actor.mana
-				shadow.e_rage = shadow.e_rage + actor.e_rage
-				shadow.e_energy = shadow.e_energy + actor.e_energy
-				shadow.runepower = shadow.runepower + actor.runepower
-				shadow.focus = shadow.focus + actor.focus
-				shadow.holypower = shadow.holypower + actor.holypower
-				
-				shadow.mana_r = shadow.mana_r + actor.mana_r
-				shadow.e_rage_r = shadow.e_rage_r + actor.e_rage_r
-				shadow.e_energy_r = shadow.e_energy_r + actor.e_energy_r
-				shadow.runepower_r = shadow.runepower_r + actor.runepower_r
-				shadow.focus_r = shadow.focus_r + actor.focus_r
-				shadow.holypower_r = shadow.holypower_r + actor.holypower_r
-				
-			--> total no combat overall(captura de dados)
-				_details.table_overall.totals[3].mana = _details.table_overall.totals[3].mana + actor.mana
-				_details.table_overall.totals[3].e_rage = _details.table_overall.totals[3].e_rage + actor.e_rage
-				_details.table_overall.totals[3].e_energy = _details.table_overall.totals[3].e_energy + actor.e_energy
-				_details.table_overall.totals[3].runepower = _details.table_overall.totals[3].runepower + actor.runepower
-				
-				if (actor.group) then
-					_details.table_overall.totals_group[3]["mana"] = _details.table_overall.totals_group[3]["mana"] + actor.mana
-					_details.table_overall.totals_group[3]["e_rage"] = _details.table_overall.totals_group[3]["e_rage"] + actor.e_rage
-					_details.table_overall.totals_group[3]["e_energy"] = _details.table_overall.totals_group[3]["e_energy"] + actor.e_energy
-					_details.table_overall.totals_group[3]["runepower"] = _details.table_overall.totals_group[3]["runepower"] + actor.runepower
+				shadow.total = shadow.total + actor.total
+				shadow.received = shadow.received + actor.received
+
+				if (not actor.powertype) then
+					print("actor without powertype", actor.name, actor.powertype)
 				end
 
-			--> copia o container de targets(captura de dados)
-				for index, dst in _ipairs(actor.targets._ActorTable) do
-					--> cria e soma o valor do total
-					local dst_shadow = shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-					dst_shadow.total = dst_shadow.total + dst.total
-					--> refresh no dst
-					if (not no_refresh) then
-						_details.refresh:r_dst_of_ability(dst, shadow.targets)
-					end
+				shadow.powertype = actor.powertype
+				
+			--> total no combat overall(captura de dados)
+				_details.table_overall.totals[3][actor.powertype] = _details.table_overall.totals[3][actor.powertype] + actor.total
+
+				if (actor.group) then
+					_details.table_overall.totals_group[3][actor.powertype] = _details.table_overall.totals_group[3][actor.powertype] + actor.total
+				end
+
+			--> targets
+				for target_name, amount in _pairs(actor.targets) do
+					shadow.targets[target_name] = (shadow.targets[target_name] or 0) + amount
 				end
 			
-			--> copia o container de abilities(captura de dados)
-				for spellid, ability in _pairs(actor.spell_tables._ActorTable) do
-					--> cria e soma o valor
-					local ability_shadow = shadow.spell_tables:CatchSpell(spellid, true, nil, true)
-					--> refresh e soma os valores dos targets
-					for index, dst in _ipairs(ability.targets._ActorTable) do 
-						--> cria e soma o valor do total
-						local dst_shadow = ability_shadow.targets:CatchCombatant(nil, dst.name, nil, true)
-						dst_shadow.total = dst_shadow.total + dst.total
-						--> refresh no dst da ability
-						if (not no_refresh) then
-							_details.refresh:r_dst_of_ability(dst, ability_shadow.targets)
-						end
-					end
-					--> soma todos os demais valores
-					for key, value in _pairs(ability) do 
-						if (_type(value) == "number") then
-							if (key ~= "id") then
-								if (not ability_shadow[key]) then 
-									ability_shadow[key] = 0
-								end
-								ability_shadow[key] = ability_shadow[key] + value
-							end
-						end
-					end
-					--> refresh na meta e indexes
-					if (not no_refresh) then
-						_details.refresh:r_ability_e_energy(ability, shadow.spell_tables)
+			--> spells
+				for spellid, ability in _pairs(actor.spells._ActorTable) do
+
+					local ability_shadow = shadow.spells:CatchSpell(spellid, true, "SPELL_ENERGY", false)
+
+					ability_shadow.total = ability_shadow.total + ability.total
+					ability_shadow.counter = ability_shadow.counter + ability.counter
+
+					--> spell targets
+					for target_name, amount in _pairs(ability.targets) do
+						ability_shadow.targets[target_name] = (ability_shadow.targets[target_name] or 0) + amount
 					end
 				end
 
@@ -1271,121 +1451,84 @@ end
 function _details.refresh:r_attribute_energy(this_player, shadow)
 	_setmetatable(this_player, _details.attribute_energy)
 	this_player.__index = _details.attribute_energy
-	
-	if (shadow ~= -1) then
-		this_player.shadow = shadow
-		_details.refresh:r_container_combatants(this_player.targets, shadow.targets)
-		_details.refresh:r_container_abilities(this_player.spell_tables, shadow.spell_tables)
-	else
-		_details.refresh:r_container_combatants(this_player.targets, -1)
-		_details.refresh:r_container_abilities(this_player.spell_tables, -1)
+
+	this_player.shadow = shadow
+	_details.refresh:r_container_abilities(this_player.spells, shadow.spells)
+
+	if (not shadow.powertype) then
+		shadow.powertype = this_player.powertype
 	end
 end
 
 function _details.clear:c_attribute_energy(this_player)
-	--this_player.__index = {}
 	this_player.__index = nil
 	this_player.shadow = nil
 	this_player.links = nil
 	this_player.my_bar = nil
-	
-	_details.clear:c_container_combatants(this_player.targets)
-	_details.clear:c_container_abilities(this_player.spell_tables)
+
+	_details.clear:c_container_abilities(this_player.spells)
 end
 
 attribute_energy.__add = function(table1, table2)
 
-	--> soma os totais das energias
-		table1.mana = table1.mana + table2.mana
-		table1.e_rage = table1.e_rage + table2.e_rage
-		table1.e_energy = table1.e_energy + table2.e_energy
-		table1.runepower = table1.runepower + table2.runepower
-		table1.focus = table1.focus + table2.focus
-		table1.holypower = table1.holypower + table2.holypower
-		
-		table1.mana_r = table1.mana_r + table2.mana_r
-		table1.e_rage_r = table1.e_rage_r + table2.e_rage_r
-		table1.e_energy_r = table1.e_energy_r + table2.e_energy_r
-		table1.runepower_r = table1.runepower_r + table2.runepower_r
-		table1.focus_r = table1.focus_r + table2.focus_r
-		table1.holypower_r = table1.holypower_r + table2.holypower_r
+	if (not table1.powertype) then
+		table1.powertype = table2.powertype
+	end
 
-	--> soma os containers de targets
-		for index, dst in _ipairs(table2.targets._ActorTable) do 
-			--> pega o dst no ator
-			local dst_table1 = table1.targets:CatchCombatant(nil, dst.name, nil, true)
-			--> soma o valor
-			dst_table1.total = dst_table1.total + dst.total
+	--> total and received
+		table1.total = table1.total + table2.total
+		table1.received = table1.received + table2.received
+
+	--> targets
+		for target_name, amount in _pairs (table2.targets) do
+			table1.targets[target_name] = (table1.targets[target_name] or 0) + amount
 		end
 	
-	--> soma o container de abilities
-		for spellid, ability in _pairs(table2.spell_tables._ActorTable) do 
-			--> pega a ability no primeiro ator
-			local ability_table1 = table1.spell_tables:CatchSpell(spellid, true, "SPELL_ENERGY", false)
-			--> soma os targets
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total + dst.total
+	--> spells
+		for spellid, ability in _pairs (table2.spells._ActorTable) do 
+
+			local ability_table1 = table1.spells:CatchSpell(spellid, true, "SPELL_ENERGY", false)
+
+			ability_table1.total = ability_table1.total + ability.total
+			ability_table1.counter = ability_table1.counter + ability.counter
+
+			--> spell targets
+			for target_name, amount in _pairs(ability.targets) do
+				ability_table1.targets[target_name] = (ability_table1.targets[target_name] or 0) + amount
 			end
-			--> soma os valores da ability
-			for key, value in _pairs(ability) do 
-				if (_type(value) == "number") then
-					if (key ~= "id") then
-						if (not ability_table1[key]) then 
-							ability_table1[key] = 0
-						end
-						ability_table1[key] = ability_table1[key] + value
-					end
-				end
-			end
-		end	
+		end
 	
 	return table1
 end
 
 attribute_energy.__sub = function(table1, table2)
 
-	--> soma os totais das energias
-		table1.mana = table1.mana - table2.mana
-		table1.e_rage = table1.e_rage - table2.e_rage
-		table1.e_energy = table1.e_energy - table2.e_energy
-		table1.runepower = table1.runepower - table2.runepower
-		table1.focus = table1.focus - table2.focus
-		table1.holypower = table1.holypower - table2.holypower
-		
-		table1.mana_r = table1.mana_r - table2.mana_r
-		table1.e_rage_r = table1.e_rage_r - table2.e_rage_r
-		table1.e_energy_r = table1.e_energy_r - table2.e_energy_r
-		table1.runepower_r = table1.runepower_r - table2.runepower_r
-		table1.focus_r = table1.focus_r - table2.focus_r
-		table1.holypower_r = table1.holypower_r - table2.holypower_r
+	if (not table1.powertype) then
+		table1.powertype = table2.powertype
+	end
 
-	--> soma os containers de targets
-		for index, dst in _ipairs(table2.targets._ActorTable) do 
-			--> pega o dst no ator
-			local dst_table1 = table1.targets:CatchCombatant(nil, dst.name, nil, true)
-			--> soma o valor
-			dst_table1.total = dst_table1.total - dst.total
+	--> total and received
+		table1.total = table1.total - table2.total
+		table1.received = table1.received - table2.received
+
+	--> targets
+		for target_name, amount in _pairs(table2.targets) do
+			if (table1.targets[target_name]) then
+				table1.targets[target_name] = table1.targets[target_name] - amount
+			end
 		end
 	
-	--> soma o container de abilities
-		for spellid, ability in _pairs(table2.spell_tables._ActorTable) do 
-			--> pega a ability no primeiro ator
-			local ability_table1 = table1.spell_tables:CatchSpell(spellid, true, "SPELL_ENERGY", false)
-			--> soma os targets
-			for index, dst in _ipairs(ability.targets._ActorTable) do 
-				local dst_table1 = ability_table1.targets:CatchCombatant(nil, dst.name, nil, true)
-				dst_table1.total = dst_table1.total - dst.total
-			end
-			--> soma os valores da ability
-			for key, value in _pairs(ability) do 
-				if (_type(value) == "number") then
-					if (key ~= "id") then
-						if (not ability_table1[key]) then 
-							ability_table1[key] = 0
-						end
-						ability_table1[key] = ability_table1[key] - value
-					end
+	--> spells
+		for spellid, ability in _pairs(table2.spells._ActorTable) do
+			local ability_table1 = table1.spells:CatchSpell(spellid, true, "SPELL_ENERGY", false)
+
+			ability_table1.total = ability_table1.total - ability.total
+			ability_table1.counter = ability_table1.counter - ability.counter
+
+			--> spell targets
+			for target_name, amount in _pairs(ability.targets) do
+				if (ability_table1.targets[target_name]) then
+					ability_table1.targets[target_name] = ability_table1.targets[target_name] - amount
 				end
 			end
 		end

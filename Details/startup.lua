@@ -3,7 +3,6 @@
 if (
 	-- version 1.21.0
 	not _G._details.attribute_custom.damagedoneTooltip or
-	not _G._details.attribute_custom.damagetakenTooltip or
 	not _G._details.attribute_custom.healdoneTooltip
 	) then
 	
@@ -311,13 +310,10 @@ function _G._details:Start()
 			_details:FillUserCustomSpells()
 			_details:AddDefaultCustomDisplays()
 
-			if (_details_database.last_realversion and _details_database.last_realversion < 31 and enable_reset_warning) then
-				for index, custom in ipairs(_details.custom) do
-					if (custom.name == Loc["STRING_CUSTOM_POT_DEFAULT"]) then
-						-- only on 14/11/2014
-						--_detalhes.atributo_custom:RemoveCustom (index)
-						break
-					end
+			--> Reset for the new structure
+			if (_details_database.last_realversion and _details_database.last_realversion < 46 and enable_reset_warning) then
+				for i = 1, #_details.custom do
+					_details.attribute_custom:RemoveCustom(i)
 				end
 				_details:AddDefaultCustomDisplays()
 			end
@@ -443,7 +439,7 @@ function _G._details:Start()
 
 	--> get in the realm chat channel
 	if (not _details.schedule_chat_enter and not _details.schedule_chat_leave) then
-		_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 30)
+		_details:ScheduleTimer("CheckChatOnZoneChange", 60)
 	end
 
 	--> open profiler 
@@ -511,10 +507,19 @@ function _G._details:Start()
 	real_time_frame:SetScript("OnUpdate", function(self, elapsed)
 		if (_details.in_combat and instance.attribute == 1 and instance.sub_attribute == 1) then
 			for i = 1, instance:GetNumRows() do
-				local row = instance:GetRow(index)
-				if (row:IsShown()) then
+				local row = instance:GetRow(i)
+				if (row and row:IsShown()) then
 					local actor = row.my_table
-					local right_text = row.text_right
+					if (actor) then
+						local dps_text = row.ps_text
+						if (dps_text) then
+							local new_dps = math.floor(actor.total / actor:Time())
+							local formated_dps = _details.ToKFunctions[_details.ps_abbreviation](_, new_dps)
+
+							row.text_right:SetText(row.text_right:GetText():gsub(dps_text, formated_dps))
+							row.ps_text = formated_dps
+						end
+					end
 				end
 			end
 		end

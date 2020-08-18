@@ -5,7 +5,6 @@
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> local pointers
-	local _setmetatable = setmetatable--lua local
 	local _ipairs = ipairs--lua local
 	local _pairs =  pairs--lua local
 	local _UnitAura = UnitAura--api local
@@ -61,14 +60,8 @@
 			a_amt = 0,
 			a_dmg = 0,
 			
-			targets = container_combatants:NewContainer(container_damage_target)
+			targets = {}
 		}
-		
-		_setmetatable(_newDamageSpell, ability_damage)
-		
-		if (link) then
-			_newDamageSpell.targets.shadow = link.targets
-		end
 		
 		if (token == "SPELL_PERIODIC_DAMAGE") then
 			_details:SpellIsDot(id)
@@ -80,28 +73,16 @@
 	function ability_damage:AddMiss(serial, name, flags, src_name, missType)
 		self.counter = self.counter + 1
 
-		local miss = self[missType] or 0
-		miss = miss + 1
-		self[missType] = miss
-		
-		self.targets:CatchCombatant(serial, name, flags, true) --apenas create o dst para a abilidade
-	end
+		self[missType] = (self[missType] or 0) + 1
 
-	function ability_damage:AddFF(amount)
-		self.counter = self.counter + 1
-		self.total = self.total + amount
+		self.targets[name] = self.targets[name] or 0
 	end
 
 	function ability_damage:Add(serial, name, flag, amount, src_name, resisted, blocked, absorbed, critical, glacing, token)
 
 		self.counter = self.counter + 1
 		
-		local dst = self.targets._NameIndexTable[name]
-		if (not dst) then
-			dst = self.targets:CatchCombatant(serial, name, flag, true)
-		else
-			dst = self.targets._ActorTable[dst]
-		end
+		self.targets[name] = (self.targets[name] or 0) + amount
 
 		if (resisted and resisted > 0) then
 			self.r_dmg = self.r_dmg+amount --> table.total é o total de damage
@@ -119,7 +100,6 @@
 		end	
 		
 		self.total = self.total + amount
-		dst.total = dst.total + amount
 
 		if (glacing) then
 			self.g_dmg = self.g_dmg+amount --> amount é o total de damage
@@ -201,82 +181,6 @@
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> core
-
-	function _details.refresh:r_ability_damage(ability, shadow) --recebeu o container shadow
-		_setmetatable(ability, ability_damage)
-		ability.__index = ability_damage
-		ability.shadow = shadow._ActorTable[ability.id]
-		_details.refresh:r_container_combatants(ability.targets, ability.shadow.targets)
-	end
-
-	function _details.clear:c_ability_damage(ability)
-		--ability.__index = {}
-		ability.__index = nil
-		ability.shadow = nil
-		
-		_details.clear:c_container_combatants(ability.targets)
-	end
-
-	ability_damage.__add = function(table1, table2)
-		table1.total = table1.total + table2.total
-		table1.counter = table1.counter + table2.counter
-		table1.successful_casted = table1.successful_casted + table2.successful_casted
-		
-		table1.n_min = table1.n_min + table2.n_min
-		table1.n_max = table1.n_max + table2.n_max
-		table1.n_amt = table1.n_amt + table2.n_amt
-		table1.n_dmg = table1.n_dmg + table2.n_dmg
-
-		table1.c_min = table1.c_min + table2.c_min
-		table1.c_max = table1.c_max + table2.c_max
-		table1.c_amt = table1.c_amt + table2.c_amt
-		table1.c_dmg = table1.c_dmg + table2.c_dmg
-		
-		table1.g_amt = table1.g_amt + table2.g_amt 
-		table1.g_dmg = table1.g_dmg + table2.g_dmg
-		
-		table1.r_amt = table1.r_amt + table2.r_amt 
-		table1.r_dmg = table1.r_dmg + table2.r_dmg
-		
-		table1.b_amt = table1.b_amt + table2.b_amt
-		table1.b_dmg = table1.b_dmg + table2.b_dmg
-		
-		table1.a_amt = table1.a_amt + table2.a_amt 
-		table1.a_dmg = table1.a_dmg + table2.a_dmg
-		
-		return table1
-	end
-
-	ability_damage.__sub = function(table1, table2)
-		table1.total = table1.total - table2.total
-		table1.counter = table1.counter - table2.counter
-		table1.successful_casted = table1.successful_casted - table2.successful_casted
-
-		table1.n_min = table1.n_min - table2.n_min
-		table1.n_max = table1.n_max - table2.n_max
-		table1.n_amt = table1.n_amt - table2.n_amt
-		table1.n_dmg = table1.n_dmg - table2.n_dmg
-
-		table1.c_min = table1.c_min - table2.c_min
-		table1.c_max = table1.c_max - table2.c_max
-		table1.c_amt = table1.c_amt - table2.c_amt
-		table1.c_dmg = table1.c_dmg - table2.c_dmg
-		
-		table1.g_amt = table1.g_amt - table2.g_amt 
-		table1.g_dmg = table1.g_dmg - table2.g_dmg
-		
-		table1.r_amt = table1.r_amt - table2.r_amt 
-		table1.r_dmg = table1.r_dmg - table2.r_dmg
-		
-		table1.b_amt = table1.b_amt - table2.b_amt
-		table1.b_dmg = table1.b_dmg - table2.b_dmg
-		
-		table1.a_amt = table1.a_amt - table2.a_amt 
-		table1.a_dmg = table1.a_dmg - table2.a_dmg
-		
-		return table1
-	end
-
 	function _details:UpdateDamageAbilityGears()
 		_recording_ability_with_buffs = _details.RecordPlayerAbilityWithBuffs
 	end

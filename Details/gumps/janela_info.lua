@@ -214,7 +214,7 @@ function gump:SwitchBackgroundInfo()
 		if (info.sub_attribute == 1 or info.sub_attribute == 2) then --> damage done / dps
 			if (info.type ~= 1) then --> window com as divisorias
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture(nil)
+				--info.bg1_sec_texture:SetTexture(nil)
 				info.type = 1
 			end
 			
@@ -228,7 +228,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 3) then --> damage taken
 			if (info.type ~= 2) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 2
 			end
 			
@@ -239,7 +239,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 4) then --> friendly fire
 			if (info.type ~= 3) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 3
 			end
 			info.targets:SetText(Loc["STRING_SPELLS"] .. ":")
@@ -247,7 +247,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 6) then --> enemies
 			if (info.type ~= 3) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 3
 			end
 			info.targets:SetText(Loc["STRING_DAMAGE_TAKEN_FROM"])
@@ -257,7 +257,7 @@ function gump:SwitchBackgroundInfo()
 		if (info.sub_attribute == 1 or info.sub_attribute == 2 or info.sub_attribute == 3) then --> damage done / dps
 			if (info.type ~= 1) then --> window com as divisorias
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture(nil)
+				--info.bg1_sec_texture:SetTexture(nil)
 				info.type = 1
 			end
 			
@@ -275,7 +275,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 4) then --> Healing taken
 			if (info.type ~= 2) then --> window com fundo diferente			
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 2
 			end
 			
@@ -287,7 +287,7 @@ function gump:SwitchBackgroundInfo()
 	elseif (info.attribute == 3) then --> REGEN
 		if (info.type ~= 2) then --> window com fundo diferente
 			info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-			info.bg1_sec_texture:SetTexture(nil)
+			--info.bg1_sec_texture:SetTexture(nil)
 			info.type = 2
 		end
 		info.targets:SetText("Vindo de:")
@@ -295,7 +295,7 @@ function gump:SwitchBackgroundInfo()
 	elseif (info.attribute == 4) then --> MISC
 		if (info.type ~= 2) then --> window com fundo diferente
 			info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-			info.bg1_sec_texture:SetTexture(nil)
+			--info.bg1_sec_texture:SetTexture(nil)
 			info.type = 2
 		end
 		info.targets:SetText(Loc["STRING_TARGETS"] .. ":")
@@ -775,56 +775,18 @@ function gump:CreateWindowInfo()
 	this_gump.class_iconPlus:SetWidth(64)
 	this_gump.class_iconPlus:SetHeight(64)
 	this_gump.class_iconPlus:SetDrawLayer("BACKGROUND", 2)
-	
-	--> cria as 4 partes do fundo da window
-	
+
 	--> top left
 	this_gump.bg1 = this_gump:CreateTexture(nil, "BORDER")
 	this_gump.bg1:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 0, 0)
-	--this_gump.bg1:SetWidth(512)
-	--this_gump.bg1:SetHeight(256)
 	this_gump.bg1:SetDrawLayer("BORDER", 1)
 	
 	function _details:SetPlayerDetailsWindowTexture(texture)
 		this_gump.bg1:SetTexture(texture)
 	end
 	_details:SetPlayerDetailsWindowTexture("Interface\\AddOns\\Details\\images\\info_window_background")
-	
-	this_gump.bg1_sec_texture = this_gump:CreateTexture(nil, "BORDER")
-	this_gump.bg1_sec_texture:SetDrawLayer("BORDER", 2)
-	--this_gump.bg1_sec_texture:SetPoint("topleft", this_gump.bg1, "topleft", 356, -86)
-	this_gump.bg1_sec_texture:SetPoint("topleft", this_gump.bg1, "topleft", 348, -86)
-	this_gump.bg1_sec_texture:SetHeight(262)
-	this_gump.bg1_sec_texture:SetWidth(264)
 
-	--> bottom left
-	this_gump.bg3 = this_gump:CreateTexture(nil, "BORDER")
-	--this_gump.bg3:SetPoint("BOTTOMLEFT", this_gump, "BOTTOMLEFT", 0, 0)
-	this_gump.bg3:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 0, -256)
-	this_gump.bg3:SetWidth(512)
-	this_gump.bg3:SetHeight(128)
-	this_gump.bg3:SetTexture("Interface\\AddOns\\Details\\images\\info_bg_part3") 
-	this_gump.bg3:Hide()
-	
-	--> top right
-	this_gump.bg2 = this_gump:CreateTexture(nil, "BORDER")
-	this_gump.bg2:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 512, 0)
-	this_gump.bg2:SetWidth(128)
-	this_gump.bg2:SetHeight(128)
-	this_gump.bg2:SetTexture("Interface\\AddOns\\Details\\images\\info_bg_part2") 
-	this_gump.bg2:Hide()
-	
-	--> bottom right
-	this_gump.bg4 = this_gump:CreateTexture(nil, "BORDER")
-	--this_gump.bg4:SetPoint("BOTTOMRIGHT", this_gump, "BOTTOMRIGHT", 0, 0)
-	--this_gump.bg4:SetPoint("BOTTOMLEFT", this_gump, "BOTTOMLEFT", 512, 0)
-	this_gump.bg4:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 512, -128)
-	this_gump.bg4:SetWidth(128)
-	this_gump.bg4:SetHeight(256)
-	this_gump.bg4:SetTexture("Interface\\AddOns\\Details\\images\\info_bg_part4") 
-	this_gump.bg4:Hide()
-
-	--> bot�o de close
+	--> close button
 	this_gump.close = _CreateFrame("Button", nil, this_gump, "UIPanelCloseButton")
 	this_gump.close:SetWidth(32)
 	this_gump.close:SetHeight(32)
@@ -844,19 +806,6 @@ function gump:CreateWindowInfo()
 	this_gump.no_targets.text:SetText(Loc["STRING_NO_TARGET_BOX"])
 	this_gump.no_targets.text:SetTextColor(1, 1, 1, .4)
 	this_gump.no_targets:Hide()
-	
-	function this_gump:ToFront()
-		if (_details.bosswindow) then
-			if (_details.bosswindow:GetFrameLevel() > this_gump:GetFrameLevel()) then 
-				this_gump:SetFrameLevel(this_gump:GetFrameLevel()+3)
-				_details.bosswindow:SetFrameLevel(_details.bosswindow:GetFrameLevel()-3)
-			end
-		end
-	end
-	
-	this_gump.grab = gump:NewDetailsButton(this_gump, this_gump, _, this_gump.ToFront, nil, nil, 590, 73, "", "", "", "", {OnGrab = "PassClick"}, "DetailsWindowInfoGrab")
-	this_gump.grab:SetPoint("topleft",this_gump, "topleft")
-	this_gump.grab:SetFrameLevel(this_gump:GetFrameLevel()+1)
 	
 	--> titulo
 	gump:NewLabel(this_gump, this_gump, nil, "titulo", Loc["STRING_PLAYER_DETAILS"], "GameFontHighlightLeft", 12, {227/255, 186/255, 4/255})
@@ -1388,19 +1337,18 @@ function gump:CreateWindowInfo()
 					tab.selfhealingpersecond:SetText("0(0%)")
 				else
 					local last_actor_heal = last_combat(2, player.name)
-					local this_dst = actor_heal.targets._NameIndexTable[player.name]
+					local this_dst = actor_heal.targets[player.name]
 					if (this_dst) then
-						this_dst = actor_heal.targets._ActorTable[this_dst]
-						local heal_total = this_dst.total
+						local heal_total = this_dst
 						tab.selfhealing:SetText(_details:ToK2(heal_total))
 						
 						if (last_actor_heal) then
-							local this_dst = last_actor_heal.targets._NameIndexTable[player.name]
+							local this_dst = last_actor_heal.targets[player.name]
 							if (this_dst) then
-							
+								local heal = this_dst
 								this_dst = actor_heal.targets._ActorTable[this_dst]
 								
-								local last_heal = this_dst.total / last_combat:GetCombatTime()
+								local last_heal = heal / last_combat:GetCombatTime()
 								
 								local ps, diff = getpercent(heal_total, last_heal, elapsed_time, true)
 								tab.selfhealingpersecond:SetText(_details:comma_value(_math_floor(ps)) .. "(" .. diff .. ")")
@@ -1425,7 +1373,7 @@ function gump:CreateWindowInfo()
 					for actorName, _ in pairs(heal_from) do 
 						local thisActor = combat(2, actorName)
 						local targets = thisActor.targets --> targets is a container with target classes
-						local amount = targets:GetAmount(player.name, "total")
+						local amount = targets[player.name] or 0
 						myReceivedHeal[#myReceivedHeal+1] = {actorName, amount, thisActor.class}
 					end
 					
@@ -1452,7 +1400,7 @@ function gump:CreateWindowInfo()
 							local last_actor = last_combat(2, myReceivedHeal[i][1])
 							if (last_actor) then
 								local targets = last_actor.targets
-								local amount = targets:GetAmount(player.name, "total")
+								local amount = targets[player.name] or 0
 								if (amount) then
 									
 									local last_heal = amount
@@ -1484,14 +1432,14 @@ function gump:CreateWindowInfo()
 				local misc_player = combat(4, player.name)
 				
 				if (misc_player) then
-					if (misc_player.cooldowns_defensive_spell_tables) then
-						local my_table = misc_player.cooldowns_defensive_spell_tables._ActorTable
+					if (misc_player.cooldowns_defensive_spells) then
+						local my_table = misc_player.cooldowns_defensive_spells._ActorTable
 						local cooldowns_used = {}
 						
 						for _spellid, _table in pairs(my_table) do
 							cooldowns_used[#cooldowns_used+1] = {_spellid, _table.counter}
 						end
-						table.sort(cooldowns_used, function(t1, t2) return t1[2] > t2[2] end)
+						table.sort(cooldowns_used, _details.Sort2)
 						
 						if (#cooldowns_used > 1) then
 							for i = 1, #cooldowns_used do
@@ -1514,8 +1462,8 @@ function gump:CreateWindowInfo()
 
 				--> buffs uptime
 				if (index_used < 11) then
-					if (misc_player.buff_uptime_spell_tables) then
-						local my_table = misc_player.buff_uptime_spell_tables._ActorTable
+					if (misc_player.buff_uptime_spells) then
+						local my_table = misc_player.buff_uptime_spells._ActorTable
 						
 						local encounter_time = combat:GetCombatTime()
 						
@@ -1549,13 +1497,6 @@ function gump:CreateWindowInfo()
 				end
 				
 			--> ability usada para interromper
-
-				
-				
-			
---[[
-			
---]]
 		end
 		
 		_details:CreatePlayerDetailsTab("Avoidance", --[1] tab name
@@ -1627,12 +1568,12 @@ function gump:CreateWindowInfo()
 			local player_2_target_pool
 			local player_2_top
 			if (player_2) then
-				local player_2_target = player_2.targets._ActorTable
+				local player_2_target = player_2.targets
 				player_2_target_pool = {}
-				for index, target in _ipairs(player_2_target) do 
-					player_2_target_pool[#player_2_target_pool+1] = {target.name, target.total}
+				for target_name, amount in _pairs(player_2_target) do
+					player_2_target_pool[#player_2_target_pool+1] = {target_name, amount}
 				end
-				table.sort(player_2_target_pool, function(t1, t2) return t1[2] > t2[2] end)
+				table.sort(player_2_target_pool, _details.Sort2)
 				if (player_2_target_pool[1]) then
 					player_2_top = player_2_target_pool[1][2]
 				else
@@ -1646,12 +1587,12 @@ function gump:CreateWindowInfo()
 			local player_3_target_pool
 			local player_3_top
 			if (player_3) then
-				local player_3_target = player_3.targets._ActorTable
+				local player_3_target = player_3.targets
 				player_3_target_pool = {}
-				for index, target in _ipairs(player_3_target) do 
-					player_3_target_pool[#player_3_target_pool+1] = {target.name, target.total}
+				for target_name, amount in _pairs(player_3_target) do
+					player_3_target_pool[#player_3_target_pool+1] = {target_name, amount}
 				end
-				table.sort(player_3_target_pool, function(t1, t2) return t1[2] > t2[2] end)
+				table.sort(player_3_target_pool, _details.Sort2)
 				if (player_3_target_pool[1]) then
 					player_3_top = player_3_target_pool[1][2]
 				else
@@ -1838,10 +1779,10 @@ function gump:CreateWindowInfo()
 			
 			--primeiro preenche a nossa bar
 			local spells_sorted = {}
-			for spellid, spelltable in _pairs(player.spell_tables._ActorTable) do
+			for spellid, spelltable in _pairs(player.spells._ActorTable) do
 				spells_sorted[#spells_sorted+1] = {spelltable, spelltable.total}
 			end
-			table.sort(spells_sorted, function(t1, t2) return t1[2] > t2[2] end)
+			table.sort(spells_sorted, _details.Sort2)
 		
 			self.player = player:Name()
 		
@@ -1854,10 +1795,10 @@ function gump:CreateWindowInfo()
 			frame2.player = other_players[1]:Name()
 			local player_2_total = other_players[1].total_without_pet
 			local player_2_spells_sorted = {}
-			for spellid, spelltable in _pairs(other_players[1].spell_tables._ActorTable) do
+			for spellid, spelltable in _pairs(other_players[1].spells._ActorTable) do
 				player_2_spells_sorted[#player_2_spells_sorted+1] = {spelltable, spelltable.total}
 			end
-			table.sort(player_2_spells_sorted, function(t1, t2) return t1[2] > t2[2] end)
+			table.sort(player_2_spells_sorted, _details.Sort2)
 			local player_2_top = player_2_spells_sorted[1][2]
 			local player_2_spell_info = {}
 			for index, spelltable in _ipairs(player_2_spells_sorted) do 
@@ -1872,10 +1813,10 @@ function gump:CreateWindowInfo()
 			local player_3_top
 			
 			if (other_players[2]) then
-				for spellid, spelltable in _pairs(other_players[2].spell_tables._ActorTable) do
+				for spellid, spelltable in _pairs(other_players[2].spells._ActorTable) do
 					player_3_spells_sorted[#player_3_spells_sorted+1] = {spelltable, spelltable.total}
 				end
-				table.sort(player_3_spells_sorted, function(t1, t2) return t1[2] > t2[2] end)
+				table.sort(player_3_spells_sorted, _details.Sort2)
 				player_3_top = player_3_spells_sorted[1][2]
 				for index, spelltable in _ipairs(player_3_spells_sorted) do 
 					player_3_spell_info[spelltable[1].id] = index
@@ -1904,7 +1845,7 @@ function gump:CreateWindowInfo()
 					
 					--seta no segundo box
 					local player_2 = other_players[1]
-					local spell = player_2.spell_tables._ActorTable[spellid]
+					local spell = player_2.spells._ActorTable[spellid]
 					local bar_2 = frame2.bars[i]
 					
 					-- ~compare
@@ -1959,7 +1900,7 @@ function gump:CreateWindowInfo()
 					
 					if (player_3_total) then
 						local player_3 = other_players[2]
-						local spell = player_3.spell_tables._ActorTable[spellid]
+						local spell = player_3.spells._ActorTable[spellid]
 						
 						if (spell) then
 							bar_3[1]:SetTexture(icon)
@@ -2050,12 +1991,12 @@ function gump:CreateWindowInfo()
 		local refresh_target_box = function(self)
 			
 			--player 1 targets
-			local my_targets = self.tab.player.targets._ActorTable
+			local my_targets = self.tab.player.targets
 			local target_pool = {}
-			for index, target in _ipairs(my_targets) do 
-				target_pool[#target_pool+1] = {target.name, target.total}
+			for target_name, amount in _pairs(my_targets) do
+				target_pool[#target_pool+1] = {target_name, amount}
 			end
-			table.sort(target_pool, function(t1, t2) return t1[2] > t2[2] end)
+			table.sort(target_pool, _details.Sort2)
 			
 			FauxScrollFrame_Update(self, math.max(#target_pool, 5), 4, 14)
 
@@ -2113,10 +2054,10 @@ function gump:CreateWindowInfo()
 			
 			-- player 1
 			local player_1_skills = {}
-			for spellid, spell in _pairs(player_1.spell_tables._ActorTable) do
-				for index, target in _ipairs(spell.targets._ActorTable) do
-					if (target.name == target_name) then
-						player_1_skills[#player_1_skills+1] = {spellid, target.total}
+			for spellid, spell in _pairs(player_1.spells._ActorTable) do
+				for name, amount in _pairs(spell.targets) do
+					if (name == target_name) then
+						player_1_skills[#player_1_skills+1] = {spellid, amount}
 					end
 				end
 			end
@@ -2127,10 +2068,10 @@ function gump:CreateWindowInfo()
 			local player_2_skills = {}
 			local player_2_top
 			if (player_2) then
-				for spellid, spell in _pairs(player_2.spell_tables._ActorTable) do
-					for index, target in _ipairs(spell.targets._ActorTable) do
-						if (target.name == target_name) then
-							player_2_skills[#player_2_skills+1] = {spellid, target.total}
+				for spellid, spell in _pairs(player_2.spells._ActorTable) do
+					for name, amount in _pairs(spell.targets) do
+						if (name == target_name) then
+							player_2_skills[#player_2_skills+1] = {spellid, amount}
 						end
 					end
 				end
@@ -2142,10 +2083,10 @@ function gump:CreateWindowInfo()
 			local player_3_skills = {}
 			local player_3_top
 			if (player_3) then
-				for spellid, spell in _pairs(player_3.spell_tables._ActorTable) do
-					for index, target in _ipairs(spell.targets._ActorTable) do
-						if (target.name == target_name) then
-							player_3_skills[#player_3_skills+1] = {spellid, target.total}
+				for spellid, spell in _pairs(player_3.spells._ActorTable) do
+					for name, amount in _pairs(spell.targets) do
+						if (name == target_name) then
+							player_3_skills[#player_3_skills+1] = {spellid, amount}
 						end
 					end
 				end
@@ -2346,7 +2287,7 @@ function gump:CreateWindowInfo()
 				frame1.tooltip.crit_label2:SetText(critical .. "%")
 				
 				if (player1_misc) then
-					local spell = player1_misc.debuff_uptime_spell_tables and player1_misc.debuff_uptime_spell_tables._ActorTable and player1_misc.debuff_uptime_spell_tables._ActorTable[spellid]
+					local spell = player1_misc.debuff_uptime_spells and player1_misc.debuff_uptime_spells._ActorTable and player1_misc.debuff_uptime_spells._ActorTable[spellid]
 					if (spell) then
 						local minutes, seconds = _math_floor(spell.uptime/60), _math_floor(spell.uptime%60)
 						player1_uptime = spell.uptime
@@ -2421,7 +2362,7 @@ function gump:CreateWindowInfo()
 				end
 				
 				if (player2_misc) then
-					local spell = player2_misc.debuff_uptime_spell_tables and player2_misc.debuff_uptime_spell_tables._ActorTable and player2_misc.debuff_uptime_spell_tables._ActorTable[spellid]
+					local spell = player2_misc.debuff_uptime_spells and player2_misc.debuff_uptime_spells._ActorTable and player2_misc.debuff_uptime_spells._ActorTable[spellid]
 					if (spell and spell.uptime) then
 						local minutes, seconds = _math_floor(spell.uptime/60), _math_floor(spell.uptime%60)
 						
@@ -2516,7 +2457,7 @@ function gump:CreateWindowInfo()
 				end
 
 				if (player3_misc) then
-					local spell = player3_misc.debuff_uptime_spell_tables and player3_misc.debuff_uptime_spell_tables._ActorTable and player3_misc.debuff_uptime_spell_tables._ActorTable[spellid]
+					local spell = player3_misc.debuff_uptime_spells and player3_misc.debuff_uptime_spells._ActorTable and player3_misc.debuff_uptime_spells._ActorTable[spellid]
 					if (spell and spell.uptime) then
 						local minutes, seconds = _math_floor(spell.uptime/60), _math_floor(spell.uptime%60)
 						
@@ -2886,7 +2827,7 @@ function gump:CreateWindowInfo()
 				local my_spells = {}
 				local my_spells_total = 0
 				--> build my spell list
-				for spellid, _ in _pairs(playerObject.spell_tables._ActorTable) do
+				for spellid, _ in _pairs(playerObject.spells._ActorTable) do
 					my_spells[spellid] = true
 					my_spells_total = my_spells_total + 1
 				end
@@ -2899,7 +2840,7 @@ function gump:CreateWindowInfo()
 					if (actor.class == class and actor ~= playerObject) then
 
 						local same_spells = 0
-						for spellid, _ in _pairs(actor.spell_tables._ActorTable) do
+						for spellid, _ in _pairs(actor.spells._ActorTable) do
 							if (my_spells[spellid]) then
 								same_spells = same_spells + 1
 							end
@@ -3520,13 +3461,26 @@ local target_on_enter = function(self)
 	
 	if (bar.show and type(bar.show) == "number") then
 		local actor = bar.other_actor or info.player
-		local spell = actor.spell_tables:CatchSpell(bar.show)
+		local spell = actor.spells:CatchSpell(bar.show)
 		if (spell) then
-			local ActorTargetsContainer = spell.targets._ActorTable
 			local ActorTargetsSortTable = {}
+			local ActorTargetsContainer
+
+			local attribute, sub_attribute = info.instance:GetDisplay()
+			if (attribute == 1 or attribute == 3) then
+				ActorTargetsContainer = spell.targets
+			else
+				if (sub_attribute == 3) then -- overheal
+					ActorTargetsContainer = spell.targets_overheal
+				elseif (sub_attribute == 6) then -- absorbs
+					ActorTargetsContainer = spell.targets_absorbs
+				else
+					ActorTargetsContainer = spell.targets
+				end
+			end
 			--add and sort
-			for _, _target in _ipairs(ActorTargetsContainer) do
-				ActorTargetsSortTable[#ActorTargetsSortTable+1] = {_target.name, _target[info.target_member] or _target.total or 0}
+			for target_name, amount in _pairs(ActorTargetsContainer) do
+				ActorTargetsSortTable[#ActorTargetsSortTable+1] = {target_name, amount or 0}
 			end
 			table.sort(ActorTargetsSortTable, _details.Sort2)
 			
