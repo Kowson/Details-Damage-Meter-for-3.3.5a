@@ -412,8 +412,8 @@ function _details:OpenOptionsWindow(instance, no_reopen, section)
 local menus = { --labels nos menus
 	{Loc["STRING_OPTIONSMENU_DISPLAY"], Loc["STRING_OPTIONSMENU_COMBAT"], Loc["STRING_OPTIONSMENU_TOOLTIP"], Loc["STRING_OPTIONSMENU_DATAFEED"], Loc["STRING_OPTIONSMENU_PROFILES"]},
 	
-	{Loc["STRING_OPTIONSMENU_SKIN"], Loc["STRING_OPTIONSMENU_ROWSETTINGS"], Loc["STRING_OPTIONSMENU_ROWTEXTS"], Loc["STRING_OPTIONSMENU_SHOWHIDE"], 
-	Loc["STRING_OPTIONSMENU_WINDOW"], Loc["STRING_OPTIONSMENU_TITLETEXT"], Loc["STRING_OPTIONSMENU_LEFTMENU"], Loc["STRING_OPTIONSMENU_RIGHTMENU"], 
+	{Loc["STRING_OPTIONSMENU_SKIN"], Loc["STRING_OPTIONSMENU_ROWSETTINGS"], Loc["STRING_OPTIONSMENU_ROWTEXTS"], Loc["STRING_OPTIONSMENU_ROWMODELS"], Loc["STRING_OPTIONSMENU_SHOWHIDE"],
+	Loc["STRING_OPTIONSMENU_WINDOW"], Loc["STRING_OPTIONSMENU_TITLETEXT"], Loc["STRING_OPTIONSMENU_LEFTMENU"],
 	Loc["STRING_OPTIONSMENU_WALLPAPER"], Loc["STRING_OPTIONSMENU_MISC"]},
 	
 	{Loc["STRING_OPTIONSMENU_RAIDTOOLS"], Loc["STRING_OPTIONSMENU_PERFORMANCE"], Loc["STRING_OPTIONSMENU_PLUGINS"], Loc["STRING_OPTIONSMENU_SPELLS"], 
@@ -428,7 +428,7 @@ local menus = { --labels nos menus
 		Loc["STRING_OPTIONSMENU_ROWTEXTS"], --5
 		Loc["STRING_OPTIONSMENU_WINDOW"], --6
 		Loc["STRING_OPTIONSMENU_LEFTMENU"], --7
-		Loc["STRING_OPTIONSMENU_RIGHTMENU"], --8
+		Loc["STRING_OPTIONSMENU_ROWMODELS"], --8
 		Loc["STRING_OPTIONSMENU_WALLPAPER"], --9
 		Loc["STRING_OPTIONSMENU_PERFORMANCE"],--10
 		Loc["STRING_OPTIONSMENU_RAIDTOOLS"], --11
@@ -529,7 +529,7 @@ local menus = { --labels nos menus
 
 		
 		--> index dos menus
-		local menus_settings = {1, 2, 20, 19, 13, 3, 4, 5, 17, 6, 14, 7, 8, 9, 18, 11, 10, 12, 15, 16}
+		local menus_settings = {1, 2, 20, 19, 13, 3, 4, 5, 8, 17, 6, 14, 7, 9, 18, 11, 10, 12, 15, 16}
 		
 		
 		--> create menus
@@ -1010,6 +1010,8 @@ local menus = { --labels nos menus
 		window.left_start_at = 30
 		window.right_start_at = 360
 		window.top_start_at = -90
+
+		window.buttons_width = 160
 		
 		function window:arrange_menu(frame, t, x, y_start)		
 			local y = y_start
@@ -1054,19 +1056,19 @@ function window:CreateFrame20()
 		g:NewLabel(frame20, _, "$parentTooltipTextColorAnchorLabel", "TooltipTextColorAnchorLabel", Loc["STRING_OPTIONS_TOOLTIPS_ANCHORCOLOR"], "GameFontHighlightLeft")
 		-- left color pick
 		local tooltip_text_color_callback = function(button, r, g, b, a)
-			local c = _detalhes.tooltip.fontcolor
+			local c = _details.tooltip.fontcolor
 			c[1], c[2], c[3], c[4] = r, g, b, a
 		end
 		g:NewColorPickButton(frame20, "$parentTooltipTextColorPick", "TooltipTextColorPick", tooltip_text_color_callback)
 		-- right color pick
 		local tooltip_text_color_callback_right = function(button, r, g, b, a)
-			local c = _detalhes.tooltip.fontcolor_right
+			local c = _details.tooltip.fontcolor_right
 			c[1], c[2], c[3], c[4] = r, g, b, a
 		end
 		g:NewColorPickButton(frame20, "$parentTooltipTextColorPickRight", "TooltipTextColorPickRight", tooltip_text_color_callback_right)
 		-- anchor color pick
 		local tooltip_text_color_callback_anchor = function(button, r, g, b, a)
-			local c = _detalhes.tooltip.header_text_color
+			local c = _details.tooltip.header_text_color
 			c[1], c[2], c[3], c[4] = r, g, b, a
 		end
 		g:NewColorPickButton(frame20, "$parentTooltipTextColorPickAnchor", "TooltipTextColorPickAnchor", tooltip_text_color_callback_anchor)
@@ -1290,11 +1292,11 @@ function window:CreateFrame20()
 			local unlock_function = function()
 				DetailsTooltipAnchor:MoveAnchor()
 			end
-			local unlock_anchor_button = g:NewButton(frame20, nil, "$parentUnlockAnchorButton", "UnlockAnchorButton", 160, 20, unlock_function, nil, nil, nil, Loc["STRING_OPTIONS_TOOLTIPS_ANCHOR_TO_CHOOSE"], 1)
-			unlock_anchor_button:InstallCustomTexture()
+			local unlock_anchor_button = g:NewButton(frame20, nil, "$parentUnlockAnchorButton", "UnlockAnchorButton", window.buttons_width, 18, unlock_function, nil, nil, nil, Loc["STRING_OPTIONS_TOOLTIPS_ANCHOR_TO_CHOOSE"], 1)
+			unlock_anchor_button:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			frame20.UnlockAnchorButton:SetTextColor(button_color_rgb)
 		
-			frame20.UnlockAnchorButton:SetIcon([[Interface\AddOns\Details\images\UI-ModelControlPanel]], nil, nil, nil, {20/64, 34/64, 38/128, 52/128}, nil, 4)
+			frame20.UnlockAnchorButton:SetIcon([[Interface\AddOns\Details\images\UI-ModelControlPanel]], nil, nil, nil, {20/64, 34/64, 38/128, 52/128}, nil, 4, 2)
 
 			if (_details.tooltip.anchored_to == 1) then
 				unlock_anchor_button:Disable()
@@ -2070,9 +2072,6 @@ function window:CreateFrame18()
 		confirm_button:SetScript("OnClick", delete_instance)
 		frame18.deleteInstanceButton = confirm_button
 		
-		--local confirm_button = g:NewButton(frame18, nil, "$parentDeleteInstanceButton", "deleteInstanceButton", 60, 20, delete_instance, nil, nil, nil, "delete")
-		--confirm_button:InstallCustomTexture()
-		
 		--> menu text size
 		g:NewLabel(frame18, _, "$parentMenuTextSizeLabel", "MenuTextSizeLabel", Loc["STRING_OPTIONS_MENU_FONT_SIZE"], "GameFontHighlightLeft")
 		local s = g:NewSlider(frame18, _, "$parentMenuTextSizeSlider", "MenuTextSizeSlider", SLIDER_WIDTH, 20, 8, 32, 1, _details.font_sizes.menus)
@@ -2151,7 +2150,7 @@ function window:CreateFrame18()
 		g:NewLabel(frame18, _, "$parentReportFormatLabel", "ReportFormatLabel", Loc["STRING_OPTIONS_REPORT_SCHEMA"], "GameFontHighlightLeft")
 
 		local onSelectReportFormatAlpha = function(_, _, value)
-			_detalhes.report_schema = value
+			_details.report_schema = value
 		end
 		local coords = {1, 0, 0, 1}
 		local ReportFormatOptions = {
@@ -3259,12 +3258,13 @@ function window:CreateFrame1()
 		titulo_persona_desc.width = 350
 		
 	--> persona
-		
+
+		frame1.HaveAvatar = false
 		g:NewLabel(frame1, _, "$parentNickNameLabel", "nicknameLabel", Loc["STRING_OPTIONS_NICKNAME"], "GameFontHighlightLeft")
-		
+
+		local avatar_x_anchor2 = window.right_start_at - 15
+
 		local box = g:NewTextEntry(frame1, _, "$parentNicknameEntry", "nicknameEntry", SLIDER_WIDTH, 20, onPressEnter)
-		--box:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true,
-		--edgeSize = 10, tileSize = 16, insets = {left = 1, right = 1, top = 0, bottom = 1}})
 		
 		frame1.nicknameEntry:SetPoint("left", frame1.nicknameLabel, "right", 2, 0)
 
@@ -3278,7 +3278,15 @@ function window:CreateFrame1()
 			_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject.texture = textureBackground
 			_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject.texcoord =  textureBackgroundTexCoord
 			_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject:SetVertexColor(unpack(textureBackgroundColor))
-			
+
+			if (not textureAvatar:find("UI%-EJ%-BOSS%-Default")) then
+				_G.DetailsOptionsWindow1.ChooseAvatarLabel:SetTextColor(1, 0.93, 0.74, 0)
+				_G.DetailsOptionsWindow1.HaveAvatar = true
+			else
+				_G.DetailsOptionsWindow1.ChooseAvatarLabel:SetTextColor(1, 0.93, 0.74)
+				_G.DetailsOptionsWindow1.HaveAvatar = false
+			end
+
 			_G.AvatarPickFrame.callback = nil
 		end
 		
@@ -3287,14 +3295,11 @@ function window:CreateFrame1()
 			_G.AvatarPickFrame:Show()
 		end
 		
-		--g:NewButton(frame1, _, "$parentAvatarFrame", "chooseAvatarButton", frame1.nicknameLabel:GetStringWidth() + SLIDER_WIDTH + 2, 18, openAtavarPickFrame, nil, nil, nil, Loc["STRING_OPTIONS_AVATAR"], 1)
 		g:NewButton(frame1, _, "$parentAvatarFrame", "chooseAvatarButton", 275, 85, openAtavarPickFrame, nil, nil, nil, "", 1) --
-		frame1.chooseAvatarButton:InstallCustomTexture(nil, nil, nil, true)
 		frame1.chooseAvatarButton:SetTextColor(button_color_rgb)
-		--frame1.chooseAvatarButton:SetIcon([[Interface\Buttons\UI-Panel-MinimizeButton-Up]], nil, nil, nil, {0.143125, 0.8653125, 0.1446875, 0.8653125})
-		
+
 		g:NewLabel(frame1, _, "$parentChooseAvatarLabel", "ChooseAvatarLabel", Loc["STRING_OPTIONS_AVATAR"], "GameFontHighlightLeft")
-		frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -10, -10)
+		frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -50, -25)
 		frame1.ChooseAvatarLabel:SetTextColor(button_color_rgb)
 
 	--> avatar preview
@@ -3304,7 +3309,9 @@ function window:CreateFrame1()
 	
 	--> avatar button
 		frame1.chooseAvatarButton:SetHook("OnEnter", function()
-			frame1.ChooseAvatarLabel:SetTextColor(1, 1, 1)
+			if (not frame1.HaveAvatar) then
+				frame1.ChooseAvatarLabel:SetTextColor(1, 1, 1)
+			end
 			
 			_details:CooltipPreset(2)
 			GameCooltip:AddLine(Loc["STRING_OPTIONS_AVATAR_DESC"])
@@ -3314,25 +3321,25 @@ function window:CreateFrame1()
 			return true
 		end)
 		frame1.chooseAvatarButton:SetHook("OnLeave", function()
-			frame1.ChooseAvatarLabel:SetTextColor(button_color_rgb)
+			if (not frame1.HaveAvatar) then
+				frame1.ChooseAvatarLabel:SetTextColor(button_color_rgb)
+			end
 			GameCooltip:Hide()
 			--frame1.avatarPreview:SetBlendMode("BLEND")
 			frame1.avatarPreview2:SetBlendMode("BLEND")
 			return true
 		end)
 		frame1.chooseAvatarButton:SetHook("OnMouseDown", function()
-			local avatar_x_anchor = window.right_start_at
-			frame1.avatarPreview:SetPoint(avatar_x_anchor+2, -158)
-			frame1.avatarPreview2:SetPoint(avatar_x_anchor+2, -160)
-			frame1.avatarNickname:SetPoint(avatar_x_anchor+110, -192)
-			frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -9, -11)
+			frame1.avatarPreview:SetPoint(avatar_x_anchor2+2, -158)
+			frame1.avatarPreview2:SetPoint(avatar_x_anchor2+2, -160)
+			frame1.avatarNickname:SetPoint(avatar_x_anchor2+110, -192)
+			frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -49, -26)
 		end)
 		frame1.chooseAvatarButton:SetHook("OnMouseUp", function()
-			local avatar_x_anchor = window.right_start_at
-			frame1.avatarPreview:SetPoint(avatar_x_anchor+1, -157)
-			frame1.avatarPreview2:SetPoint(avatar_x_anchor+1, -159)
-			frame1.avatarNickname:SetPoint(avatar_x_anchor+109, -191)
-			frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -10, -10)
+			frame1.avatarPreview:SetPoint(avatar_x_anchor2+1, -157)
+			frame1.avatarPreview2:SetPoint(avatar_x_anchor2+1, -159)
+			frame1.avatarNickname:SetPoint(avatar_x_anchor2+109, -191)
+			frame1.ChooseAvatarLabel:SetPoint("topright", frame1.chooseAvatarButton, "topright", -50, -25)
 		end)
 		
 		--window:CreateLineBackground2(frame1, "chooseAvatarButton", "chooseAvatarButton", Loc["STRING_OPTIONS_AVATAR_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
@@ -3478,7 +3485,7 @@ function window:CreateFrame1()
 		
 	--> update speed
 
-		local s = g:NewSlider(frame1, _, "$parentSliderUpdateSpeed", "updatespeedSlider", SLIDER_WIDTH, 20, 0.050, 3, 0.050, _details.update_speed, true)
+		local s = g:NewSlider(frame1, _, "$parentSliderUpdateSpeed", "updatespeedSlider", SLIDER_WIDTH, 20, 0.05, 3, 0.05, _details.update_speed, true)
 		s:SetBackdrop(slider_backdrop)
 		s:SetBackdropColor(unpack(slider_backdrop_color))
 		
@@ -3506,39 +3513,37 @@ function window:CreateFrame1()
 		window:CreateLineBackground2(frame1, "updatespeedSlider", "updatespeedLabel", Loc["STRING_OPTIONS_WINDOWSPEED_DESC"])
 		
 	--> window controls
-		
-		local buttons_width = 160
-		
+
 		--lock unlock
-			g:NewButton(frame1, _, "$parentLockButton", "LockButton", buttons_width, 18, _details.lock_instance_function, nil, nil, nil, Loc["STRING_OPTIONS_WC_LOCK"], 1)
-			frame1.LockButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentLockButton", "LockButton", window.buttons_width, 18, _details.lock_instance_function, nil, nil, nil, Loc["STRING_OPTIONS_WC_LOCK"], 1)
+			frame1.LockButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "LockButton", "LockButton", Loc["STRING_OPTIONS_WC_LOCK_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.LockButton:SetIcon([[Interface\AddOns\Details\images\PetBattle-LockIcon]], nil, nil, nil, {0.0703125, 0.9453125, 0.0546875, 0.9453125})
+			frame1.LockButton:SetIcon([[Interface\AddOns\Details\images\PetBattle-LockIcon]], nil, nil, nil, {0.0703125, 0.9453125, 0.0546875, 0.9453125}, nil, nil, 2)
 			frame1.LockButton:SetTextColor(button_color_rgb)
 			
 		--break snap
-			g:NewButton(frame1, _, "$parentBreakSnapButton", "BreakSnapButton", buttons_width, 18, _G.DetailsOptionsWindow.instance.Ungroup, -1, nil, nil, Loc["STRING_OPTIONS_WC_UNSNAP"], 1)
-			frame1.BreakSnapButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentBreakSnapButton", "BreakSnapButton", window.buttons_width, 18, _G.DetailsOptionsWindow.instance.Ungroup, -1, nil, nil, Loc["STRING_OPTIONS_WC_UNSNAP"], 1)
+			frame1.BreakSnapButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "BreakSnapButton", "BreakSnapButton", Loc["STRING_OPTIONS_WC_UNSNAP_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.BreakSnapButton:SetIcon([[Interface\AddOns\Details\images\icons]], nil, nil, nil, {160/512, 179/512, 142/512, 162/512})
+			frame1.BreakSnapButton:SetIcon([[Interface\AddOns\Details\images\icons]], nil, nil, nil, {160/512, 179/512, 142/512, 162/512}, nil, nil, 2)
 			frame1.BreakSnapButton:SetTextColor(button_color_rgb)
 
 		--close
-			g:NewButton(frame1, _, "$parentCloseButton", "CloseButton", buttons_width, 18, _details.close_instance_func, _G.DetailsOptionsWindow.instance, nil, nil, Loc["STRING_OPTIONS_WC_CLOSE"], 1)
-			frame1.CloseButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentCloseButton", "CloseButton", window.buttons_width, 18, _details.close_instance_func, _G.DetailsOptionsWindow.instance, nil, nil, Loc["STRING_OPTIONS_WC_CLOSE"], 1)
+			frame1.CloseButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "CloseButton", "CloseButton", Loc["STRING_OPTIONS_WC_CLOSE_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.CloseButton:SetIcon([[Interface\Buttons\UI-Panel-MinimizeButton-Up]], nil, nil, nil, {0.143125, 0.8653125, 0.1446875, 0.8653125})
+			frame1.CloseButton:SetIcon([[Interface\Buttons\UI-Panel-MinimizeButton-Up]], nil, nil, nil, {0.143125, 0.8653125, 0.1446875, 0.8653125}, nil, nil, 2)
 			frame1.CloseButton:SetTextColor(button_color_rgb)
 			
 		--create
-			g:NewButton(frame1, _, "$parentCreateWindowButton", "CreateWindowButton", buttons_width, 18, function() _details.Createinstance(nil, nil, true) end, nil, nil, nil, Loc["STRING_OPTIONS_WC_CREATE"], 1)
-			frame1.CreateWindowButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentCreateWindowButton", "CreateWindowButton", window.buttons_width, 18, function() _details.Createinstance(nil, nil, true) end, nil, nil, nil, Loc["STRING_OPTIONS_WC_CREATE"], 1)
+			frame1.CreateWindowButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "CreateWindowButton", "CreateWindowButton", Loc["STRING_OPTIONS_WC_CREATE_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.CreateWindowButton:SetIcon([[Interface\Buttons\UI-AttributeButton-Encourage-Up]])
+			frame1.CreateWindowButton:SetIcon([[Interface\Buttons\UI-AttributeButton-Encourage-Up]], nil, nil, nil, nil, nil, nil, 2)
 			frame1.CreateWindowButton:SetTextColor(button_color_rgb)
 			
 		--set color
@@ -3557,11 +3562,11 @@ function window:CreateFrame1()
 				_details.gump:ColorPick(_G.DetailsOptionsWindow1SetWindowColorButton, r, g, b, a, windowcolor_callback)
 			end
 		
-			g:NewButton(frame1, _, "$parentSetWindowColorButton", "SetWindowColorButton", buttons_width, 18, change_color, nil, nil, nil, "Change Color", 1)
-			frame1.SetWindowColorButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentSetWindowColorButton", "SetWindowColorButton", window.buttons_width, 18, change_color, nil, nil, nil, "Change Color", 1)
+			frame1.SetWindowColorButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "SetWindowColorButton", "SetWindowColorButton", "Shortcut to modify the window color.\nFor more options check out |cFFFFFF00Window Settings|r section.", nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.SetWindowColorButton:SetIcon([[Interface\AddOns\Details\images\icons]], nil, nil, nil, {0.640625, 0.6875, 0.630859375, 0.677734375})
+			frame1.SetWindowColorButton:SetIcon([[Interface\AddOns\Details\images\icons]], 10, 10, nil, {0.640625, 0.6875, 0.630859375, 0.677734375}, nil, nil, 4)
 			frame1.SetWindowColorButton:SetTextColor(button_color_rgb)
 			
 		--erase data
@@ -3592,19 +3597,19 @@ function window:CreateFrame1()
 			window:CreateLineBackground2(frame1, "EraseDataDropdown", "EraseDataLabel", Loc["STRING_OPTIONS_ED_DESC"])
 		
 		--config bookmarks
-			g:NewButton(frame1, _, "$parentBookmarkButton", "BookmarkButton", buttons_width, 18, _details.OpenBookmarkConfig, nil, nil, nil, Loc["STRING_OPTIONS_WC_BOOKMARK"], 1)
-			frame1.BookmarkButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentBookmarkButton", "BookmarkButton", window.buttons_width, 18, _details.OpenBookmarkConfig, nil, nil, nil, Loc["STRING_OPTIONS_WC_BOOKMARK"], 1)
+			frame1.BookmarkButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "BookmarkButton", "BookmarkButton", Loc["STRING_OPTIONS_WC_BOOKMARK_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.BookmarkButton:SetIcon([[Interface\Glues\CharacterSelect\Glues-AddOn-Icons]], nil, nil, nil, {0.75, 1, 0, 1})
+			frame1.BookmarkButton:SetIcon([[Interface\Glues\CharacterSelect\Glues-AddOn-Icons]], nil, nil, nil, {0.75, 1, 0, 1}, nil, nil, 2)
 			frame1.BookmarkButton:SetTextColor(button_color_rgb)
 
 		--config class colors
-			g:NewButton(frame1, _, "$parentClassColorsButton", "ClassColorsButton", buttons_width, 18, _details.OpenClassColorsConfig, nil, nil, nil, Loc["STRING_OPTIONS_CHANGE_CLASSCOLORS"], 1)
-			frame1.ClassColorsButton:InstallCustomTexture()
+			g:NewButton(frame1, _, "$parentClassColorsButton", "ClassColorsButton", window.buttons_width, 18, _details.OpenClassColorsConfig, nil, nil, nil, Loc["STRING_OPTIONS_CHANGE_CLASSCOLORS"], 1)
+			frame1.ClassColorsButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 			window:CreateLineBackground2(frame1, "ClassColorsButton", "ClassColorsButton", Loc["STRING_OPTIONS_CHANGE_CLASSCOLORS_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 			
-			frame1.ClassColorsButton:SetIcon([[Interface\AddOns\Details\images\icons]], nil, nil, nil, {430/512, 459/512, 4/512, 30/512}) -- , "orange"
+			frame1.ClassColorsButton:SetIcon([[Interface\AddOns\Details\images\icons]], nil, nil, nil, {430/512, 459/512, 4/512, 30/512}, nil, nil, 2) -- , "orange"
 			frame1.ClassColorsButton:SetTextColor(button_color_rgb)
 			
 	--> anchors
@@ -3627,9 +3632,9 @@ function window:CreateFrame1()
 		frame1.nicknameLabel:SetPoint(avatar_x_anchor, -115)
 		frame1.chooseAvatarButton:SetPoint(avatar_x_anchor+1, -140)
 		
-		frame1.avatarPreview:SetPoint(avatar_x_anchor+1, -157)
-		frame1.avatarPreview2:SetPoint(avatar_x_anchor+1, -159)
-		frame1.avatarNickname:SetPoint(avatar_x_anchor+109, -191)
+		frame1.avatarPreview:SetPoint(avatar_x_anchor2+1, -157)
+		frame1.avatarPreview2:SetPoint(avatar_x_anchor2+1, -159)
+		frame1.avatarNickname:SetPoint(avatar_x_anchor2+109, -191)
 		
 		frame1.realmNameLabel:SetPoint(avatar_x_anchor, -235)
 		
@@ -4173,9 +4178,9 @@ function window:CreateFrame13()
 			_details:ScheduleTimer("RefreshOptionsAfterProfileReset", 1)
 		end
 		
-		local profile_reset_button = g:NewButton(frame13, _, "$parentProfileResetButton", "profileResetButton", 128, 19, reset_profile, nil, nil, nil, Loc["STRING_OPTIONS_PROFILES_RESET"])
-		profile_reset_button:InstallCustomTexture()
-		frame13.profileResetButton:SetIcon([[Interface\AddOns\Details\images\UI-RefreshButton]], 14, 14, nil, {0, 1, 0, 1}, nil, 4)
+		local profile_reset_button = g:NewButton(frame13, _, "$parentProfileResetButton", "profileResetButton", window.buttons_width, 18, reset_profile, nil, nil, nil, Loc["STRING_OPTIONS_PROFILES_RESET"])
+		profile_reset_button:InstallCustomTexture(nil, nil, nil, nil, nil, true)
+		frame13.profileResetButton:SetIcon([[Interface\AddOns\Details\images\UI-RefreshButton]], 14, 14, nil, {0, 1, 0, 0.9375}, nil, 4, 2)
 		frame13.profileResetButton:SetTextColor(button_color_rgb)
 		
 		local hiddenlabel = g:NewLabel(frame13, _, "$parentProfileResetButtonLabel", "profileResetButtonLabel", "", "GameFontHighlightLeft")
@@ -4406,7 +4411,7 @@ function window:CreateFrame3()
 		g:NewTextEntry(frame3, _, "$parentSaveStyleName", "saveStyleName", 120, 20)
 		g:NewLabel(frame3, _, "$parentSaveSkinLabel", "saveSkinLabel", Loc["STRING_OPTIONS_SAVELOAD_PNAME"], "GameFontHighlightLeft")
 		frame3.saveStyleName:SetPoint("left", frame3.saveSkinLabel, "right", 2)
-		g:NewButton(frame3, _, "$parentSaveStyleButton", "saveStyle", 50, 19, saveStyleFunc, nil, nil, nil, Loc["STRING_OPTIONS_SAVELOAD_SAVE"])
+		g:NewButton(frame3, _, "$parentSaveStyleButton", "saveStyle", 50, 18, saveStyleFunc, nil, nil, nil, Loc["STRING_OPTIONS_SAVELOAD_SAVE"])
 		frame3.saveStyle:InstallCustomTexture()
 		
 		window:CreateLineBackground2(frame3, "saveStyleName", "saveSkinLabel", Loc["STRING_OPTIONS_SAVELOAD_CREATE_DESC"])
@@ -4445,18 +4450,18 @@ function window:CreateFrame3()
 		g:NewLabel(frame3, _, "$parentmakeDefaultLabel", "makeDefaultLabel", "", "GameFontHighlightLeft")
 		
 		g:NewButton(frame3, _, "$parentToAllStyleButton", "applyToAll", 160, 18, applyToAll, nil, nil, nil, Loc["STRING_OPTIONS_SAVELOAD_APPLYTOALL"], 1)
-		frame3.applyToAll:InstallCustomTexture()
+		frame3.applyToAll:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 		window:CreateLineBackground2(frame3, "applyToAll", "applyToAll", Loc["STRING_OPTIONS_SAVELOAD_APPLYALL_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 		
 		g:NewButton(frame3, _, "$parentMakeDefaultButton", "makeDefault", 160, 18, makeDefault, nil, nil, nil, Loc["STRING_OPTIONS_SAVELOAD_MAKEDEFAULT"])
-		frame3.makeDefault:InstallCustomTexture()
+		frame3.makeDefault:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 		window:CreateLineBackground2(frame3, "makeDefault", "makeDefault", Loc["STRING_OPTIONS_SAVELOAD_STD_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 		
 		frame3.toAllStyleLabel:SetPoint("left", frame3.applyToAll, "left")
 		frame3.makeDefaultLabel:SetPoint("left", frame3.makeDefault, "left")
 		
-		frame3.makeDefault:SetIcon([[Interface\Buttons\UI-CheckBox-Check]], 14, 14, nil, {4/32, 28/32, 4/32, 28/32}, "yellow", 4)
-		frame3.applyToAll:SetIcon([[Interface\AddOns\Details\images\UI-HomeButton]], 14, 14, nil, {1/16, 14/16, 0, 1}, nil, 4)
+		frame3.makeDefault:SetIcon([[Interface\Buttons\UI-CheckBox-Check]], 14, 14, nil, {4/32, 28/32, 4/32, 28/32}, "yellow", 4, 2)
+		frame3.applyToAll:SetIcon([[Interface\AddOns\Details\images\UI-HomeButton]], 14, 14, nil, {1/16, 14/16, 0, 1}, nil, 4, 2)
 		frame3.makeDefault:SetTextColor(button_color_rgb)
 		frame3.applyToAll:SetTextColor(button_color_rgb)
 
@@ -4627,8 +4632,8 @@ function window:CreateFrame3()
 		end
 	
 		g:NewButton(frame3, _, "$parentImportButton", "ImportButton", 160, 18, import_saved, nil, nil, nil, Loc["STRING_OPTIONS_SAVELOAD_IMPORT"])
-		frame3.ImportButton:InstallCustomTexture()
-		frame3.ImportButton:SetIcon([[Interface\Buttons\UI-GuildButton-PublicNote-Up]], 14, 14, nil, nil, nil, 4)
+		frame3.ImportButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
+		frame3.ImportButton:SetIcon([[Interface\Buttons\UI-GuildButton-PublicNote-Up]], 14, 14, nil, nil, nil, 4, 2)
 		frame3.ImportButton:SetTextColor(button_color_rgb)
 		
 		g:NewLabel(frame3, _, "$parentImportLabel", "ImportLabel", "", "GameFontHighlightLeft")
@@ -6229,7 +6234,7 @@ function window:CreateFrame7()
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Appearance - Reset Instance Close ~8
+-- Appearance - Rows: Advanced ~8
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function window:CreateFrame8()
@@ -6286,7 +6291,7 @@ function window:CreateFrame9()
 					end
 				end
 			end
-			g:NewButton(frame9, _, "$parentEditImage", "editImage", 200, 18, startImageEdit, nil, nil, nil, Loc["STRING_OPTIONS_EDITIMAGE"])
+			g:NewButton(frame9, _, "$parentEditImage", "editImage", window.buttons_width, 18, startImageEdit, nil, nil, nil, Loc["STRING_OPTIONS_EDITIMAGE"])
 			
 			--> agora o dropdown do alinhamento
 			local onSelectAnchor = function(_, instance, anchor)
@@ -6479,10 +6484,10 @@ function window:CreateFrame9()
 		--
 		frame9.anchorDropdown:SetPoint("left", frame9.anchorLabel, "right", 2)
 		--
-		frame9.editImage:InstallCustomTexture()
+		frame9.editImage:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 		window:CreateLineBackground2(frame9, "editImage", "editImage", Loc["STRING_OPTIONS_WP_EDIT_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 		frame9.editImage:SetTextColor(button_color_rgb)
-		frame9.editImage:SetIcon([[Interface\AddOns\Details\images\icons]], 14, 14, nil, {469/512, 505/512, 290/512, 322/512}, nil, 4)
+		frame9.editImage:SetIcon([[Interface\AddOns\Details\images\icons]], 14, 14, nil, {469/512, 505/512, 290/512, 322/512}, nil, 4, 2)
 
 		window:CreateLineBackground2(frame9, "useBackgroundSlider", "enablewallpaperLabel", Loc["STRING_OPTIONS_WP_ENABLE_DESC"])
 		
@@ -6715,11 +6720,11 @@ function window:CreateFrame9()
 			DetailsLoadWallpaperImage:Show()
 		end
 		
-		g:NewButton(frame9, _, "$parentLoadImage", "LoadImage", 200, 18, load_image, nil, nil, nil, Loc["STRING_OPTIONS_WALLPAPER_LOAD"])
-		frame9.LoadImage:InstallCustomTexture()
+		g:NewButton(frame9, _, "$parentLoadImage", "LoadImage", window.buttons_width, 18, load_image, nil, nil, nil, Loc["STRING_OPTIONS_WALLPAPER_LOAD"])
+		frame9.LoadImage:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 		window:CreateLineBackground2(frame9, "LoadImage", "LoadImage", Loc["STRING_OPTIONS_WALLPAPER_LOAD_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 		frame9.LoadImage:SetTextColor(button_color_rgb)
-		frame9.LoadImage:SetIcon([[Interface\AddOns\Details\images\icons]], 11, 14, nil, {437/512, 467/512, 191/512, 239/512}, nil, 5)		
+		frame9.LoadImage:SetIcon([[Interface\AddOns\Details\images\icons]], 10, 13, nil, {437/512, 467/512, 191/512, 239/512}, nil, 5, 3)
 		
 	--> Anchors
 	
@@ -7029,7 +7034,7 @@ function window:CreateFrame10()
 		--window:CreateLineBackground2(frame10, "animateSlider", "animateLabel", Loc["STRING_OPTIONS_ANIMATEBARS_DESC"])
 		
 		--update speed
-		local s = g:NewSlider(frame10, _, "$parentSliderUpdateSpeed", "updatespeedSlider", SLIDER_WIDTH, 20, 0.050, 3, 0.050, _details.update_speed, true)
+		local s = g:NewSlider(frame10, _, "$parentSliderUpdateSpeed", "updatespeedSlider", SLIDER_WIDTH, 20, 0.05, 3, 0.05, _details.update_speed, true)
 		s:SetBackdrop(slider_backdrop)
 		s:SetBackdropColor(unpack(slider_backdrop_color))
 		
@@ -7390,7 +7395,7 @@ function window:CreateFrame11()
 		--esquema para activer ou desactiver certos cooldowns
 			--botão que open um gump estilo welcome, com as spells pegas na list de cooldowns
 		
-		g:NewButton(frame11, _, "$parentCooldownIgnoreButton", "CooldownIgnoreButton", 140, 16, function()
+		g:NewButton(frame11, _, "$parentCooldownIgnoreButton", "CooldownIgnoreButton", window.buttons_width, 18, function()
 			if (not DetailsAnnounceSelectCooldownIgnored) then
 				DetailsAnnounceSelectCooldownIgnored = CreateFrame("frame", "DetailsAnnounceSelectCooldownIgnored", UIParent)
 				local f = DetailsAnnounceSelectCooldownIgnored
@@ -7488,10 +7493,10 @@ function window:CreateFrame11()
 		
 		end, nil, nil, nil, Loc["STRING_OPTIONS_RT_COOLDOWNS_SELECT"], 1)
 		
-		frame11.CooldownIgnoreButton:InstallCustomTexture()
+		frame11.CooldownIgnoreButton:InstallCustomTexture(nil, nil, nil, nil, nil, true)
 		window:CreateLineBackground2(frame11, "CooldownIgnoreButton", "CooldownIgnoreButton", Loc["STRING_OPTIONS_RT_COOLDOWNS_SELECT_DESC"], nil, {1, 0.8, 0}, button_color_rgb)
 		
-		frame11.CooldownIgnoreButton:SetIcon([[Interface\AddOns\Details\images\UI-DropDownRadioChecks]], nil, nil, nil, {0, 0.5, 0, 0.5})
+		frame11.CooldownIgnoreButton:SetIcon([[Interface\AddOns\Details\images\UI-DropDownRadioChecks]], nil, nil, nil, {0, 0.5, 0, 0.5}, nil, nil, 2)
 		frame11.CooldownIgnoreButton:SetTextColor(button_color_rgb)
 	
 	--deaths
@@ -8240,8 +8245,8 @@ function window:update_all(editing_instance, section)
 	_G.DetailsOptionsWindow6MicroDisplayCenterDropdown.MyObject:SetFixedParameter(editing_instance)
 	_G.DetailsOptionsWindow6MicroDisplayRightDropdown.MyObject:SetFixedParameter(editing_instance)
 
-	--_detalhes.StatusBar.Plugins[1].real_name
-	--_detalhes.StatusBar.Plugins[1].__name
+	--_details.StatusBar.Plugins[1].real_name
+	--_details.StatusBar.Plugins[1].__name
 
 	window:update_microframes()
 	
@@ -8276,11 +8281,7 @@ function window:update_all(editing_instance, section)
 	_G.DetailsOptionsWindow7:update_menuanchor_xy(editing_instance)
 
 	--> window 8
---	_G.DetailsOptionsWindow8
 
-	--instanceTextColorLabel
-
-	
 	--> window 10	
 	_G.DetailsOptionsWindow10SliderMemory.MyObject:SetValue(_details.memory_threshold)
 	_G.DetailsOptionsWindow10PanicModeSlider.MyObject:SetValue(_details.segments_panic_mode)
@@ -8638,6 +8639,14 @@ function window:update_all(editing_instance, section)
 	_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject.texture = background
 	_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject.texcoord = cords
 	_G.DetailsOptionsWindow1AvatarPreviewTexture2.MyObject:SetVertexColor(unpack(color))
+
+	if (not avatar:find ("UI%-EJ%-BOSS%-Default")) then
+		_G.DetailsOptionsWindow1.ChooseAvatarLabel:SetTextColor(1, 0.93, 0.74, 0)
+		_G.DetailsOptionsWindow1.HaveAvatar = true
+	else
+		_G.DetailsOptionsWindow1.ChooseAvatarLabel:SetTextColor(1, 0.93, 0.74)
+		_G.DetailsOptionsWindow1.HaveAvatar = false
+	end
 
 	local nick = _details:GetNickname(UnitGUID("player"), UnitName("player"), true)
 	_G.DetailsOptionsWindow1AvatarNicknameLabel:SetText(nick)

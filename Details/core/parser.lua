@@ -2617,7 +2617,12 @@
 	
 	-- ~encounter
 	function _details:ENCOUNTER_START(id, name, diff, size)
-	
+
+
+		if (_details.debug) then
+			_details:Msg("(debug) ENCOUNTER_START event triggered.")
+		end
+
 		_details.latest_ENCOUNTER_END = _details.latest_ENCOUNTER_END or 0
 		if (_details.latest_ENCOUNTER_END + 10 > _details._time) then
 			return
@@ -2683,7 +2688,9 @@
 	
 	function _details:ENCOUNTER_END(id, encounterName, wipe)
 		
-		--local encounterID, encounterName, difficultyID, raidSize, endStatus = _select(1, ...)
+		if (_details.debug) then
+			_details:Msg("(debug) ENCOUNTER_END event triggered.")
+		end
 	
 		_details:Msg("encounter against|cFFFFC000", encounterName, "|rended.")
 	
@@ -2810,7 +2817,9 @@
 		end
 
 		if (_details.schedule_store_boss_encounter) then
-			pcall(_details.StoreEncounter)
+			if (not _details.logoff_saving_data) then
+				pcall(_details.StoreEncounter)
+			end
 			_details.schedule_store_boss_encounter = nil
 		end
 
@@ -2970,47 +2979,54 @@
 	_details.listener:SetScript("OnEvent", _details.OnEvent)
 	
 	--> logout function ~save
-		function _details:PLAYER_LOGOUT(...)
-		
-			--> close info window
-				if (_details.CloseWindowInfo) then
-					_details:CloseWindowInfo()
-				end
+	local saver = CreateFrame("frame", nil, UIParent)
+	saver:RegisterEvent("PLAYER_LOGOUT")
+	saver:SetScript("OnEvent", function (...)
+		local saver_error = function(errortext)
+			_details = _details_global or {}
+			_details_global.exit_errors = _details_global.exit_errors or {}
 
-			--> do not save window pos
-				for id, instance in _details:ListInstances() do
-					if (instance.baseframe) then
-						instance.baseframe:SetUserPlaced(false)
-					end
-				end
-				
-			--> leave combat start save tables
-				if (_details.in_combat and _details.table_current) then 
-					_details:EndCombat()
-					_details.can_panic_mode = true
-				end
-				
-				if (_details.CheckSwitchOnLogon and _details.table_instances[1] and getmetatable(_details.table_instances[1])) then
-					_details:CheckSwitchOnLogon()
-				end
-				
-				if (_details.wipe_full_config) then
-					_details_global = nil
-					_details_database = nil
-					return
-				end
-			
-			--> save the config
-				_details:SaveConfig()
-				_details:SaveProfile()
-
-			--> save the nicktag cache
-				_details_database.nick_tag_cache = table_deepcopy(_details_database.nick_tag_cache)
+			tinsert(_details_global.exit_errors, 1, _details.userversion .. " " .. errortext)
+			tremove(_details_global.exit_errors, 6)
 		end
-		
-		local saver = CreateFrame("frame", "_details_saver_frame", UIParent)
-		saver:RegisterEvent("PLAYER_LOGOUT")
-		saver:SetScript("OnEvent", _details.PLAYER_LOGOUT)
+
+		_details.logoff_saving_data = true
+
+		--> close info window
+		if (_details.CloseWindowInfo) then
+			xpcall(_details.CloseWindowInfo, saver_error)
+		end
+
+		--> do not save window pos
+		for id, instance in _details:ListInstances() do
+			if (instance.baseframe) then
+				instance.baseframe:SetUserPlaced(false)
+			end
+		end
+				
+		--> leave combat start save tables
+		if (_details.in_combat and _details.table_current) then
+			xpcall(details:EndCombat(), saver_error)
+			_details.can_panic_mode = true
+		end
+
+		if (_details.CheckSwitchOnLogon and _details.table_instances[1] and getmetatable(_details.table_instances[1])) then
+			xpcall(_details:CheckSwitchOnLogon(), saver_error)
+		end
+
+		if (_details.wipe_full_config) then
+			_details_global = nil
+			_details_database = nil
+			return
+		end
+
+		--> save the config
+		xpcall(_details:SaveConfig(), saver_error)
+		xpcall(_details:SaveProfile(), saver_error)
+
+		--> save the nicktag cache
+		_details_database.nick_tag_cache = table_deepcopy(_details_database.nick_tag_cache)
+	end)
 		
 	--> end
 

@@ -17,6 +17,8 @@
 	
 	local gump = _details.gump --details local
 
+	local _
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
 
@@ -74,9 +76,9 @@
 				
 				if (v_proxima > v) then
 					if (row.animation_end >= v_proxima) then
-						row.statusbar:SetValue(v_proxima)
+						row:SetValue(v_proxima)
 					else
-						row.statusbar:SetValue(row.animation_end)
+						row:SetValue(row.animation_end)
 						row_proxima.statusbar:SetValue(row.animation_end)
 					end
 				end
@@ -116,7 +118,7 @@
 
 	function _details:FazerAnimacao_Esquerda(elapsed)
 		self.start = self.start - 1
-		self.statusbar:SetValue(self.start)
+		self:SetValue(self.start)
 		if (self.start-1 <= self.stop) then
 			self.has_animation = false
 			self:SetScript("OnUpdate", nil)
@@ -125,7 +127,7 @@
 	
 	function _details:FazerAnimacao_Direita(elapsed)
 		self.start = self.start + 1
-		self.statusbar:SetValue(self.start)
+		self:SetValue(self.start)
 		if (self.start+1 >= self.stop) then
 			self.has_animation = false
 			self:SetScript("OnUpdate", nil)
@@ -850,7 +852,7 @@
 				--GameCooltip:Hide()
 			end
 			
-			local reset = gump:NewLabel(panel, _, nil, nil, "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:" .. 20 .. ":" .. 20 .. ":0:1:512:512:8:70:328:409|t " .. Loc["STRING_OPTIONS_CLASSCOLOR_RESET"])
+			local reset = gump:NewLabel(panel, panel, nil, nil, "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:" .. 20 .. ":" .. 20 .. ":0:1:512:512:8:70:328:409|t " .. Loc["STRING_OPTIONS_CLASSCOLOR_RESET"])
 			reset:SetPoint("bottomright", panel, "bottomright", -23, 38)
 			local reset_texture = gump:CreateImage(panel,[[Interface\MONEYFRAME\UI-MONEYFRAME-BORDER]], 138, 45, "border")
 			reset_texture:SetPoint("center", reset, "center", 0, -7)

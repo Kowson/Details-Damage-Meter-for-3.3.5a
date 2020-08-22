@@ -492,9 +492,9 @@
 		this_bar.text_left:SetSize(this_bar:GetWidth() - this_bar.text_right:GetStringWidth() - 20, 15)
 		
 		if (placing == 1) then
-			this_bar.statusbar:SetValue(100)
+			this_bar:SetValue(100)
 		else
-			this_bar.statusbar:SetValue(table[2] / instance.top * 100)
+			this_bar:SetValue(table[2] / instance.top * 100)
 		end
 		
 		if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
@@ -560,18 +560,18 @@
 			targets = ability.targets
 		end
 		
-		local container = actor.debuff_uptime_targets._ActorTable
+		local container = actor.debuff_uptime_targets
 		
-		for _, dst in _ipairs(container) do
+		for target_name, debuff_table in _ipairs(container) do
 			if (targets) then
-				local damage_dst = targets[dst.name]
+				local damage_dst = targets[target_name]
 				if (damage_dst) then
-					dst.damage = damage_dst
+					debuff_table.damage = damage_dst
 				else
-					dst.damage = 0
+					debuff_table.damage = 0
 				end
 			else
-				dst.damage = 0
+				debuff_table.damage = 0
 			end
 		end
 
@@ -585,7 +585,7 @@
 			return false;
 		end)
 		
-		actor.debuff_uptime_targets:remapear()
+		--actor.debuff_uptime_targets:remapear()
 		
 		--> prepare o cooltip
 		local GameCooltip = GameCooltip
@@ -593,16 +593,16 @@
 		GameCooltip:AddLine(Loc["STRING_VOIDZONE_TOOLTIP"], nil, nil, headerColor, nil, 12)
 		GameCooltip:AddIcon([[Interface\Addons\Details\images\icons]], 1, 1, 14, 14, 0.126953125, 0.1796875, 0, 0.0546875)
 		
-		for _, dst in _ipairs(container) do 
+		for target_name, debuff_table in _ipairs(container) do
 
-			local minutes, seconds = _math_floor(dst.uptime / 60), _math_floor(dst.uptime % 60)
+			local minutes, seconds = _math_floor(debuff_table.uptime / 60), _math_floor(debuff_table.uptime % 60)
 			if (minutes > 0) then
-				GameCooltip:AddLine(dst.name, FormatTooltipNumber(_, dst.damage) .. "(" .. minutes .. "m " .. seconds .. "s" .. ")")
+				GameCooltip:AddLine(debuff_table.name, FormatTooltipNumber(_, debuff_table.damage) .. "(" .. minutes .. "m " .. seconds .. "s" .. ")")
 			else
-				GameCooltip:AddLine(dst.name, FormatTooltipNumber(_, dst.damage) .. "(" .. seconds .. "s" .. ")")
+				GameCooltip:AddLine(debuff_table.name, FormatTooltipNumber(_, debuff_table.damage) .. "(" .. seconds .. "s" .. ")")
 			end
 			
-			local class = _details:GetClass(dst.name)
+			local class = _details:GetClass(debuff_table.name)
 			if (class) then	
 				GameCooltip:AddIcon([[Interface\AddOns\Details\images\classes_small]], nil, nil, 14, 14, unpack(_details.class_coords[class]))
 			else
@@ -670,7 +670,7 @@
 		this_bar.text_left:SetText(placing .. ". " .. self.name)
 		this_bar.text_left:SetSize(this_bar:GetWidth() - this_bar.text_right:GetStringWidth() - 20, 15)
 		
-		this_bar.statusbar:SetValue(100)
+		this_bar:SetValue(100)
 		
 		if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
 			gump:Fade(this_bar, "out")
@@ -1119,7 +1119,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			row1.text_left:SetText(Loc["STRING_TOTAL"])
 			row1.text_right:SetText(_details:ToK2(total) .. "(" .. _details:ToK(total / combat_time) .. ")")
 			
-			row1.statusbar:SetValue(100)
+			row1:SetValue(100)
 			local r, b, g = unpack(instance.total_bar.color)
 			row1.texture:SetVertexColor(r, b, g)
 			
@@ -1175,7 +1175,7 @@ function attribute_damage:RefreshWindow(instance, combat_table, force, export, r
 			row1.text_left:SetText(Loc["STRING_TOTAL"])
 			row1.text_right:SetText(_details:ToK2(total) .. "(" .. _details:ToK(total / combat_time) .. ")")
 			
-			row1.statusbar:SetValue(100)
+			row1:SetValue(100)
 			local r, b, g = unpack(instance.total_bar.color)
 			row1.texture:SetVertexColor(r, b, g)
 			
@@ -1391,7 +1391,7 @@ end
 	--> primeiro colocado
 	if (this_bar.placing == 1) then
 		if (not table_previous or table_previous ~= this_bar.my_table or force) then
-			this_bar.statusbar:SetValue(100)
+			this_bar:SetValue(100)
 			
 			if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
 				gump:Fade(this_bar, "out")
@@ -1404,13 +1404,11 @@ end
 	else
 
 		if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
-		
-			--this_bar.statusbar:SetValue(this_percentage)
 			
 			if (use_animations) then
 				this_bar.animation_end = this_percentage
 			else
-				this_bar.statusbar:SetValue(this_percentage)
+				this_bar:SetValue(this_percentage)
 				this_bar.animation_ignore = true
 			end
 				
@@ -1432,7 +1430,7 @@ end
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
 				else
-					this_bar.statusbar:SetValue(this_percentage)
+					this_bar:SetValue(this_percentage)
 					this_bar.animation_ignore = true
 				end
 			
@@ -1445,7 +1443,7 @@ end
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
 				else
-					this_bar.statusbar:SetValue(this_percentage)
+					this_bar:SetValue(this_percentage)
 				end
 				this_bar.last_value = this_percentage
 				

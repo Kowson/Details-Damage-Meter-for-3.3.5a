@@ -311,6 +311,22 @@ L["STRING_NO_SPELL"] = "no spell has been used"
 L["STRING_NO_TARGET"] = "No target found."
 L["STRING_NO_TARGET_BOX"] = "No Targets Avaliable"
 L["STRING_OFFHAND_HITS"] = "Off Hand"
+L["STRING_OPTIONS_3D_ENABLED"] = "Enabled"
+L["STRING_OPTIONS_3D_LALPHA"] = "Alpha"
+L["STRING_OPTIONS_3D_LALPHA_DESC"] = [=[Adjust the amount of transparency in the lower model.
+
+|cFFFFFF00Important|r: some models ignore the amount of transparency.]=]
+L["STRING_OPTIONS_3D_LANCHOR"] = "Lower 3D Model"
+L["STRING_OPTIONS_3D_LENABLED_DESC"] = "Enabled or Disable the usage of a 3d model frame behind the bars."
+L["STRING_OPTIONS_3D_LSELECT_DESC"] = "Choose which model will be used on the lower model bar."
+L["STRING_OPTIONS_3D_SELECT"] = "Select Model"
+L["STRING_OPTIONS_3D_UALPHA"] = "Alpha"
+L["STRING_OPTIONS_3D_UALPHA_DESC"] = [=[Adjust the amount of transparency in the upper model.
+
+|cFFFFFF00Important|r: some models ignore the amount of transparency.]=]
+L["STRING_OPTIONS_3D_UANCHOR"] = "Upper 3D Model"
+L["STRING_OPTIONS_3D_UENABLED_DESC"] = "Enabled or Disable the usage of a 3d model frame above the bars."
+L["STRING_OPTIONS_3D_USELECT_DESC"] = "Choose which model will be used on the upper model bar."
 L["STRING_OPTIONS_ADVANCED"] = "Advanced"
 L["STRING_OPTIONS_ALPHAMOD_ANCHOR"] = "Transparency Modifiers:"
 L["STRING_OPTIONS_ALWAYS_USE"] = "Use On All Characters"
@@ -322,7 +338,7 @@ L["STRING_OPTIONS_ANIMATESCROLL"] = "Animate Scroll Bar"
 L["STRING_OPTIONS_ANIMATESCROLL_DESC"] = "When enabled, scrollbar uses a animation when showing up or hiding."
 L["STRING_OPTIONS_APPEARANCE"] = "Appearance"
 L["STRING_OPTIONS_ATTRIBUTE_TEXT"] = "Title Text Settings"
-L["STRING_OPTIONS_ATTRIBUTE_TEXT_DESC"] = "This options controls the title text of window."
+L["STRING_OPTIONS_ATTRIBUTE_TEXT_DESC"] = "These options controls the title text of window."
 L["STRING_OPTIONS_AUTO_SWITCH"] = "All Roles |cFFFFAA00(in combat)|r"
 L["STRING_OPTIONS_AUTO_SWITCH_COMBAT"] = "|cFFFFAA00(in combat)|r"
 L["STRING_OPTIONS_AUTO_SWITCH_DAMAGER_DESC"] = "When in damager specialization, this window show the selected attribute or plugin."
@@ -403,7 +419,7 @@ Example:
 |cFFFFFF00Scape Sequences|r: use to change color or add textures. Search 'UI escape sequences' for more information.]=]
 L["STRING_OPTIONS_BARRIGHTTEXTCUSTOM_DESC"] = "When enabled, right text is formated following the rules in the box."
 L["STRING_OPTIONS_BARS"] = "Bar General Settings"
-L["STRING_OPTIONS_BARS_DESC"] = "This options control the bar appearance."
+L["STRING_OPTIONS_BARS_DESC"] = "These options control the bar appearance."
 L["STRING_OPTIONS_BARSORT_DIRECTION"] = "Sort Direction"
 L["STRING_OPTIONS_BARSORT_DIRECTION_DESC"] = "Ascending or descending order of bar numbers."
 L["STRING_OPTIONS_BAR_SPACING"] = "Spacing"
@@ -567,7 +583,7 @@ L["STRING_OPTIONS_EDITINSTANCE"] = "Editing Window:"
 L["STRING_OPTIONS_ERASECHARTDATA"] = "Erase Charts"
 L["STRING_OPTIONS_ERASECHARTDATA_DESC"] = "During the logout, all data gathered for build the charts is erased."
 L["STRING_OPTIONS_EXTERNALS_TITLE"] = "Externals Widgets"
-L["STRING_OPTIONS_EXTERNALS_TITLE2"] = "This options controls the behavior of many foreign widgets."
+L["STRING_OPTIONS_EXTERNALS_TITLE2"] = "These options controls the behavior of many foreign widgets."
 L["STRING_OPTIONS_GENERAL"] = "General Settings"
 L["STRING_OPTIONS_GENERAL_ANCHOR"] = "General:"
 L["STRING_OPTIONS_HIDECOMBATALPHA"] = "Modify To"
@@ -717,8 +733,9 @@ L["STRING_OPTIONSMENU_PLUGINS"] = "Plugins Management"
 L["STRING_OPTIONSMENU_PROFILES"] = "Profiles"
 L["STRING_OPTIONSMENU_RAIDTOOLS"] = "Raid Tools"
 L["STRING_OPTIONSMENU_RIGHTMENU"] = "-- x -- x --"
-L["STRING_OPTIONSMENU_ROWSETTINGS"] = "Row Settings"
-L["STRING_OPTIONSMENU_ROWTEXTS"] = "Row Texts"
+L["STRING_OPTIONSMENU_ROWMODELS"] = "Rows: Advanced"
+L["STRING_OPTIONSMENU_ROWSETTINGS"] = "Rows: Settings"
+L["STRING_OPTIONSMENU_ROWTEXTS"] = "Rows: Texts"
 L["STRING_OPTIONS_MENU_SHOWBUTTONS"] = "Show Buttons"
 L["STRING_OPTIONS_MENU_SHOWBUTTONS_DESC"] = "Choose which buttons are shown on the toolbar."
 L["STRING_OPTIONSMENU_SHOWHIDE"] = "Show & Hide Settings"
@@ -755,7 +772,7 @@ L["STRING_OPTIONS_MINIMAP_ACTION_DESC"] = "Select what to do when the icon on th
 L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "Minimap:"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "Show or Hide minimap icon."
 L["STRING_OPTIONS_MISCTITLE"] = "Miscellaneous Settings"
-L["STRING_OPTIONS_MISCTITLE2"] = "This options controls several options."
+L["STRING_OPTIONS_MISCTITLE2"] = "These options controls several options."
 L["STRING_OPTIONS_NICKNAME"] = "Nickname"
 L["STRING_OPTIONS_NICKNAME_DESC"] = [=[Replace your character name.
 
@@ -787,13 +804,13 @@ L["STRING_OPTIONS_PERCENT_TYPE_DESC"] = [=[Changes the percentage method:
 |cFFFFFF00Relative Top Player|r: the percentage is relative within the amount score of the top player.]=]
 L["STRING_OPTIONS_PERFORMANCE"] = "Performance"
 L["STRING_OPTIONS_PERFORMANCE1"] = "Performance Tweaks"
-L["STRING_OPTIONS_PERFORMANCE1_DESC"] = "This options can help save some cpu usage."
+L["STRING_OPTIONS_PERFORMANCE1_DESC"] = "These options can help save some cpu usage."
 L["STRING_OPTIONS_PERFORMANCE_ANCHOR"] = "General:"
 L["STRING_OPTIONS_PERFORMANCE_ARENA"] = "Arena"
 L["STRING_OPTIONS_PERFORMANCE_BG15"] = "Battleground 15"
 L["STRING_OPTIONS_PERFORMANCE_BG40"] = "Battleground 40"
 L["STRING_OPTIONS_PERFORMANCECAPTURES"] = "Data Collector"
-L["STRING_OPTIONS_PERFORMANCECAPTURES_DESC"] = "This options are responsible for analysis and collect combat data."
+L["STRING_OPTIONS_PERFORMANCECAPTURES_DESC"] = "These options are responsible for analysis and collect combat data."
 L["STRING_OPTIONS_PERFORMANCE_DUNGEON"] = "Dungeon"
 L["STRING_OPTIONS_PERFORMANCE_ENABLE"] = "Enabled"
 L["STRING_OPTIONS_PERFORMANCE_ENABLE_DESC"] = "If enable, this settings is apply when your raid match with the raid type selected."
@@ -842,7 +859,7 @@ L["STRING_OPTIONS_PROFILES_RESET_DESC"] = "Reset all settings of the selected pr
 L["STRING_OPTIONS_PROFILES_SELECT"] = "Select Profile"
 L["STRING_OPTIONS_PROFILES_SELECT_DESC"] = "Load a profile, all settings are overwrite by the new profile settings."
 L["STRING_OPTIONS_PROFILES_TITLE"] = "Profiles"
-L["STRING_OPTIONS_PROFILES_TITLE_DESC"] = "This options allow you share the same settings between different characters."
+L["STRING_OPTIONS_PROFILES_TITLE_DESC"] = "These options allow you share the same settings between different characters."
 L["STRING_OPTIONS_PROFILE_USENEW"] = "Use New Profile"
 L["STRING_OPTIONS_PS_ABBREVIATE"] = "Abbreviation Type"
 L["STRING_OPTIONS_PS_ABBREVIATE_COMMA"] = "Comma"
@@ -917,6 +934,8 @@ L["STRING_OPTIONS_RESET_TEXTSIZE_DESC"] = [=[Modify the reset button text size.
 
 Only applied when reset button is hosted by this window.]=]
 L["STRING_OPTIONS_RESET_TO_DEFAULT"] = "Reset to Default"
+L["STRING_OPTIONS_ROWADV_TITLE"] = "Row Advanced Settings"
+L["STRING_OPTIONS_ROWADV_TITLE_DESC"] = "These options allow you modify the rows more deeply."
 L["STRING_OPTIONS_ROW_SETTING_ANCHOR"] = "General:"
 L["STRING_OPTIONS_RT_COOLDOWN1"] = "%s used on %s!"
 L["STRING_OPTIONS_RT_COOLDOWN2"] = "%s used!"
@@ -980,7 +999,7 @@ L["STRING_OPTIONS_SAVELOAD_APPLYTOALL"] = "Apply in all Windows"
 L["STRING_OPTIONS_SAVELOAD_CREATE_DESC"] = [=[Type the custom skin name on the field and click on create button.
 
 This process create a custom skin which you can load on others windows or just save for another time.]=]
-L["STRING_OPTIONS_SAVELOAD_DESC"] = "This options allow you to save or load predefined settings."
+L["STRING_OPTIONS_SAVELOAD_DESC"] = "These options allow you to save or load predefined settings."
 L["STRING_OPTIONS_SAVELOAD_ERASE_DESC"] = "This option erase a previous saved skin."
 L["STRING_OPTIONS_SAVELOAD_EXPORT"] = "Export"
 L["STRING_OPTIONS_SAVELOAD_EXPORT_COPY"] = "Press CTRL + C"
@@ -1007,7 +1026,7 @@ By default, Details! scroll bars are replaced by a mechanism that stretches the 
 
 The |cFFFFFF00stretch handle|r is outside over window button/menu (left of close button).]=]
 L["STRING_OPTIONS_SEGMENTSSAVE"] = "Segments Saved"
-L["STRING_OPTIONS_SEGMENTSSAVE_DESC"] = [=[This options controls how many segments you wish save between game sesions.
+L["STRING_OPTIONS_SEGMENTSSAVE_DESC"] = [=[These options controls how many segments you wish save between game sesions.
 
 High values can make your character logoff take more time
 
@@ -1028,7 +1047,7 @@ L["STRING_OPTIONS_SHOW_TOTALBAR_INGROUP"] = "Only in Group"
 L["STRING_OPTIONS_SHOW_TOTALBAR_INGROUP_DESC"] = "Total bar aren't shown if you isn't in a group."
 L["STRING_OPTIONS_SIZE"] = "Size"
 L["STRING_OPTIONS_SKIN_A"] = "Skin Settings"
-L["STRING_OPTIONS_SKIN_A_DESC"] = "This options allows you to change the skin."
+L["STRING_OPTIONS_SKIN_A_DESC"] = "These options allows you to change the skin."
 L["STRING_OPTIONS_SKIN_ELVUI_BUTTON1"] = "Align Within Right Chat"
 L["STRING_OPTIONS_SKIN_ELVUI_BUTTON1_DESC"] = "Move and resize the windows |cFFFFFF00#1|r and |cFFFFFF00#2|r placing over the right chat window."
 L["STRING_OPTIONS_SKIN_ELVUI_BUTTON2"] = "Set Tooltip Border to Black"
@@ -1086,7 +1105,7 @@ L["STRING_OPTIONS_SWITCH_ANCHOR"] = "Switches:"
 L["STRING_OPTIONS_SWITCHINFO"] = "|cFFF79F81 LEFT DISABLED|r  |cFF81BEF7 RIGHT ENABLED|r"
 L["STRING_OPTIONS_TESTBARS"] = "Create Test Bars"
 L["STRING_OPTIONS_TEXT"] = "Bar Text Settings"
-L["STRING_OPTIONS_TEXT_DESC"] = "This options control the appearance of the window row texts."
+L["STRING_OPTIONS_TEXT_DESC"] = "These options control the appearance of the window row texts."
 L["STRING_OPTIONS_TEXTEDITOR_CANCEL"] = "Cancel"
 L["STRING_OPTIONS_TEXTEDITOR_CANCEL_TOOLTIP"] = "Finish the editing and ignore any change in the code."
 L["STRING_OPTIONS_TEXTEDITOR_COLOR"] = "Color"
@@ -1143,9 +1162,9 @@ L["STRING_OPTIONS_TIMEMEASURE_DESC"] = [=[|cFFFFFF00Activity|r: the timer of eac
 
 |cFFFFFF00Effective|r: used on rankings, this method uses the elapsed combat time for measure the Dps and Hps of all raid members.]=]
 L["STRING_OPTIONS_TOOLBAR2_SETTINGS"] = "Right Menu Settings"
-L["STRING_OPTIONS_TOOLBAR2_SETTINGS_DESC"] = "This options change the reset, window and close buttons from the toolbar menu on the top of the window."
+L["STRING_OPTIONS_TOOLBAR2_SETTINGS_DESC"] = "These options change the reset, window and close buttons from the toolbar menu on the top of the window."
 L["STRING_OPTIONS_TOOLBAR_SETTINGS"] = "Left Menu Settings"
-L["STRING_OPTIONS_TOOLBAR_SETTINGS_DESC"] = "This options change the main menu on the top of the window."
+L["STRING_OPTIONS_TOOLBAR_SETTINGS_DESC"] = "These options change the main menu on the top of the window."
 L["STRING_OPTIONS_TOOLBARSIDE"] = "Toolbar Anchor"
 L["STRING_OPTIONS_TOOLBARSIDE_DESC"] = [=[Places the toolbar (a.k.a title bar) on the top or bottom side of window.
 
@@ -1210,7 +1229,7 @@ L["STRING_OPTIONS_TOOLTIPS_OFFSETY_DESC"] = "How far vertically the tooltip is p
 L["STRING_OPTIONS_TOOLTIPS_SHOWAMT"] = "Show Amount"
 L["STRING_OPTIONS_TOOLTIPS_SHOWAMT_DESC"] = "Shows a number indicating how many spells, targets and pets have in the tooltip."
 L["STRING_OPTIONS_TOOLTIPS_TITLE"] = "Tooltips"
-L["STRING_OPTIONS_TOOLTIPS_TITLE_DESC"] = "This options controls the appearance of tooltips."
+L["STRING_OPTIONS_TOOLTIPS_TITLE_DESC"] = "These options controls the appearance of tooltips."
 L["STRING_OPTIONS_TOTALBAR_ANCHOR"] = "Total Bar:"
 L["STRING_OPTIONS_WALLPAPER_ALPHA"] = "Alpha:"
 L["STRING_OPTIONS_WALLPAPER_ANCHOR"] = "Wallpaper Selection:"
@@ -1276,7 +1295,7 @@ L["STRING_OPTIONS_WINDOWSPEED_DESC"] = [=[Seconds between each update on opened 
 
 |cFFFFFF003.0|r: update once every 3 seconds.]=]
 L["STRING_OPTIONS_WINDOW_TITLE"] = "Window Settings"
-L["STRING_OPTIONS_WINDOW_TITLE_DESC"] = "This options control the window appearance of selected window."
+L["STRING_OPTIONS_WINDOW_TITLE_DESC"] = "These options control the window appearance of selected window."
 L["STRING_OPTIONS_WP"] = "Wallpaper Settings"
 L["STRING_OPTIONS_WP_ALIGN"] = "Align"
 L["STRING_OPTIONS_WP_ALIGN_DESC"] = [=[Select how the wallpaper will align within the window.
@@ -1288,7 +1307,7 @@ L["STRING_OPTIONS_WP_ALIGN_DESC"] = [=[Select how the wallpaper will align withi
 -|cFFFFFF00Stretch|r: auto resize on vertical or horizontal and align with left-right or top-bottom sides.
 
 -|cFFFFFF00Four Corners|r: align with specified corner, no auto resize is made.]=]
-L["STRING_OPTIONS_WP_DESC"] = "This options control the wallpaper of window."
+L["STRING_OPTIONS_WP_DESC"] = "These options control the wallpaper of window."
 L["STRING_OPTIONS_WP_EDIT"] = "Edit Image"
 L["STRING_OPTIONS_WP_EDIT_DESC"] = "Open the image editor to change some wallpaper aspects."
 L["STRING_OPTIONS_WP_ENABLE"] = "Show"

@@ -383,9 +383,7 @@ function _G._details:Start()
 			
 		end
 	end	
-	
-	--> minimap
-	_details:RegisterMinimap()
+
 	function _details:SimulateEncounterStart(id, name)
 		local _, _, diff, _, size = GetInstanceInfo()
 		_details:ENCOUNTER_START(id, name, diff, size)
@@ -393,13 +391,6 @@ function _G._details:Start()
 	function _details:SimulateEncounterEnd(id, name, wipe)
 		_details:ENCOUNTER_END(id, name, wipe)
 	end
-	
-	
-	
-	function _details:RegisterHotCorner()
-		_details:DoRegisterHotCorner()
-	end
-	_details:ScheduleTimer("RegisterHotCorner", 5)
 
 	function _details:OpenOptionsWindowAtStart()
 		--_details:OpenOptionsWindow(_details.table_instances[1])
@@ -409,8 +400,15 @@ function _G._details:Start()
 	end
 	_details:ScheduleTimer("OpenOptionsWindowAtStart", 2)
 	--_details:OpenCustomDisplayWindow()
-	
-	--BNSendFriendInvite("tercio#1488")
+
+	--> minimap
+	pcall(_details.RegisterMinimap, _details)
+
+	--> hot corner
+	function _details:RegisterHotCorner()
+		_details:DoRegisterHotCorner()
+	end
+	_details:ScheduleTimer ("RegisterHotCorner", 5)
 
 	--> get in the realm chat channel
 	if (not _details.schedule_chat_enter and not _details.schedule_chat_leave) then

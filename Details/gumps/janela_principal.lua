@@ -1879,6 +1879,17 @@ local bar_scripts_onclick = function(self, button)
 
 end
 
+
+local set_bar_value = function (self, value)
+	self.statusbar:SetValue(value)
+
+	if (self.using_upper_3dmodels) then
+		local width = self:GetWidth()
+		local p = (width / 100) * value
+		self.modelbox_high:SetPoint("bottomright", self, "bottomright", p - width, 0)
+	end
+end
+
 local function bar_scripts(this_bar, instance, i)
 	this_bar._instance = instance
 
@@ -1887,18 +1898,29 @@ local function bar_scripts(this_bar, instance, i)
 	this_bar:SetScript("OnMouseDown", bar_scripts_onmousedown)
 	this_bar:SetScript("OnMouseUp", bar_scripts_onmouseup)
 	this_bar:SetScript("OnClick", bar_scripts_onclick)
+	this_bar.SetValue = set_bar_value
 end
 
 function _details:ReportSingleLine(instance, bar)
 
 	local report
 	if (instance.attribute == 5) then --> custom
-		report = {"Details! " .. Loc["STRING_CUSTOM_REPORT"] .. " " ..instance.customName}
+		local actor_name = bar.text_left:GetText() or ""
+		actor_name = actor_name:gsub ((".*%."), "")
+
+		report = {"Details! " .. Loc["STRING_CUSTOM_REPORT"] .. " " .. instance.customName .. ": " .. actor_name}
+		--> dump cooltip
+		local GameCooltip = GameCooltip
+
+		local amt = GameCooltip.Indexes
+		for i = 2, amt do
+			local left_text, right_text = GameCooltip:GetText(i)
+			report[#report+1] = (i-1) .. ". " .. left_text .. " ... " .. right_text
+		end
 	else
 		report = {"Details! " .. Loc["STRING_REPORT"] .. " " .. _details.sub_attributes[instance.attribute].list[instance.sub_attribute]}
+		report[#report+1] = bar.text_left:GetText() .. " " .. bar.text_right:GetText()
 	end
-
-	report[#report+1] = bar.text_left:GetText().." "..bar.text_right:GetText()
 
 	return _details:Report(report, {_no_current = true, _no_inverse = true, _custom = true})
 end
@@ -3203,7 +3225,7 @@ function gump:CreateNewBar(instance, index)
 	new_row.statusbar = CreateFrame("StatusBar", "DetailsBar_Statusbar_"..instance.mine_id.."_"..index, new_row)
 	--> frame for hold the backdrop border
 	new_row.border = CreateFrame("Frame", "DetailsBar_Border_" .. instance.mine_id .. "_" .. index, new_row.statusbar)
-	new_row.border:SetFrameLevel(new_row.statusbar:GetFrameLevel()+1)
+	new_row.border:SetFrameLevel(new_row.statusbar:GetFrameLevel()+2)
 	new_row.border:SetAllPoints(new_row)
 	
 	--> create textures and icons
@@ -3222,7 +3244,7 @@ function gump:CreateNewBar(instance, index)
 	new_row.statusbar:SetValue(0)
 
 	--> class icon
-	local icon_class = new_row.statusbar:CreateTexture(nil, "overlay")
+	local icon_class = new_row.border:CreateTexture(nil, "overlay")
 	icon_class:SetHeight(instance.row_info.height)
 	icon_class:SetWidth(instance.row_info.height)
 	icon_class:SetTexture(instance.row_info.icon_file)
@@ -3234,13 +3256,13 @@ function gump:CreateNewBar(instance, index)
 	new_row.statusbar:SetPoint("bottomright", new_row, "bottomright")
 	
 	--> left text
-	new_row.text_left = new_row.statusbar:CreateFontString(nil, "overlay", "GameFontHighlight")
+	new_row.text_left = new_row.border:CreateFontString(nil, "overlay", "GameFontHighlight")
 	new_row.text_left:SetPoint("left", new_row.icon_class, "right", 3, 0)
 	new_row.text_left:SetJustifyH("left")
 	new_row.text_left:SetNonSpaceWrap(true)
 
 	--> right text
-	new_row.text_right = new_row.statusbar:CreateFontString(nil, "overlay", "GameFontHighlight")
+	new_row.text_right = new_row.border:CreateFontString(nil, "overlay", "GameFontHighlight")
 	new_row.text_right:SetPoint("right", new_row.statusbar, "right")
 	new_row.text_right:SetJustifyH("right")
 	
@@ -3495,7 +3517,7 @@ function _details:InstanceRefreshRows(instance)
 		
 	--font face
 		self.row_info.font_face_file = SharedMedia:Fetch("font", self.row_info.font_face)
-		
+
 	-- do it
 
 	for _, row in _ipairs(self.bars) do 
@@ -3580,7 +3602,7 @@ function _details:InstanceRefreshRows(instance)
 		else
 			row.border:SetBackdrop(nil)
 		end
-		
+
 	end
 	
 	self:SetBarGrowDirection()
@@ -4481,7 +4503,7 @@ local build_mode_list = function(self, elapsed)
 		CoolTip:AddLine("Window Control")
 		CoolTip:AddIcon([[Interface\AddOns\Details\images\mode_icons]], 1, 1, 20, 20, 0.625, 0.75, 0, 1)
 
-		--CoolTip:AddMenu (2, _detalhes.OpenOptionsWindow, true, 1, nil, "Cant Create Window", _, true)
+		--CoolTip:AddMenu (2, _details.OpenOptionsWindow, true, 1, nil, "Cant Create Window", _, true)
 		--CoolTip:AddIcon ([[Interface\Buttons\UI-PlusButton-Up]], 2, 1, 16, 16)
 
 		local HaveClosedInstances = false

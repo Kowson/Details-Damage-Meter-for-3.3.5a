@@ -216,7 +216,7 @@ function attribute_energy:UpdateResources(bar_index, placing, instance)
 	this_bar.text_left:SetText(placing .. ". " .. self.name)
 	this_bar.text_left:SetSize(this_bar:GetWidth() - this_bar.text_right:GetStringWidth() - 20, 15)
 
-	this_bar.statusbar:SetValue(100)
+	this_bar:SetValue(100)
 
 	if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
 		gump:Fade(this_bar, "out")
@@ -486,7 +486,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			row1.text_left:SetText(Loc["STRING_TOTAL"])
 			row1.text_right:SetText(_details:ToK2(total) .. "(" .. _details:ToK(total / combat_time) .. ")")
 			
-			row1.statusbar:SetValue(100)
+			row1:SetValue(100)
 			local r, b, g = unpack(instance.total_bar.color)
 			row1.texture:SetVertexColor(r, b, g)
 			
@@ -542,7 +542,7 @@ function attribute_energy:RefreshWindow(instance, combat_table, force, export)
 			row1.text_left:SetText(Loc["STRING_TOTAL"])
 			row1.text_right:SetText(_details:ToK2(total) .. "(" .. _details:ToK(total / combat_time) .. ")")
 			
-			row1.statusbar:SetValue(100)
+			row1:SetValue(100)
 			local r, b, g = unpack(instance.total_bar.color)
 			row1.texture:SetVertexColor(r, b, g)
 			
@@ -651,7 +651,7 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 	--> primeiro colocado
 	if (this_bar.placing == 1) then
 		if (not table_previous or table_previous ~= this_bar.my_table or force) then
-			this_bar.statusbar:SetValue(100)
+			this_bar:SetValue(100)
 			
 			if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
 				gump:Fade(this_bar, "out")
@@ -664,13 +664,11 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 	else
 
 		if (this_bar.hidden or this_bar.fading_in or this_bar.faded) then
-		
-			--this_bar.statusbar:SetValue(this_percentage)
 			
 			if (use_animations) then
 				this_bar.animation_end = this_percentage
 			else
-				this_bar.statusbar:SetValue(this_percentage)
+				this_bar:SetValue(this_percentage)
 				this_bar.animation_ignore = true
 			end
 			
@@ -692,7 +690,7 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
 				else
-					this_bar.statusbar:SetValue(this_percentage)
+					this_bar:SetValue(this_percentage)
 					this_bar.animation_ignore = true
 				end
 			
@@ -705,7 +703,7 @@ function attribute_energy:RefreshBar2(this_bar, instance, table_previous, force,
 				if (use_animations) then
 					this_bar.animation_end = this_percentage
 				else
-					this_bar.statusbar:SetValue(this_percentage)
+					this_bar:SetValue(this_percentage)
 				end
 				this_bar.last_value = this_percentage
 				

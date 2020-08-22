@@ -458,7 +458,7 @@
 					_details.table_current.is_boss.killed = true
 
 					--> add to storage
-					if (not InCombatLockdown() and not UnitAffectingCombat("player")) then
+					if (not InCombatLockdown() and not UnitAffectingCombat("player") and not _details.logoff_saving_data) then
 						pcall(_details.StoreEncounter)
 					else
 						_details.schedule_store_boss_encounter = true

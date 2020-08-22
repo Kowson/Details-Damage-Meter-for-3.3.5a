@@ -214,7 +214,7 @@ function gump:SwitchBackgroundInfo()
 		if (info.sub_attribute == 1 or info.sub_attribute == 2) then --> damage done / dps
 			if (info.type ~= 1) then --> window com as divisorias
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture(nil)
+				info.bg1_sec_texture:SetTexture(nil)
 				info.type = 1
 			end
 			
@@ -228,7 +228,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 3) then --> damage taken
 			if (info.type ~= 2) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 2
 			end
 			
@@ -239,7 +239,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 4) then --> friendly fire
 			if (info.type ~= 3) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 3
 			end
 			info.targets:SetText(Loc["STRING_SPELLS"] .. ":")
@@ -247,7 +247,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 6) then --> enemies
 			if (info.type ~= 3) then --> window com fundo diferente
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 3
 			end
 			info.targets:SetText(Loc["STRING_DAMAGE_TAKEN_FROM"])
@@ -257,7 +257,7 @@ function gump:SwitchBackgroundInfo()
 		if (info.sub_attribute == 1 or info.sub_attribute == 2 or info.sub_attribute == 3) then --> damage done / dps
 			if (info.type ~= 1) then --> window com as divisorias
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture(nil)
+				info.bg1_sec_texture:SetTexture(nil)
 				info.type = 1
 			end
 			
@@ -275,7 +275,7 @@ function gump:SwitchBackgroundInfo()
 		elseif (info.sub_attribute == 4) then --> Healing taken
 			if (info.type ~= 2) then --> window com fundo diferente			
 				info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-				--info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
+				info.bg1_sec_texture:SetTexture([[Interface\AddOns\Details\images\info_window_damagetaken]])
 				info.type = 2
 			end
 			
@@ -287,7 +287,7 @@ function gump:SwitchBackgroundInfo()
 	elseif (info.attribute == 3) then --> REGEN
 		if (info.type ~= 2) then --> window com fundo diferente
 			info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-			--info.bg1_sec_texture:SetTexture(nil)
+			info.bg1_sec_texture:SetTexture(nil)
 			info.type = 2
 		end
 		info.targets:SetText("Vindo de:")
@@ -295,7 +295,7 @@ function gump:SwitchBackgroundInfo()
 	elseif (info.attribute == 4) then --> MISC
 		if (info.type ~= 2) then --> window com fundo diferente
 			info.bg1:SetTexture([[Interface\AddOns\Details\images\info_window_background]])
-			--info.bg1_sec_texture:SetTexture(nil)
+			info.bg1_sec_texture:SetTexture(nil)
 			info.type = 2
 		end
 		info.targets:SetText(Loc["STRING_TARGETS"] .. ":")
@@ -785,6 +785,12 @@ function gump:CreateWindowInfo()
 		this_gump.bg1:SetTexture(texture)
 	end
 	_details:SetPlayerDetailsWindowTexture("Interface\\AddOns\\Details\\images\\info_window_background")
+
+	this_gump.bg1_sec_texture = this_gump:CreateTexture(nil, "BORDER")
+	this_gump.bg1_sec_texture:SetDrawLayer("BORDER", 2)
+	this_gump.bg1_sec_texture:SetPoint("topleft", this_gump.bg1, "topleft", 348, -86)
+	this_gump.bg1_sec_texture:SetHeight(262)
+	this_gump.bg1_sec_texture:SetWidth(264)
 
 	--> close button
 	this_gump.close = _CreateFrame("Button", nil, this_gump, "UIPanelCloseButton")

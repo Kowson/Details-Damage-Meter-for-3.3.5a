@@ -829,7 +829,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		EncounterDetailsFrame.boss_icon:SetTexture(Texture)
 		EncounterDetailsFrame.boss_icon:SetTexCoord(L, R, T, B)
 	else
-		EncounterDetailsFrame.boss_icon:SetTexture([[Interface\CHARACTERFRAME\TempPortrait]]) -- TODO: CHECK IF IMAGE EXISTS
+		EncounterDetailsFrame.boss_icon:SetTexture([[Interface\CHARACTERFRAME\TempPortrait]])
 		EncounterDetailsFrame.boss_icon:SetTexCoord(0, 1, 0, 1)
 	end
 	
@@ -839,7 +839,7 @@ function EncounterDetails:OpenAndRefresh(_, segment)
 		EncounterDetailsFrame.raidbackground:SetTexCoord(L, R, T, B)
 		EncounterDetailsFrame.raidbackground:SetAlpha(0.8)
 	else
-		EncounterDetailsFrame.raidbackground:SetTexture([[Interface\Glues\LOADINGSCREENS\LoadScreenDungeon]]) -- TODO: CHECK IF IMAGE EXISTS
+		EncounterDetailsFrame.raidbackground:SetTexture([[Interface\Glues\LOADINGSCREENS\LoadScreenDungeon]])
 		EncounterDetailsFrame.raidbackground:SetTexCoord(0, 1, 120/512, 408/512)
 		EncounterDetailsFrame.raidbackground:SetAlpha(0.8)
 	end
