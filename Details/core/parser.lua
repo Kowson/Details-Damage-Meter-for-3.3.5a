@@ -613,6 +613,8 @@
 
 			friend.total = friend.total + amount
 			friend.spells[spellid] = (friend.spells[spellid] or 0) + amount
+
+			return true
 		else
 			_current_total[1] = _current_total[1]+amount
 			
