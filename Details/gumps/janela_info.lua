@@ -3060,7 +3060,7 @@ function _details.window_info:prepare_report(button)
 	
 		report_lines = {"Details! " .. Loc ["STRING_ACTORFRAME_REPORTTARGETS"] .. " " .. _details.sub_attributes [1].list [1] .. " " .. Loc ["STRING_ACTORFRAME_REPORTOF"] .. " " .. player.name}
 
-		for index, bar in _ipairs (info.bar2) do
+		for index, bar in _ipairs(info.bars2) do
 			if (bar:IsShown()) then
 				report_lines [#report_lines+1] = bar.text_left:GetText().." -> ".. bar.text_right:GetText()
 			end

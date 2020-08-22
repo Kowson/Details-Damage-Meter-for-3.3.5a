@@ -317,31 +317,6 @@ function _G._details:Start()
 				end
 				_details:AddDefaultCustomDisplays()
 			end
-
-			if (_details_database.last_realversion and _details_database.last_realversion < 20 and enable_reset_warning) then
-				table.wipe(self.custom)
-				_details:AddDefaultCustomDisplays()
-			end
-			
-			if (_details_database.last_realversion and _details_database.last_realversion < 18 and enable_reset_warning) then
-				
-				for index, instance in ipairs(_details.table_instances) do 
-					if (not instance.initiated) then
-						instance:RestoreWindow()
-						local skin = instance.skin
-						instance:ChangeSkin("Default Skin")
-						instance:ChangeSkin("Minimalistic v2")
-						instance:ChangeSkin(skin)
-						instance:DisableInstance()
-					else
-						local skin = instance.skin
-						instance:ChangeSkin("Default Skin")
-						instance:ChangeSkin("Minimalistic v2")
-						instance:ChangeSkin(skin)
-					end
-				end
-			end
-
 		end
 	
 	local lower = _details:GetLowerInstanceNumber()

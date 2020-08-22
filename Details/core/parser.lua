@@ -3020,7 +3020,7 @@
 	function _details:OnParserEvent(evento, time, token, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, ...)
 		local func = token_list[token]
 		if (_details.debug) then
-			_details:Msg("(debug) OnParserEvent(" .. token .. ") = " .. tostring(func))
+			--_details:Msg("(debug) OnParserEvent(" .. token .. ") = " .. tostring(func))
 		end
 		--print(evento, time, token, src_serial, src_name)
 		
