@@ -211,9 +211,6 @@
 								BossIndex = BossIds[serial]
 								if (BossIndex) then
 									Actor.boss = true
-									if (Actor.shadow) then
-										Actor.shadow.boss = true
-									end
 									return boss_found(BossIndex, _details:GetBossName(zoneMapID, BossIndex), zoneName, zoneMapID, DifficultyID)
 								end
 							end
@@ -276,6 +273,8 @@
 			
 			--> � o timer que ve se o player ta em combat ou n�o -- check if any party or raid members are in combat
 			_details.table_current.verifica_combat = _details:ScheduleRepeatingTimer("EstaEmCombate", 1) 
+
+			_details:ClearCCPetsBlackList()
 
 			_table_wipe(_details.encounter_end_table)
 			
@@ -863,9 +862,6 @@
 			for class_type, container in _ipairs(_details.table_current) do 
 				for _, actor in _ipairs(container._ActorTable) do 
 					actor.boss_fight_component = true
-					if (actor.shadow) then 
-						actor.shadow.boss_fight_component = true
-					end
 				end
 			end
 		end
@@ -874,16 +870,10 @@
 			local on_energy = energy_container._ActorTable[energy_container._NameIndexTable[name]]
 			if (on_energy) then
 				on_energy.fight_component = true
-				if (on_energy.shadow) then
-					on_energy.shadow.fight_component = true
-				end
 			end
 			local on_misc = misc_container._ActorTable[misc_container._NameIndexTable[name]]
 			if (on_misc) then
 				on_misc.fight_component = true
-				if (on_misc.shadow) then
-					on_misc.shadow.fight_component = true
-				end
 			end
 		end
 		
@@ -903,9 +893,6 @@
 								local target_object = container._ActorTable[container._NameIndexTable[target_name]]
 								if (target_object) then
 									target_object.fight_component = true
-									if (target_object.shadow) then
-										target_object.shadow.fight_component = true
-									end
 									fight_component(energy_container, misc_container, target_name)
 								end
 							end
@@ -914,9 +901,6 @@
 									local target_object = container._ActorTable[container._NameIndexTable[damager_actor]]
 									if (target_object) then
 										target_object.fight_component = true
-										if (target_object.shadow) then
-											target_object.shadow.fight_component = true
-										end
 										fight_component(energy_container, misc_container, damager_actor)
 									end
 								end
@@ -925,9 +909,6 @@
 									local target_object = container._ActorTable[container._NameIndexTable[healer_actor]]
 									if (target_object) then
 										target_object.fight_component = true
-										if (target_object.shadow) then
-											target_object.shadow.fight_component = true
-										end
 										fight_component(energy_container, misc_container, healer_actor)
 									end
 								end

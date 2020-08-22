@@ -3140,6 +3140,17 @@ function gump:CreateWindowMain(ID, instance, criando)
 	
 end
 
+function _details:SetBarFollowPlayer(follow)
+	if (follow == nil) then
+		follow = self.following.enabled
+	end
+	self.following.enabled = follow
+
+	self:RefreshBars()
+	self:InstanceReset()
+	self:ReajustaGump()
+end
+
 function _details:SetBarGrowDirection(direction)
 
 	if (not direction) then
@@ -3878,15 +3889,6 @@ function _details:InstanceButtonsColors(red, green, blue, alpha, no_save, only_l
 				ThisButton:SetAlpha(alpha)
 			end
 		end
-		
-	elseif (only_right) then
-	
-		local icons = {baseToolbar.novo, baseToolbar.close, baseToolbar.reset}
-		
-		for _, button in _ipairs(icons) do 
-			button:SetAlpha(alpha)
-		end
-
 	else
 		
 		local icons = {baseToolbar.mode_selecao, baseToolbar.segment, baseToolbar.attribute, baseToolbar.report, baseToolbar.novo, baseToolbar.close, baseToolbar.reset}
@@ -3900,7 +3902,6 @@ function _details:InstanceButtonsColors(red, green, blue, alpha, no_save, only_l
 				ThisButton:SetAlpha(alpha)
 			end
 		end
-	
 	end
 end
 

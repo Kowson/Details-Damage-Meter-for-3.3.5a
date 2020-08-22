@@ -284,6 +284,7 @@ function history:reset()
 	_details.table_history = history:Newhistory() --joga fora a table antiga e cria uma new
 	--novo container para armazenar pets
 	_details.table_pets = _details.container_pets:NewContainer()
+	_details:UpdateContainerCombatants()
 	_details.container_pets:BuscarPets()
 	-- new table do overall e current
 	_details.table_overall = combat:Newtable() --joga fora a table antiga e cria uma new

@@ -158,25 +158,8 @@
 		end
 	end
 
-	function _details:InitializeTime(time, shadow)
-
-	-- inicia o time no objeto atual
-	--------------------------------------------------------------------------------
-		
+	function _details:InitializeTime(time)
 		self.start_time = time
-		
-	-- inicia o time no shadow do objeto
-	--------------------------------------------------------------------------------	
-		
-		if (shadow.end_time) then
-			local subs = shadow.end_time - shadow.start_time
-			shadow.start_time = time - subs
-			shadow.end_time = nil
-		else
-			if (shadow.start_time == 0) then
-				shadow.start_time = time
-			end
-		end
 	end
 
 	function _details:FinishTime()

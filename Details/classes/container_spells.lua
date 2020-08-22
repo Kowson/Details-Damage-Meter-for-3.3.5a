@@ -87,8 +87,6 @@ local _
 			container.__index = _details.container_abilities
 			local func_creation = container_abilities:CreationFunc(container.type)
 			container.creation_func = func_creation
-		--> seta a shadow
-			container.shadow = shadow
 	end
 
 	function _details.clear:c_container_abilities(container)

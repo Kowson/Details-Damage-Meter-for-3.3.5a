@@ -1362,6 +1362,10 @@ end
 					shadow = overall_energy:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
 					shadow.group = actor.group
+					shadow.isTank = actor.isTank
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
 				end
 			
 			--> restore a meta e indexes ao ator
@@ -1395,6 +1399,10 @@ end
 					shadow = overall_energy:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
 					shadow.group = actor.group
+					shadow.isTank = actor.isTank
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
 				end
 			
 			--> restore a meta e indexes ao ator
@@ -1449,7 +1457,6 @@ function _details.refresh:r_attribute_energy(this_player, shadow)
 	_setmetatable(this_player, _details.attribute_energy)
 	this_player.__index = _details.attribute_energy
 
-	this_player.shadow = shadow
 	_details.refresh:r_container_abilities(this_player.spells, shadow.spells)
 
 	if (not shadow.powertype) then

@@ -1274,9 +1274,9 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 		percentage = _cstr("%.1f", self[keyName] / instance.top * 100)
 	end
 
-	--time da shadow n�o � mais calcuside pela timemachine
-	if ((_details.time_type == 2 and self.group) or not _details:CaptureGet("damage") or not self.shadow) then --not self.shadow is overall but...
-		if (not self.shadow and combat_time == 0) then
+	--> shadow time is not calculated by timemachine
+	if ((_details.time_type == 2 and self.group) or not _details:CaptureGet("damage") or instance.segment == -1) then
+		if (instance.segment == -1 and combat_time == 0) then
 			local p = _details.table_current(1, self.name)
 			if (p) then
 				local t = p:Time()
@@ -3100,24 +3100,16 @@ function attribute_damage:SetTooltipTargets(this_bar, index, instance)
 
 end
 
---controla se o dps do player this travado ou destravado
+--> controls whether the player's dps is locked or unlocked
 function attribute_damage:Initialize(initialize)
 	if (initialize == nil) then 
-		return self.dps_started --retorna se o dps this aberto ou closedo para this player
+		return self.dps_started --> returns whether dps is open or closed for this player
 	elseif (initialize) then
 		self.dps_started = true
-		self:RegisterInTimeMachine() --coloca ele da timeMachine
-		if (self.shadow) then
-			self.shadow.dps_started = true --> isso foi posto recentemente
-			--self.shadow:RegisterInTimeMachine()
-		end
+		self:RegisterInTimeMachine() -- put him in timeMachine
 	else
 		self.dps_started = false
-		self:UnregisterInTimeMachine() --retira ele da timeMachine
-		if (self.shadow) then
-			--self.shadow:UnregisterInTimeMachine()
-			self.shadow.dps_started = false --> isso foi posto recentemente
-		end
+		self:UnregisterInTimeMachine() -- delete from timeMachine
 	end
 end
 
@@ -3174,6 +3166,11 @@ end
 					shadow = overall_damage:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
 					shadow.group = actor.group
+					shadow.isTank = actor.isTank
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
+
 					shadow.start_time = time() - 3
 					shadow.end_time = time()
 				end
@@ -3224,7 +3221,12 @@ end
 				if (not shadow) then 
 					shadow = overall_damage:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
+					shadow.isTank = actor.isTank
 					shadow.group = actor.group
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
+
 					shadow.start_time = time() - 3
 					shadow.end_time = time()
 				end
@@ -3234,10 +3236,13 @@ end
 				_details.refresh:r_attribute_damage(actor, shadow)
 			end
 			--> time elapsed(captura de dados)
-				if (actor.end_time) then
-					local time =(actor.end_time or time()) - actor.start_time
-					shadow.start_time = shadow.start_time - time
+			local end_time = actor.end_time
+				if (not actor.end_time) then
+					end_time = time()
 				end
+
+				local current_time = end_time - actor.start_time
+				shadow.start_time = shadow.start_time - current_time
 				
 			--> total de damage(captura de dados)
 				shadow.total = shadow.total + actor.total				
@@ -3435,8 +3440,6 @@ function _details.refresh:r_attribute_damage(this_player, shadow)
 	--> restaura metas do ator
 		_setmetatable(this_player, _details.attribute_damage)
 		this_player.__index = _details.attribute_damage
-	--> atribui a shadow a ele
-		this_player.shadow = shadow
 	--> restaura as metas dos containers
 		_details.refresh:r_container_abilities(this_player.spells, shadow.spells)
 end

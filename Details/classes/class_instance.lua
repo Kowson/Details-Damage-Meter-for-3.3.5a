@@ -596,6 +596,29 @@ end
 					end
 				end
 				new_instance:ChangeSkin()
+			else
+				--> if you don't have a pattern, create from another instance already open
+				local copy_from
+				for i = 1, next_id-1 do
+					local opened_instance = _details:GetInstance(i)
+					if (opened_instance and opened_instance:IsEnabled() and opened_instance.baseframe) then
+						copy_from = opened_instance
+						break
+					end
+				end
+
+				if (copy_from) then
+					for key, value in _pairs(copy_from) do
+						if (_details.instance_defaults[key] ~= nil) then
+							if (type(value) == "table") then
+								new_instance[key] = table_deepcopy(value)
+							else
+								new_instance[key] = value
+							end
+						end
+					end
+					new_instance:ChangeSkin()
+				end
 			end
 			
 			return new_instance
@@ -2532,6 +2555,9 @@ function _details:ChangeMode(instance, which, from_mode_menu)
 	_details.popup:Select(1, checked)
 	if (from_mode_menu) then
 		instance.baseframe.header.mode_selecao:GetScript("OnEnter")(instance.baseframe.header.mode_selecao)
+		--> running OnEnter does also trigger an instance enter event, so we need to manually leave the instance:
+		_details.OnLeaveMainWindow(instance, instance.baseframe.header.mode_selecao)
+
 		if (instance.desaturated_menu) then
 			instance.baseframe.header.mode_selecao:GetNormalTexture():SetDesaturated(true)
 		end

@@ -179,6 +179,7 @@ function _details:LoadCombatTables()
 			_details.table_overall = _details.combat:Newtable()
 			_details.table_current = _details.combat:Newtable(_, _details.table_overall)
 			_details.table_pets = _details.container_pets:NewContainer()
+			_details:UpdateContainerCombatants()
 		else
 
 		--> build basic containers
@@ -192,6 +193,7 @@ function _details:LoadCombatTables()
 			if (_details_database.table_pets) then
 				_details.table_pets.pets = table_deepcopy(_details_database.table_pets)
 			end
+			_details:UpdateContainerCombatants()
 			
 		--> if the core revision was incremented, reset all combat data
 			if (_details_database.last_realversion and _details_database.last_realversion < _details.realversion) then
@@ -200,6 +202,7 @@ function _details:LoadCombatTables()
 				_details.table_overall = _details.combat:Newtable()
 				_details.table_current = _details.combat:Newtable(_, _details.table_overall)
 				_details.table_pets = _details.container_pets:NewContainer()
+				_details:UpdateContainerCombatants()
 			end
 
 		--> re-build all indexes and metatables
@@ -231,6 +234,7 @@ function _details:LoadCombatTables()
 			if (not _details.table_pets or not _details.table_pets.pets) then
 				_details.table_pets = _details.container_pets:NewContainer()
 			end
+			_details:UpdateContainerCombatants()
 		
 		end
 end

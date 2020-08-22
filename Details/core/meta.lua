@@ -609,6 +609,9 @@
 		
 		--> elimina pets antigos
 		_details:LimparPets()
+		if (not _details.in_combat) then
+			_details:ClearCCPetsBlackList()
+		end
 		
 		--> wipa container de shields
 		_table_wipe(_details.shields)

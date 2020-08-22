@@ -85,17 +85,17 @@
 		else
 			LastIcon = instance.baseframe.header.report
 		end
-		
-		local x = 0
-		if (instance.consolidate) then
-			LastIcon = instance.consolidateButtonTexture
-			x = x - 3
-		end
 
 		_details.ToolBar.Shown[#_details.ToolBar.Shown+1] = Button
-		Button:SetPoint("left", LastIcon.widget or LastIcon, "right", Button.x + x, Button.y)
+		Button:SetPoint("left", LastIcon.widget or LastIcon, "right", Button.x, Button.y)
 		Button:Show()
-		
+
+		if (instance.auto_hide_menu.left and not instance.is_interacting) then
+			instance:ToolbarMenuButtons()
+			Button:SetAlpha(0)
+			return
+		end
+
 		if (Effect) then
 			if (type(Effect) == "string") then
 				if (Effect == "blink") then
@@ -206,8 +206,8 @@
 
 			instance:ChangeSkin()
 		else
-			--instance:SetMenuAlpha()
 			instance:ToolbarMenuButtons()
+			instance:SetAutoHideMenu(nil, nil, true)
 		end
 		
 		return true

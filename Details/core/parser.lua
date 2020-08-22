@@ -87,6 +87,8 @@
 		local tanks_members_cache = setmetatable({}, _details.weaktable)
 	--> damage and heal last events
 		local last_events_cache = {} --> placeholder
+	--> pets
+		local container_pets = {} --> place holder
 	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -547,14 +549,14 @@
 				if (mine_owner.end_time) then
 					mine_owner.end_time = nil
 				else
-					mine_owner:InitializeTime(_timestamp, mine_owner.shadow)
+					mine_owner.start_time = _timestamp
 				end
 			end
 			
 			if (this_player.end_time) then
 				this_player.end_time = nil
 			else
-				this_player:InitializeTime(_timestamp, this_player.shadow)
+				this_player.start_time = _timestamp
 			end
 
 			if (this_player.name == _details.playername and token ~= "SPELL_PERIODIC_DAMAGE") then --> starting o dps do "PLAYER"
@@ -747,12 +749,12 @@
 		end
 	
 		--> pet summon another pet
-		local sou_pet = _details.table_pets.pets[src_serial]
+		local sou_pet = container_pets[src_serial]
 		if (sou_pet) then --> okey, ja � um pet
 			src_name, src_serial, src_flags = sou_pet[1], sou_pet[2], sou_pet[3]
 		end
 		
-		local dst_pet = _details.table_pets.pets[dst_serial]
+		local dst_pet = container_pets[dst_serial]
 		if (dst_pet) then
 			src_name, src_serial, src_flags = dst_pet[1], dst_pet[2], dst_pet[3]
 		end
@@ -890,14 +892,14 @@
 				if (mine_owner.end_time) then
 					mine_owner.end_time = nil
 				else
-					mine_owner:InitializeTime(_timestamp, mine_owner.shadow)
+					mine_owner.start_time = _timestamp
 				end
 			end
 			
 			if (this_player.end_time) then --> the fight is over, repoen the time
 				this_player.end_time = nil
 			else
-				this_player:InitializeTime(_timestamp, this_player.shadow)
+				this_player.start_time = _timestamp
 			end
 		end
 
@@ -2040,7 +2042,6 @@
 
 		--> update last event
 		this_player.last_event = _timestamp
-		--shadow.last_event = _timestamp
 
 		--> combat ress total
 		_current_total[4].ress = _current_total[4].ress + 1
@@ -2978,7 +2979,7 @@
 
 	_details.listener:SetScript("OnEvent", _details.OnEvent)
 	
-	--> logout function ~save
+	--> logout function ~save ~logout
 	local saver = CreateFrame("frame", nil, UIParent)
 	saver:RegisterEvent("PLAYER_LOGOUT")
 	saver:SetScript("OnEvent", function (...)
@@ -2990,41 +2991,53 @@
 			tremove(_details_global.exit_errors, 6)
 		end
 
+		_details_global.exit_log = {}
+		_details.saver_error_func = saver_error
 		_details.logoff_saving_data = true
 
 		--> close info window
 		if (_details.CloseWindowInfo) then
+			tinsert(_details_global.exit_log, "1 - Closing Window Info.")
 			xpcall(_details.CloseWindowInfo, saver_error)
 		end
 
 		--> do not save window pos
-		for id, instance in _details:ListInstances() do
-			if (instance.baseframe) then
-				instance.baseframe:SetUserPlaced(false)
+		if (_details.table_instances) then
+			tinsert(_details_global.exit_log, "2 - Clearing user place from instances.")
+			for id, instance in _details:ListInstances() do
+				if (instance.baseframe) then
+					instance.baseframe:SetUserPlaced(false)
+				end
 			end
 		end
 				
 		--> leave combat start save tables
 		if (_details.in_combat and _details.table_current) then
+			tinsert(_details_global.exit_log, "3 - Leaving current combat.")
 			xpcall(details:EndCombat(), saver_error)
 			_details.can_panic_mode = true
 		end
 
-		if (_details.CheckSwitchOnLogon and _details.table_instances[1] and getmetatable(_details.table_instances[1])) then
+		if (_details.CheckSwitchOnLogon and _details.table_instances and getmetatable(_details.table_instances[1]) and _details.table_instances[1] and getmetatable(_details.table_instances[1])) then
+			tinsert(_details_global.exit_log, "4 - Reversing switches.")
 			xpcall(_details:CheckSwitchOnLogon(), saver_error)
 		end
 
 		if (_details.wipe_full_config) then
+			tinsert(_details_global.exit_log, "5 - Is a full config wipe.")
 			_details_global = nil
 			_details_database = nil
 			return
 		end
 
 		--> save the config
+		tinsert(_details_global.exit_log, "6 - Saving Config.")
 		xpcall(_details:SaveConfig(), saver_error)
+		tinsert(_details_global.exit_log, "7 - Saving Profiles.")
 		xpcall(_details:SaveProfile(), saver_error)
 
 		--> save the nicktag cache
+		tinsert(_details_global.exit_log, "8 - Saving nicktag cache.")
 		_details_database.nick_tag_cache = table_deepcopy(_details_database.nick_tag_cache)
 	end)
 		
@@ -3048,6 +3061,10 @@
 
 	function _details:UpdateParser()
 		_timestamp = _details._time
+	end
+
+	function _details:UpdatePetsOnParser()
+		container_pets = _details.table_pets.pets
 	end
 
 	function _details:PrintParserCacheIndexes()

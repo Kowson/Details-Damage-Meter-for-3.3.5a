@@ -155,7 +155,7 @@
 	end
 	
 	--> cleanup when logout
-	function _details:TimeDataCleanUpTimerary()
+	function _details:TimeDataCleanUpTemporary()
 		local new_table = {}
 		for index, t in ipairs(_details.savedTimeCaptures) do
 			if (not t.do_not_save) then

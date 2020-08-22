@@ -74,10 +74,10 @@ function _details:SaveConfig()
 			_details_database.table_pets = _details.table_pets.pets
 		end
 		
-		_details:TimeDataCleanUpTimerary()
+		xpcall(_details.TimeDataCleanUpTemporary, _details.saver_error_func)
 		
 	--> buffs
-		_details.Buffs:SaveBuffs()
+		xpcall(_details.Buffs.SaveBuffs, _details.saver_error_func)
 	
 	--> salva o container do personagem
 		for key, value in pairs(_details.default_player_data) do

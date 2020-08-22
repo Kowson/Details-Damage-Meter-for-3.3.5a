@@ -240,13 +240,16 @@ do
 	--> Event Frame
 		_details.listener = _CreateFrame("Frame", nil, _UIParent)
 		_details.listener:RegisterEvent("ADDON_LOADED")
-		_details.listener:RegisterEvent("PLAYER_LOGOUT")
 		_details.listener:SetFrameStrata("LOW")
 		_details.listener:SetFrameLevel(9)
 		_details.listener.FrameTime = 0
 		
 		_details.overlay_frame = _CreateFrame("Frame", nil, _UIParent)
 		_details.overlay_frame:SetFrameStrata("TOOLTIP")
+
+	--> Pet Owner Finder
+		_CreateFrame("GameTooltip", "DetailsPetOwnerFinder", nil, "GameTooltipTemplate")
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> functions

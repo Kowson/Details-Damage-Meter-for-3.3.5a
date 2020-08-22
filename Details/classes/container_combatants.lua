@@ -8,6 +8,8 @@
 
 	local _UnitClass = UnitClass --api local
 	local _IsInInstance = IsInInstance --api local
+	local _UnitGUID = UnitGUID --api local
+	local strsplit = strsplit --api local
 	
 	local _setmetatable = setmetatable --lua local
 	local _getmetatable = getmetatable --lua local
@@ -39,8 +41,11 @@
 	local container_misc_target = 	_details.container_type.CONTAINER_MISCTARGET_CLASS
 	local container_enemydebufftarget_target = _details.container_type.CONTAINER_ENEMYDEBUFFTARGET_CLASS
 
+	local container_pets = {}
+
 	--> flags
 	local REACTION_HOSTILE	=	0x00000040
+	local REACTION_FRIENDLY	=	0x00000010
 	local IS_GROUP_OBJECT 	= 	0x00000007
 	local OBJECT_TYPE_MASK =	0x0000FC00
 	local OBJECT_TYPE_OBJECT =	0x00004000
@@ -136,7 +141,7 @@
 	end
 
 	--> read the actor flag
-	local read_actor_flag = function(novo_objeto, shadow_objeto, owner_of_pet, serial, flag, name, container_type)
+	local read_actor_flag = function(novo_objeto, owner_of_pet, serial, flag, name, container_type)
 
 		if (flag) then
 
@@ -155,15 +160,8 @@
 				if ((_bit_band(flag, IS_GROUP_OBJECT) ~= 0 and novo_objeto.class ~= "UNGROUPPLAYER")) then --> faz parte do group
 					novo_objeto.group = true
 
-					if (shadow_objeto) then
-						shadow_objeto.group = true
-					end
-					
 					if (_details:IsATank(serial)) then
 						novo_objeto.isTank = true
-						if (shadow_objeto) then
-							shadow_objeto.isTank = true
-						end
 					end
 				end
 				
@@ -234,20 +232,65 @@
 		novo_objeto.flag_original = flag
 		novo_objeto.serial = serial
 	end
-	-- CatchCombatant(GUID, name, flags, 
-	function container_combatants:CatchCombatant(serial, name, flag, create, isOwner)
+
+	local pet_blacklist = {}
+	local pet_tooltip_frame = _G.DetailsPetOwnerFinder
+	local pet_text_object = _G["DetailsPetOwnerFinderTextLeft2"]
+
+	local find_pet_owner = function(serial, name, flag, self)
+
+		pet_tooltip_frame:SetOwner(WorldFrame, "ANCHOR_NONE")
+		pet_tooltip_frame:SetHyperlink("unit:" .. serial or "")
+
+		local text = pet_text_object:GetText()
+		--print ("Unknow Owner:", name, "ToolTip Text:", text)
+
+		if (text and text ~= "") then
+			text = text:gsub("'s", "") --> enUS
+
+			for _, ownerName in _ipairs({strsplit (" ", text)}) do
+				local cur_combat = _details.table_current
+				if (cur_combat and cur_combat.raid_roster[ownerName]) then
+					local ownerGuid = _UnitGUID(ownerName)
+					if (ownerGuid) then
+						_details.table_pets:Adicionar(serial, name, flag, ownerGuid, ownerName, 0x00000417)
+						local pet_name, owner_name, owner_serial, owner_flag = _details.table_pets:CatchDono(serial, name, flag)
+
+						local pet_owner
+						if (pet_name and owner_name) then
+							name = pet_name
+							pet_owner = self:CatchCombatant(owner_serial, owner_name, owner_flag, true, name)
+						end
+
+						--print ("Owner Found:", ownerName, name)
+						return name, pet_owner
+					end
+				end
+			end
+		end
+	end
+
+	function container_combatants:CatchCombatant(serial, name, flag, create)
 		--print("Serial: "..serial.." | Name: "..name)
 		--> verifica se � um pet, se for confere se tem o name do owner, se n�o tiver, precisa por
 		local owner_of_pet
+		serial = serial or "ns"
 		
-		--if (flag and _bit_band(flag, OBJECT_TYPE_PETS) ~= 0) then --> � um pet
-		if (_details.table_pets.pets[serial]) then --> � um pet
-			--> aqui ele precisaria achar as tag < > pra saber se o name passado j� n�o veio com o owner imbutido, se n�o tiver as tags, ter� que ser posto aqui
-			if (not name:find("<") or not name:find(">")) then --> finding is slow, do you have another way to do that?
-				local name_dele, owner_name, owner_serial, owner_flag = _details.table_pets:CatchDono(serial, name, flag)
-				if (name_dele and owner_name) then
-					name = name_dele
-					owner_of_pet = self:CatchCombatant(owner_serial, owner_name, owner_flag, true, name)
+		if (container_pets[serial]) then
+			local pet_name, owner_name, owner_serial, owner_flag = _details.table_pets:CatchDono(serial, name, flag)
+			if (pet_name and owner_name) then
+				name = pet_name
+				owner_of_pet = self:CatchCombatant(owner_serial, owner_name, owner_flag, true)
+			end
+
+		elseif (not pet_blacklist[serial]) then --> verifica se é um pet
+			pet_blacklist[serial] = true
+
+			--> try to find the owner
+			if (flag and _bit_band(flag, OBJECT_TYPE_PETGUARDIAN) ~= 0) then
+				local find_name, find_owner = find_pet_owner(serial, name, flag, self)
+				if (find_name and find_owner) then
+					name, owner_of_pet = find_name, find_owner
 				end
 			end
 		end
@@ -260,25 +303,7 @@
 		
 		--> n�o achou, create
 		elseif (create) then
-
-			--> espelho do container no overall
-			local shadow = self.shadow 
-			local shadow_objeto
-
-			--> if you have the mirror(not the overall table already)
-			if (shadow) then 
-				--> just checks whether it exists or not
-				shadow_objeto = shadow:CatchCombatant(_, name) 
-				--> if doesn't exist, create it
-				if (not shadow_objeto) then 
-					--> take the name of the pet
-					local novo_name = name:gsub((" <.*"), "") 
-					--> create the object
-					shadow_objeto = shadow:CatchCombatant(serial, novo_name, flag, true)
-				end
-			end
-
-			local novo_objeto = self.creation_func(_, serial, name, shadow_objeto) --> shadow_objeto passes to class_damage to write to .targets and .spells, but does not write to itself
+			local novo_objeto = self.creation_func(_, serial, name)
 			novo_objeto.name = name
 
 		-- type do container
@@ -287,14 +312,13 @@
 			if (self.type == container_damage) then --> CONTAINER DAMAGE
 
 				get_actor_class(novo_objeto, name, flag)
-				read_actor_flag(novo_objeto, shadow_objeto, owner_of_pet, serial, flag, name, "damage")
+				read_actor_flag(novo_objeto, owner_of_pet, serial, flag, name, "damage")
 				
 				if (owner_of_pet) then
 					owner_of_pet.pets[#owner_of_pet.pets+1] = name
 				end
 				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
+				if (self.shadow) then
 					if (novo_objeto.group and _details.in_combat) then
 						_details.cache_damage_group[#_details.cache_damage_group+1] = novo_objeto
 					end
@@ -306,7 +330,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> n�o executar 2x
+					if (self.shadow) then
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -318,14 +342,13 @@
 			elseif (self.type == container_heal) then --> CONTAINER HEALING
 				
 				get_actor_class(novo_objeto, name, flag)
-				read_actor_flag(novo_objeto, shadow_objeto, owner_of_pet, serial, flag, name, "heal")
+				read_actor_flag(novo_objeto, owner_of_pet, serial, flag, name, "heal")
 				
 				if (owner_of_pet) then
 					owner_of_pet.pets[#owner_of_pet.pets+1] = name
 				end
 				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
+				if (self.shadow) then
 					if (novo_objeto.group and _details.in_combat) then
 						_details.cache_healing_group[#_details.cache_healing_group+1] = novo_objeto
 					end
@@ -337,7 +360,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> n�o executar 2x
+					if (self.shadow) then --> n�o executar 2x
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -346,14 +369,10 @@
 			elseif (self.type == container_energy) then --> CONTAINER ENERGY
 				
 				get_actor_class(novo_objeto, name, flag)
-				read_actor_flag(novo_objeto, shadow_objeto, owner_of_pet, serial, flag, name, "energy")
+				read_actor_flag(novo_objeto, owner_of_pet, serial, flag, name, "energy")
 				
 				if (owner_of_pet) then
 					owner_of_pet.pets[#owner_of_pet.pets+1] = name
-				end
-				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
 				end
 				
 				if (novo_objeto.class == "UNGROUPPLAYER") then --> is a player
@@ -362,7 +381,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> n�o executar 2x
+					if (self.shadow) then
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -370,16 +389,12 @@
 			elseif (self.type == container_misc) then --> CONTAINER MISC
 				
 				get_actor_class(novo_objeto, name, flag)
-				read_actor_flag(novo_objeto, shadow_objeto, owner_of_pet, serial, flag, name, "misc")
+				read_actor_flag(novo_objeto, owner_of_pet, serial, flag, name, "misc")
 				
 				--local test_class = 
 				
 				if (owner_of_pet) then
 					owner_of_pet.pets[#owner_of_pet.pets+1] = name
-				end
-				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
 				end
 				
 				if (novo_objeto.class == "UNGROUPPLAYER") then --> is a player
@@ -388,7 +403,7 @@
 					end
 					
 					--> try to guess his class
-					if (shadow) then --> n�o executar 2x
+					if (self.shadow) then
 						_details:ScheduleTimer("GuessClass", 1, {novo_objeto, self, 1})
 					end
 				end
@@ -402,33 +417,16 @@
 				novo_objeto.e_energy = 0
 				novo_objeto.runepower = 0
 				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
-				
 			elseif (self.type == container_enemydebufftarget_target) then
 				
 				novo_objeto.uptime = 0
 				novo_objeto.actived = false
 				novo_objeto.activedamt = 0
 				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
-				
 			elseif (self.type == container_misc_target) then --> CONTAINER ALVOS DO MISC
-
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
 				
 			elseif (self.type == container_friendlyfire) then --> CONTAINER FRIENDLY FIRE
-				
 				get_actor_class(novo_objeto, name)
-				
-				if (shadow_objeto) then
-					novo_objeto.shadow = shadow_objeto
-				end
 			end
 		
 	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -445,6 +443,14 @@
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> core
+
+	function _details:UpdateContainerCombatants()
+		container_pets = _details.table_pets.pets
+		_details:UpdatePetsOnParser()
+	end
+	function _details:ClearCCPetsBlackList()
+		table.wipe(pet_blacklist)
+	end
 
 	function container_combatants:CreationFunc(type)
 		if (type == container_damage_target) then

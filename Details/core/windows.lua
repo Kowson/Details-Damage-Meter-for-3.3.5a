@@ -765,6 +765,12 @@
 		_details:GetFramework():ShowTutorialAlertFrame("How to Use Bookmarks", "switch fast between displays", func)
 	end
 
+--> translate window
+
+function _details:OpenTranslateWindow()
+
+end
+
 --> feedback window
 	function _details:OpenFeedbackWindow()
 

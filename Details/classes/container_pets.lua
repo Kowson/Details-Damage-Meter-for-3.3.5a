@@ -121,14 +121,10 @@ function container_pets:BuscarPets()
 			if (pet_serial) then
 				if (not _details.table_pets.pets[pet_serial]) then
 					local name, realm = _UnitName("raid"..i)
-					if (name == "Unknown Entity") then
-						_details:SchedulePetUpdate(1)
-					else
-						if (realm and realm ~= "") then
-							name = name.."-"..realm
-						end
-						_details.table_pets:Adicionar(pet_serial, _UnitName("raidpet"..i), 0x1114, _UnitGUID("raid"..i), name, 0x514)
+					if (realm and realm ~= "") then
+						name = name.."-"..realm
 					end
+					_details.table_pets:Adicionar(pet_serial, _UnitName("raidpet"..i), 0x1114, _UnitGUID("raid"..i), name, 0x514)
 				end
 			end
 		end
@@ -139,14 +135,10 @@ function container_pets:BuscarPets()
 			if (pet_serial) then
 				if (not _details.table_pets.pets[pet_serial]) then
 					local name, realm = _UnitName("party"..i)
-					if (name == "Unknown Entity") then
-						_details:SchedulePetUpdate(1)
-					else
-						if (realm and realm ~= "") then
-							name = name.."-"..realm
-						end
-						_details.table_pets:Adicionar(pet_serial, _UnitName("partypet"..i), 0x1114, _UnitGUID("party"..i), name, 0x514) 
+					if (realm and realm ~= "") then
+						nome = nome.."-"..realm
 					end
+					_details.table_pets:Adicionar(pet_serial, _UnitName("partypet"..i), 0x1114, _UnitGUID("party"..i), name, 0x514)
 				end
 			end
 		end
@@ -201,6 +193,7 @@ function _details:LimparPets()
 	--a table antiga será descartada pelo garbage collector.
 	--_table_wipe(_details.table_pets.pets)
 	_details.table_pets.pets = _new_PetTable
+	_details:UpdateContainerCombatants()
 end
 
 local have_schedule = false

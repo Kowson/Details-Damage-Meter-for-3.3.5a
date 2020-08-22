@@ -580,8 +580,8 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 		percentage = _cstr("%.1f", self[keyName] / instance.top * 100)
 	end
 
-	if ((_details.time_type == 2 and self.group) or(not _details:CaptureGet("heal") and not _details:CaptureGet("aura")) or not self.shadow) then
-		if (not self.shadow and combat_time == 0) then
+	if ((_details.time_type == 2 and self.group) or(not _details:CaptureGet("heal") and not _details:CaptureGet("aura")) or instance.segment == -1) then
+		if (instance.segment == -1 and combat_time == 0) then
 			local p = _details.table_current(2, self.name)
 			if (p) then
 				local t = p:Time()
@@ -1939,17 +1939,9 @@ function attribute_heal:Initialize(initialize)
 	elseif (initialize) then
 		self.initialize_hps = true
 		self:RegisterInTimeMachine() --coloca ele da timeMachine
-		if (self.shadow) then
-			self.shadow.initialize_hps = true --> isso foi posto recentemente
-			--self.shadow:RegisterInTimeMachine()
-		end
 	else
 		self.initialize_hps = false
 		self:UnregisterInTimeMachine() --retira ele da timeMachine
-		if (self.shadow) then
-			self.shadow.initialize_hps = false --> isso foi posto recentemente
-			--self.shadow:UnregisterInTimeMachine()
-		end
 	end
 end
 
@@ -1997,6 +1989,11 @@ end
 					shadow = overall_heal:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
 					shadow.group = actor.group
+					shadow.isTank = actor.isTank
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
+
 					shadow.start_time = time() - 3
 					shadow.end_time = time()
 				end
@@ -2050,6 +2047,11 @@ end
 					shadow = overall_heal:CatchCombatant(actor.serial, actor.name, actor.flag_original, true)
 					shadow.class = actor.class
 					shadow.group = actor.group
+					shadow.isTank = actor.isTank
+					shadow.boss = actor.boss
+					shadow.boss_fight_component = actor.boss_fight_component
+					shadow.fight_component = actor.fight_component
+
 					shadow.start_time = time() - 3
 					shadow.end_time = time()
 				end
@@ -2060,10 +2062,13 @@ end
 				end
 			
 			--> time elapsed(captura de dados)
-				if (actor.end_time) then
-					local time =(actor.end_time or time()) - actor.start_time
-					shadow.start_time = shadow.start_time - time
+				local end_time = actor.end_time
+				if (not actor.end_time) then
+					end_time = time()
 				end
+
+				local elapsed_time = end_time - actor.start_time
+				shadow.start_time = shadow.start_time - elapsed_time
 
 			--> total de heal(captura de dados)
 				shadow.total = shadow.total + actor.total
@@ -2306,7 +2311,6 @@ function _details.refresh:r_attribute_heal(this_player, shadow)
 	_setmetatable(this_player, attribute_heal)
 	this_player.__index = attribute_heal
 
-	this_player.shadow = shadow
 	_details.refresh:r_container_abilities(this_player.spells, shadow.spells)
 end
 
