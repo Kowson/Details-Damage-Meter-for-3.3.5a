@@ -664,8 +664,8 @@ function SlashCmdList.DETAILS(msg, editbox)
 		if (pass_guid == "-") then
 			local guid = UnitGUID("target")
 			if (guid) then 
-				print(guid.. " -> " .. _details:GetNpcIdFromGuid(guid))
-				_details.id_frame.text:SetText("".._details:GetNpcIdFromGuid(guid))
+				local g = _details:GetNpcIdFromGuid(guid)
+				_details.id_frame.texto:SetText("" .. g)
 				_details.id_frame.text:HighlightText()
 			end
 		
