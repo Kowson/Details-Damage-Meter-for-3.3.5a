@@ -763,10 +763,56 @@
 		_details:GetFramework():ShowTutorialAlertFrame("How to Use Bookmarks", "switch fast between displays", func)
 	end
 
+--> feedback window
+	function _details:OpenFeedbackWindow()
+
+		if (not _G.DetailsFeedbackPanel) then
+
+			gump:CreateSimplePanel(UIParent, 340, 170, Loc["STRING_FEEDBACK_SEND_FEEDBACK"], "DetailsFeedbackPanel")
+			local panel = _G.DetailsFeedbackPanel
+
+			local label = gump:CreateLabel(panel, Loc["STRING_FEEDBACK_PREFERED_SITE"])
+			label:SetPoint("topleft", panel, "topleft", 15, -60)
+
+			local wowi = gump:NewImage(panel, [[Interface\AddOns\Details\images\icons2]], 101, 34, "artwork", {0/512, 101/512, 163/512, 200/512})
+			wowi:SetDesaturated(true)
+
+			wowi:SetPoint("topleft", panel, "topleft", 17, -100)
+
+			local wowi_title = gump:CreateLabel(panel, "GitHub:", nil, nil, "GameFontNormal")
+			local wowi_desc = gump:CreateLabel(panel, "GitHub", nil, "silver")
+			wowi_desc:SetWidth(202)
+
+			wowi_title:SetPoint("topleft", wowi, "topright", 5, 0)
+			wowi_desc:SetPoint("topleft", wowi_title, "bottomleft", 0, -1)
+
+			local on_enter = function(self, capsule)
+				capsule.image:SetDesaturated(false)
+			end
+			local on_leave = function(self, capsule)
+				capsule.image:SetDesaturated(true)
+			end
+
+			local on_click = function(website)
+				_details:CopyPaste([[https://github.com/Kowson/Details-Damage-Meter-for-3.3.5a/issues]])
+			end
+
+			local wowi_button = gump:CreateButton(panel, on_click, 103, 34, "")
+			wowi_button:SetPoint("topleft", wowi, "topleft", -1, 0)
+			wowi_button:InstallCustomTexture(nil, nil, nil, nil, true)
+			wowi_button.image = wowi
+			wowi_button:SetHook("OnEnter", on_enter)
+			wowi_button:SetHook("OnLeave", on_leave)
+
+		end
+		_G.DetailsFeedbackPanel:Show()
+
+	end
+
 --> config class colors
 	function _details:OpenClassColorsConfig()
 		if (not _G.DetailsClassColorManager) then
-			gump:CreateSimplePanel(UIParent, 300, 280, "Modify Class Colors", "DetailsClassColorManager")
+			gump:CreateSimplePanel(UIParent, 300, 280, Loc["STRING_OPTIONS_CLASSCOLOR_MODIFY"], "DetailsClassColorManager")
 			local panel = _G.DetailsClassColorManager
 			local upper_panel = CreateFrame("frame", nil, panel)
 			upper_panel:SetAllPoints(panel)
@@ -804,7 +850,7 @@
 				--GameCooltip:Hide()
 			end
 			
-			local reset = gump:NewLabel(panel, _, nil, nil, "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:" .. 20 .. ":" .. 20 .. ":0:1:512:512:8:70:328:409|t " .. "Right Click to Reset")
+			local reset = gump:NewLabel(panel, _, nil, nil, "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:" .. 20 .. ":" .. 20 .. ":0:1:512:512:8:70:328:409|t " .. Loc["STRING_OPTIONS_CLASSCOLOR_RESET"])
 			reset:SetPoint("bottomright", panel, "bottomright", -23, 38)
 			local reset_texture = gump:CreateImage(panel,[[Interface\MONEYFRAME\UI-MONEYFRAME-BORDER]], 138, 45, "border")
 			reset_texture:SetPoint("center", reset, "center", 0, -7)
@@ -853,7 +899,7 @@
 	function _details:OpenBookmarkConfig()
 	
 		if (not _G.DetailsBookmarkManager) then
-			gump:CreateSimplePanel(UIParent, 300, 480, "Manage Bookmarks", "DetailsBookmarkManager")
+			gump:CreateSimplePanel(UIParent, 300, 480, Loc["STRING_OPTIONS_MANAGE_BOOKMARKS"], "DetailsBookmarkManager")
 			local panel = _G.DetailsBookmarkManager
 			panel.blocks = {}
 			
@@ -2175,7 +2221,7 @@
 	function _details:CreateTestBars()
 		local current_combat = _details:GetCombat("current")
 		
-		local actors_name = {"Ragnaros", "The Lich King", "Your Neighbor", "Your Raid Leader", "Your Internet Girlfriend", "Mr. President", "A Shadow Priest Complaining About Dps", "Ms. Gray", "Parry Hotter", "Your Math Teacher", "King Djoffrey", UnitName("player") .. " Snow", "A Drunk Dawrf", "Somebody That You Used To Know", "Low Dps Guy", "Helvis Phresley(Death Log Not Found)", "Stormwind Guard", "A PvP Player", "Bolvar Fordragon","Malygos","Akama","Anachronos","Lady Blauminex","Cairne Bloodhoof","Borivar","C'Thun","Drek'Thar","Durotan","Eonar","Footman Malakai","Bolvar Fordragon","Fritz Fizzlesprocket","Lisa Gallywix","M'uru","High Priestess MacDonnell","Nazgrel","Ner'zhul","Saria Nightwatcher","Chief Ogg'ora","Ogoun","Grimm Onearm","Apothecary Oni'jus","Orman of Stromgarde","General Rajaxx","Baron Rivendare","Roland","Archmage Trelane","Liam Trollbane"}
+		local actors_name = {"Ragnaros", "Dravun", "Darcaros", "The Lich King", "Your Neighbor", "Your Raid Leader", "Your Internet Girlfriend", "Mr. President", "A Shadow Priest Complaining About Dps", "Ms. Gray", "Parry Hotter", "Your Math Teacher", "King Djoffrey", UnitName("player") .. " Snow", "A Drunk Dawrf", "Somebody That You Used To Know", "Low Dps Guy", "Helvis Phresley(Death Log Not Found)", "Stormwind Guard", "A PvP Player", "Bolvar Fordragon","Malygos","Akama","Anachronos","Lady Blauminex","Cairne Bloodhoof","Borivar","C'Thun","Drek'Thar","Durotan","Eonar","Footman Malakai","Bolvar Fordragon","Fritz Fizzlesprocket","Lisa Gallywix","M'uru","High Priestess MacDonnell","Nazgrel","Ner'zhul","Saria Nightwatcher","Chief Ogg'ora","Ogoun","Grimm Onearm","Apothecary Oni'jus","Orman of Stromgarde","General Rajaxx","Baron Rivendare","Roland","Archmage Trelane","Liam Trollbane"}
 		local actors_classes = CLASS_SORT_ORDER
 		
 		local total_damage = 0

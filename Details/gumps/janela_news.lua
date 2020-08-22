@@ -9,7 +9,7 @@ function _details:OpenNewsWindow()
 	
 	news_window:Title(Loc["STRING_NEWS_TITLE"])
 	news_window:Text(Loc["STRING_VERSION_LOG"])
-	news_window:Icon("Interface\\CHARACTERFRAME\\TempPortrait")
+	news_window:Icon([[Interface\AddOns\Details\images\icons2]])
 	news_window:Show()
 end
 
@@ -133,8 +133,13 @@ function _details:CreateOrOpenNewsWindow()
 			text:SetText(textt or "")
 		end
 		
-		function frame:Icon(path)
+		function frame:Icon(path, coords)
 			frame.portrait:SetTexture(path or nil)
+			if (coords) then
+				frame.portrait:SetTexCoord(unpack(coords))
+			else
+				frame.portrait:SetTexCoord(0, 1, 0, 1)
+			end
 		end
 		
 		frame:Hide()

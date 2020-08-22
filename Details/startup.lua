@@ -311,8 +311,8 @@ function _G._details:Start()
 			_details:AddDefaultCustomDisplays()
 
 			--> Reset for the new structure
-			if (_details_database.last_realversion and _details_database.last_realversion < 46 and enable_reset_warning) then
-				for i = 1, #_details.custom do
+			if (_details_database.last_realversion and _details_database.last_realversion < 47 and enable_reset_warning) then
+				for i = #_details.custom, 1, -1 do
 					_details.attribute_custom:RemoveCustom(i)
 				end
 				_details:AddDefaultCustomDisplays()

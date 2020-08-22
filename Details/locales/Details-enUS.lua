@@ -163,6 +163,11 @@ L["STRING_ERASE_DATA_OVERALL"] = "Reset Overall Data"
 L["STRING_ERASE_IN_COMBAT"] = "Schedule overall wipe after this combat."
 L["STRING_EXAMPLE"] = "Example"
 L["STRING_FAIL_ATTACKS"] = "Attack Failures"
+L["STRING_FEEDBACK_CURSE_DESC"] = "Open a ticket or leave a message on Details! page."
+L["STRING_FEEDBACK_MMOC_DESC"] = "Post on our thread at mmo-champion's forum."
+L["STRING_FEEDBACK_PREFERED_SITE"] = "Choose your prefered community site:"
+L["STRING_FEEDBACK_SEND_FEEDBACK"] = "Send Feedback"
+L["STRING_FEEDBACK_WOWI_DESC"] = "Leave a comment on Details! project page."
 L["STRING_FIGHTNUMBER"] = "Fight #"
 L["STRING_FREEZE"] = "This segment is not available at the moment"
 L["STRING_FROM"] = "From"
@@ -468,6 +473,8 @@ L["STRING_OPTIONS_CHEAL_DESC"] = [=[Enable capture of:
 - |cFFFFFF00Healing Taken|r
 - |cFFFFFF00Enemy Healed|r
 - |cFFFFFF00Damage Prevented|r]=]
+L["STRING_OPTIONS_CLASSCOLOR_MODIFY"] = "Modify Class Colors"
+L["STRING_OPTIONS_CLASSCOLOR_RESET"] = "Right Click to Reset"
 L["STRING_OPTIONS_CLEANUP"] = "Auto Erase Trash Segments"
 L["STRING_OPTIONS_CLEANUP_DESC"] = "When enabled, trash cleanup segments are removed automatically after two others segments."
 L["STRING_OPTIONS_CLOSE_BUTTON_ANCHOR"] = "Close Button:"
@@ -636,6 +643,7 @@ L["STRING_OPTIONS_INTERFACEDIT"] = "Interface Edit Mode"
 L["STRING_OPTIONS_LEFT_MENU_ANCHOR"] = "Menu Settings:"
 L["STRING_OPTIONS_LOCKSEGMENTS"] = "Segments Locked"
 L["STRING_OPTIONS_LOCKSEGMENTS_DESC"] = "When enabled, changing a segment in any window does change in all the others opened windows too."
+L["STRING_OPTIONS_MANAGE_BOOKMARKS"] = "Manage Bookmarks"
 L["STRING_OPTIONS_MAXINSTANCES"] = "Max Window Amount"
 L["STRING_OPTIONS_MAXINSTANCES_DESC"] = [=[Limit the amount of windows which can be created.
 
@@ -1004,6 +1012,7 @@ L["STRING_OPTIONS_SEGMENTSSAVE_DESC"] = [=[This options controls how many segmen
 High values can make your character logoff take more time
 
 If you rarelly use the data of last day, it`s high recommeded leave this option in |cFFFFFF001|r.]=]
+L["STRING_OPTIONS_SENDFEEDBACK"] = "Feedback"
 L["STRING_OPTIONS_SHOWHIDE"] = "Show & Hide settings"
 L["STRING_OPTIONS_SHOWHIDE_DESC"] = "Controls when a window should hide or appear on the screen."
 L["STRING_OPTIONS_SHOW_SIDEBARS"] = "Show Borders"
