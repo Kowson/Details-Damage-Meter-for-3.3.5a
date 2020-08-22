@@ -1608,11 +1608,6 @@
 			end
 		end
 
-		if (false and player_dst.powertype ~= this_player.powertype) then --- TODO: think of a way to track regenerating different resources
-			print("error: different power types: who -> ", this_player.powertype, " target -> ", player_dst.powertype)
-			return
-		end
-		
 		this_player.last_event = _timestamp
 
 	------------------------------------------------------------------------------------------------

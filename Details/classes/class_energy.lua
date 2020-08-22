@@ -878,8 +878,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 	local i = 1
 
 	for index, actor in _ipairs(container._ActorTable) do
-		if (actor.powertype == powertype) then
-
+		-- if (actor.powertype == powertype) then
 			for spellid, spell in _pairs(actor.spells._ActorTable) do
 				local on_self = spell.targets[name]
 				if (on_self) then
@@ -900,7 +899,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 				end
 			end
 
-		end
+		-- end
 	end
 
 	i = i - 1
@@ -945,7 +944,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 	i = 1
 
 	for index, actor in _ipairs(container._ActorTable) do
-		if (actor.powertype == powertype) then
+		-- if (actor.powertype == powertype) then
 			local on_self = actor.targets[name]
 			if (on_self) then
 				local t = energy_tooltips_table[i]
@@ -956,7 +955,7 @@ function attribute_energy:ToolTipRegenReceived(instance, number, bar, keydown)
 				t[1], t[2], t[3] = actor.name, on_self, actor.class
 				i = i + 1
 			end
-		end
+		--end
 	end
 
 	i = i - 1
@@ -1046,7 +1045,7 @@ function attribute_energy:SetInfoRegenReceived()
 	local i = 1
 
 	for index, actor in _ipairs(container._ActorTable) do
-		if (actor.powertype == powertype) then
+		-- if (actor.powertype == powertype) then
 			for spellid, spell in _pairs(actor.spells._ActorTable) do
 				local on_self = spell.targets[my_name]
 				if (on_self) then
@@ -1066,7 +1065,7 @@ function attribute_energy:SetInfoRegenReceived()
 					end
 				end
 			end
-		end
+		-- end
 	end
 
 	i = i - 1
@@ -1117,7 +1116,7 @@ function attribute_energy:SetInfoRegenReceived()
 
 
 	for index, actor in _ipairs (container._ActorTable) do
-		if (actor.powertype == powertype) then
+		-- if (actor.powertype == powertype) then
 			local on_self = actor.targets[my_name]
 			if (on_self) then
 				local t = energy_tooltips_table[i]
@@ -1128,7 +1127,7 @@ function attribute_energy:SetInfoRegenReceived()
 				t[1], t[2], t[3] = actor.name, on_self, actor.class
 				i = i + 1
 			end
-		end
+		-- end
 	end
 
 	i = i - 1
@@ -1160,7 +1159,7 @@ function attribute_energy:SetInfoRegenReceived()
 		end
 		
 		bar.text_left:SetText(index..instance.dividers.placing..table[1])
-		bar.text_right:SetText(_details:comma_value(table[2]) .. _cstr("%.1f", table[2] / total_regenerated * 100))
+		bar.text_right:SetText(_details:comma_value(table[2]) .. "(" .. _cstr("%.1f", table[2] / total_regenerated * 100) .. "%)")
 		
 		if (bar.mouse_over) then --> atualizar o tooltip
 			if (bar.isTarget) then
@@ -1206,7 +1205,7 @@ function attribute_energy:SetDetailsRegenReceived(name, bar)
 	local i = 1
 
 	for index, actor in _ipairs(container._ActorTable) do
-		if (actor.powertype == powertype) then
+		-- if (actor.powertype == powertype) then
 			local spell = actor.spells._ActorTable[spellid]
 			if (spell) then
 				local on_self = spell.targets[who_name]
@@ -1220,7 +1219,7 @@ function attribute_energy:SetDetailsRegenReceived(name, bar)
 					i = i + 1
 				end
 			end
-		end
+		-- end
 	end
 
 	i = i - 1
