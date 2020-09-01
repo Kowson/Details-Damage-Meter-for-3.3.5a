@@ -234,6 +234,12 @@ function _details:GetMaxInstancesAmount()
 	return _details.instances_amount
 end
 
+function _details:SetMaxInstancesAmount(amount)
+	if (_type(amount) == "number") then
+		_details.instances_amount = amount
+	end
+end
+
 function _details:GetFreeInstancesAmount()
 	return _details.instances_amount - #_details.table_instances
 end
@@ -487,6 +493,7 @@ end
 		end
 		
 		self:SetCombatAlpha(nil, nil, true)
+		self:DesaturateMenu()
 		
 		--if (self.hide_out_of_combat and not UnitAffectingCombat("player")) then
 		--	self:SetWindowAlphaForCombat(true, true)
@@ -628,7 +635,7 @@ end
 			if (instance and not instance:IsActive()) then
 				instance:EnableInstance()
 				_details:DelayOptionsRefresh(instance)
-				return
+				return instance
 			end
 		end
 	
@@ -636,7 +643,7 @@ end
 		for index, instance in _ipairs(_details.table_instances) do
 			if (not instance:IsActive()) then
 				instance:EnableInstance()
-				return
+				return instance
 			end
 		end
 		
@@ -930,6 +937,8 @@ function _details:agrupar_windows(sides)
 	_details:DelayOptionsRefresh()
 	
 end
+
+_details.MakeInstanceGroup = _details.agrupar_windows
 
 function _details:UngroupInstance()
 	return self:Ungroup(-1)

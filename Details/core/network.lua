@@ -558,11 +558,14 @@
 			end
 		else
 			if (in_city) then
-				if (_details.schedule_chat_leave) then
-					_details:CancelTimer(_details.schedule_chat_leave)
-				end
-				if (not _details.schedule_chat_enter) then
-					_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 5)
+				local _, name = GetChannelName(2)
+				if (name) then
+					if (_details.schedule_chat_leave) then
+						_details:CancelTimer(_details.schedule_chat_leave)
+					end
+					if (not _details.schedule_chat_enter) then
+						_details.schedule_chat_enter = _details:ScheduleTimer("EnterChatChannel", 5)
+					end
 				end
 			end
 		end

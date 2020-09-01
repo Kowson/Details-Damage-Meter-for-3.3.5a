@@ -4605,7 +4605,8 @@ local build_mode_list = function(self, elapsed)
 
 		CoolTip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], menu_wallpaper_tex, menu_wallpaper_color, true)
 		CoolTip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
-		
+		CoolTip:SetBackdrop(2, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
+
 		show_anti_overlap(instance, self, "top")
 		
 		CoolTip:ShowCooltip()
@@ -6195,6 +6196,10 @@ end
 		OnEnterMainWindow(self.instance, self)
 		GameCooltip.buttonOver = true
 		self.instance.baseframe.header.button_mouse_over = true
+
+		if (self.instance.desaturated_menu) then
+			self:GetNormalTexture():SetDesaturated(false)
+		end
 		
 		GameCooltip:Reset()
 		GameCooltip:SetType("menu")
@@ -6226,7 +6231,11 @@ end
 	
 	local reset_button_onleave = function(self)
 		OnLeaveMainWindow(self.instance, self)
-		
+
+		if (self.instance.desaturated_menu) then
+			self:GetNormalTexture():SetDesaturated(true)
+		end
+
 		hide_anti_overlap(self.instance.baseframe.anti_menu_overlap)
 		
 		GameCooltip.buttonOver = false
@@ -6260,6 +6269,10 @@ end
 
 	local close_button_onenter = function(self)
 		OnEnterMainWindow(self.instance, self, 3)
+
+		if (self.instance.desaturated_menu) then
+			self:GetNormalTexture():SetDesaturated(false)
+		end
 
 		local GameCooltip = GameCooltip
 
@@ -6305,6 +6318,10 @@ end
 	
 	local close_button_onleave = function(self)
 		OnLeaveMainWindow(self.instance, self, 3)
+
+		if (self.instance.desaturated_menu) then
+			self:GetNormalTexture():SetDesaturated(true)
+		end
 
 		hide_anti_overlap(self.instance.baseframe.anti_menu_overlap)
 		
@@ -6792,7 +6809,7 @@ function gump:CreateHeader(baseframe, instance)
 
 			end)
 	
--- ~delete ~erase
+-- ~delete ~erase ~reset
 --> reset history ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 	baseframe.header.reset = CreateFrame("button", "DetailsClearSegmentsButton" .. instance.mine_id, baseframe)
@@ -6819,45 +6836,4 @@ function gump:CreateHeader(baseframe, instance)
 	b:GetPushedTexture():SetTexCoord(128/256, 160/256, 0, 1)
 	
 --> end botão reset
-
-
---[[
-
---> test com shadows
-
---mode
-	local shadow = baseframe.header.mode_selecao:CreateTexture("sombra", "background")
-	shadow:SetPoint("center", baseframe.header.mode_selecao.widget, "center")
-	shadow:SetTexture("Interface\\PetBattles\\PetBattle-SelectedPetGlow")
-	shadow:SetVertexColor(0, 0, 0, 1)
-	shadow:SetSize(22, 22)
---segments
-	local shadow = baseframe.header.segment:CreateTexture("sombra2", "background")
-	shadow:SetPoint("center", baseframe.header.segment.widget, "center")
-	shadow:SetTexture("Interface\\PetBattles\\PetBattle-SelectedPetGlow")
-	shadow:SetVertexColor(0, 0, 0, 1)
-	shadow:SetSize(22, 22)
---attribute
-	local shadow = baseframe.header.attribute:CreateTexture("sombra3", "background")
-	shadow:SetPoint("center", baseframe.header.attribute.widget, "center")
-	shadow:SetTexture("Interface\\PetBattles\\PetBattle-SelectedPetGlow")
-	shadow:SetVertexColor(0, 0, 0, 1)
-	shadow:SetSize(12, 16)
-	shadow:SetTexCoord(0.0, 0.0, 0.3, 0.3, 0.7, 0.7, 1, 1)
---report
-	local shadow = baseframe.header.report:CreateTexture("sombra4", "background")
-	shadow:SetPoint("center", baseframe.header.report.widget, "center")
-	shadow:SetTexture("Interface\\PetBattles\\PetBattle-SelectedPetGlow")
-	shadow:SetVertexColor(0, 0, 0, 1)
-	shadow:SetSize(22, 22)
-	
---baseToolbar.novo, baseToolbar.close, baseToolbar.reset}baseToolbar.mode_selecao, baseToolbar.segment, baseToolbar.attribute, baseToolbar.report	
-
-	local shadow = UIParent:CreateTexture("SombraTthis", "background")
-	shadow:SetPoint("center", UIParent, "center", 200, 0)
-	shadow:SetTexture("Interface\\PetBattles\\PetBattle-SelectedPetGlow")
-	shadow:SetVertexColor(0, 0, 0, 1)
-	shadow:SetSize(300, 300)
-	shadow:SetTexCoord(0.0, 0.0, 0.3, 0.3, 0.7, 0.7, 1, 1)
-	--]]
 end

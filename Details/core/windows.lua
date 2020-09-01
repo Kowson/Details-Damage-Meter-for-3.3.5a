@@ -427,11 +427,7 @@
 						if (index <= X) then
 							gump:Fade(bar, "out")
 						else
-							if (self.baseframe.isStretching or self.auto_resize) then
-								gump:Fade(bar, 1)
-							else
-								gump:Fade(bar, "in", 0.1)
-							end
+							gump:Fade(bar, 1)
 						end
 					end
 				end
@@ -460,7 +456,7 @@
 							if (self.baseframe.isStretching or self.auto_resize) then
 								gump:Fade(bar, 1)
 							else	
-								gump:Fade(bar, "in", 0.1)
+								gump:Fade(bar, 1)
 							end
 						end
 					end
