@@ -1416,6 +1416,7 @@ end
 
 				if (not actor.powertype) then
 					print("actor without powertype", actor.name, actor.powertype)
+					actor.powertype = 1
 				end
 
 				shadow.powertype = actor.powertype

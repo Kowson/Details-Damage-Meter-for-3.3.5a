@@ -8,10 +8,12 @@
 
 	local _math_floor = math.floor --lua local
 	local _cstr = string.format --lua local
+	local _UnitClass = UnitClass
 	
 	local gump = _details.gump --details local
 	
 	local _GetSpellInfo = _details.getspellinfo --details api
+	local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -263,8 +265,9 @@
 	--/run local s="test {spell}"; s=s:gsub("{spell}", "tercio");print(s)
 	
 	function _details:interrupt_announcer(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname, spelltype, extraSpellID, extraSpellName, extraSchool)
-		if (src_name == _details.playername) then -- and _details.announce_interrupts.enabled
-			local channel = _details.announce_interrupts.channel
+		local channel = _details.announce_interrupts.channel
+		if (channel ~= "PRINT" and src_name == _details.playername) then
+
 			local next = _details.announce_interrupts.next
 			local custom = _details.announce_interrupts.custom
 			
@@ -295,17 +298,49 @@
 				
 				_details:SendMsgToChannel(msg, channel, _details.announce_interrupts.whisper)
 			end
+		elseif (channel == "PRINT") then
+			local custom = _details.announce_interrupts.custom
+			local spellname
+			if (spellid > 10) then
+				spellname = GetSpellLink(extraSpellID)
+			else
+				spellname = _GetSpellInfo(extraSpellID)
+			end
+
+			if (custom ~= "") then
+				custom = custom:gsub("{spell}", spellname)
+				custom = custom:gsub("{next}", src_name)
+				_details:SendMsgToChannel (custom, "PRINT")
+			else
+				local minute, second = _details:GetCombat():GetFormatedCombatTime()
+
+				local _, class = _UnitClass(src_name)
+				local class_color = "|cFFFF3333"
+
+				if (class) then
+					local coords = CLASS_ICON_TCOORDS [class]
+					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+				end
+
+				if (second < 10) then
+					second = "0" .. second
+				end
+				local msg = "|cFFFFFF00[|r".. minute ..  ":" .. second .. "|cFFFFFF00]|r Interrupt: " .. spellname .. " (" .. class_color .. _details:GetOnlyName(src_name) .. "|r)"
+				_details:SendMsgToChannel(msg, "PRINT")
+			end
 		end
 	end
-	
+
+	local ignored_self_cooldowns = {
+	}
+
 	function _details:cooldown_announcer(token, time, src_serial, src_name, src_flags, dst_serial, dst_name, dst_flags, spellid, spellname)
-		if (src_name == _details.playername) then -- and _details.announce_cooldowns.enabled
+		local channel = _details.announce_cooldowns.channel
+		if (channel ~= "PRINT" and src_name == _details.playername) then -- and _details.announce_cooldowns.enabled
 			local ignored = _details.announce_cooldowns.ignored_cooldowns
 			if (ignored[spellid]) then
 				return
 			end
-			
-			local channel = _details.announce_cooldowns.channel
 			
 			if (channel == "WHISPER") then
 				if (dst_name == Loc["STRING_RAID_WIDE"]) then
@@ -344,6 +379,55 @@
 
 				_details:SendMsgToChannel(msg, channel, _details.announce_interrupts.whisper)
 			end
+		elseif (channel == "PRINT") then
+			local ignored = _details.announce_cooldowns.ignored_cooldowns
+			if (ignored[spellid]) then
+				return
+			end
+
+			if (ignored_self_cooldowns[spellid]) then
+				return
+			end
+
+			if (src_name == dst_name and src_name ~= _details.playername) then
+				return
+			end
+
+			local msg
+			local minute, second = _details:GetCombat():GetFormatedCombatTime()
+
+			local _, class = _UnitClass(src_name)
+			local class_color = "|cFFFFFFFF"
+
+			local _, class2 = _UnitClass(dst_name)
+			local class_color2 = "|cFFFFFFFF"
+
+			if (class) then
+				local coords = CLASS_ICON_TCOORDS[class]
+				class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+			end
+
+			if (class2) then
+				local coords = CLASS_ICON_TCOORDS[class2]
+				class_color2 = " -> |TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class2].colorStr
+				dst_name = _details:GetOnlyName(dst_name)
+			else
+				dst_name = ""
+			end
+
+			local spellname
+			if (spellid > 10) then
+				spellname = GetSpellLink(spellid)
+			else
+				spellname = _GetSpellInfo(spellid)
+			end
+
+			if (second < 10) then
+				second = "0" .. second
+			end
+			msg = "|cFF8F8FFF[|r".. minute ..  ":" .. second .. "|cFF8F8FFF]|r Cooldown: " .. spellname .. " (" .. class_color .. _details:GetOnlyName(src_name) .. "|r" .. class_color2 .. dst_name .. "|r)"
+
+			_details:SendMsgToChannel(msg, "PRINT")
 		end
 	end
 	
@@ -372,6 +456,11 @@
 					return
 				end
 				channel = "PARTY"
+			elseif (where == 4) then
+				if (zone ~= "raid" and zone ~= "party") then
+					return
+				end
+				channel = "PRINT"
 			end
 			
 			local only_first = _details.announce_deaths.only_first
@@ -385,7 +474,19 @@
 			
 			dst_name = _details:GetOnlyName(dst_name)
 			
-			local msg = _cstr(Loc["STRING_OPTIONS_RT_DEATH_MSG"], dst_name) .. ":"
+			local msg
+			if (where == 4) then --> observer
+				local _, class = _UnitClass(dst_name)
+				local class_color = "|cFFFFFFFF"
+
+				if (class) then
+					local coords = CLASS_ICON_TCOORDS[class]
+					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+				end
+				msg = "Death: " .. class_color .. dst_name .. "|r ->"
+			else
+				msg = _cstr(Loc["STRING_OPTIONS_RT_DEATH_MSG"], dst_name) .. ":"
+			end
 			local spells = ""
 			local last = #death_table
 			
@@ -407,6 +508,13 @@
 			end
 			
 			msg = msg .. " " .. spells
+			if (where == 4) then --> observer
+				local minute, second = _details:GetCombat():GetFormatedCombatTime()
+				if (second < 10) then
+					second = "0" .. second
+				end
+				msg = "|cFFFF8800[|r".. minute ..  ":" .. second .. "|cFFFF8800]|r " .. msg
+			end
 			_details:SendMsgToChannel(msg, channel)
 			--print(msg)
 		--end

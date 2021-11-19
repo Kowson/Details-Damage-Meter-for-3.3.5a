@@ -17,6 +17,7 @@
 	local _table_remove = table.remove -- lua local
 	local _rawget = rawget
 	local _math_max = math.max
+	local _math_floor = math.floor
 	local _GetTime = GetTime
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -104,7 +105,13 @@
 		return self[container]._ActorTable
 	end
 
-	--return the combat time in seconds
+	--return the combat time in (minutes, seconds)
+	function combat:GetFormatedCombatTime()
+		local time = self:GetCombatTime()
+		local m, s = _math_floor(time/60), _math_floor(time%60)
+		return m, s
+	end
+
 	function combat:GetCombatTime()
 		if (self.end_time) then
 			return _math_max(self.end_time - self.start_time, 0.1)
