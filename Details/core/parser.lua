@@ -727,9 +727,9 @@
 		
 	------------------------------------------------------------------------------------------------
 	--> amount add
-	if (missType == "ABSORB" and amountMissed > 0) then
-		consider_absorb(amountMissed, dst_name, src_name, time, dst_flags)
-	end
+		if (missType == "ABSORB" and amountMissed > 0) then
+			consider_absorb(amountMissed, dst_name, src_name, time, dst_flags)
+		end
 		--> actor spells table
 		local spell = this_player.spells._ActorTable[spellid]
 		if (not spell) then
@@ -2717,7 +2717,7 @@
 				_details:EndCombat(true, true) --killed
 			end
 		else
-			if (_details.table_current.end_time and _details.table_current.end_time + 2 >= _details.encounter_table["end"]) then
+			if ((_details.table_current.end_time or 0) and _details.table_current.end_time + 2 >= _details.encounter_table["end"]) then
 				--_details.table_current.start_time = _details.encounter_table["start"]
 				_details.table_current.end_time = _details.encounter_table["end"]
 				_details:UpdateGumpMain(-1, true)

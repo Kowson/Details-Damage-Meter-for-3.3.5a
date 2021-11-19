@@ -1614,7 +1614,7 @@ function attribute_misc:ToolTipDefensiveCooldowns(instance, number, bar)
 		r, g, b = unpack(_details.class_colors[self.class])
 	end	
 	
-	local mine_total = self["cooldowns_defensive"]
+	local mine_total = _math_floor(self["cooldowns_defensive"])
 	local my_table = self.cooldowns_defensive_spells._ActorTable
 	
 --> ability usada para interromper

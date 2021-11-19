@@ -2427,10 +2427,9 @@ function _details:InstanceAlert(msg, icon, time, clickfunc)
 		self.alert.button.clickfunction = nil
 	end
 
-	if (time) then
-		self.alert_time = time
-		_details:ScheduleTimer("InstanceAlertTime", time, self)
-	end
+	time = time or 15
+	self.alert_time = time
+	_details:ScheduleTimer("InstanceAlertTime", time, self)
 	
 	self.alert:SetPoint("bottom", self.baseframe, "bottom", 0, -12)
 	self.alert:SetPoint("left", self.baseframe, "left", 3, 0)
@@ -2529,14 +2528,14 @@ function CreateAlertFrame(baseframe, instance)
 	return alert_bg
 end
 
-function _details:InstanceMsg(text, icon, textcolor, icontexture, iconcoords, iconcolor)
+function _details:InstanceMsg(text, icon, textcolor, iconcoords, iconcolor)
 	if (not text) then
 		self.freeze_icon:Hide()
 		return self.freeze_text:Hide()
 	end
 	
 	self.freeze_text:SetText(text)
-	self.freeze_icon:SetTexture(icon)
+	self.freeze_icon:SetTexture(icon or [[Interface\CHARACTERFRAME\Disconnect-Icon]])
 
 	self.freeze_icon:Show()
 	self.freeze_text:Show()
@@ -2548,12 +2547,6 @@ function _details:InstanceMsg(text, icon, textcolor, icontexture, iconcoords, ic
 		self.freeze_text:SetTextColor(1, 1, 1, 1)
 	end
 
-	if (icontexture) then
-		self.freeze_icon:SetTexture(icontexture)
-	else
-		self.freeze_icon:SetTexture([[Interface\CHARACTERFRAME\Disconnect-Icon]])
-	end
-	
 	if (iconcoords and type(iconcoords) == "table") then
 		self.freeze_icon:SetTexCoord(_unpack(iconcoords))
 	else
