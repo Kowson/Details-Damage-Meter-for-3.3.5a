@@ -2262,7 +2262,7 @@
 
 				if (_hook_deaths) then
 					--> send event to registred functions
-					local death_at = _timestamp - _current_combat:GetStartTime()
+					local death_at = _GetTime() - _current_combat:GetStartTime()
 					local max_health = _UnitHealthMax(dst_name)
 
 					for _, func in _ipairs(_hook_deaths_container) do 
@@ -2297,7 +2297,7 @@
 					this_death[#this_death+1] = t
 				end
 				
-				local elapsed = _timestamp - _current_combat:GetStartTime()
+				local elapsed = _GetTime() - _current_combat:GetStartTime()
 				local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 				
 				local t = {this_death, time, this_player.name, this_player.class, _UnitHealthMax(dst_name), minutes.."m "..seconds.."s", ["dead"] = true,["last_cooldown"] = this_player.last_cooldown,["dead_at"] = elapsed}
@@ -2704,12 +2704,12 @@
 		end
 		
 		_details.latest_ENCOUNTER_END = _details.latest_ENCOUNTER_END or 0
-		if (_details.latest_ENCOUNTER_END + 15 > _details._time) then
+		if (_details.latest_ENCOUNTER_END + 15 > _GetTime()) then
 			return
 		end
 		_details.latest_ENCOUNTER_END = _GetTime()
 		
-		_details.encounter_table["end"] = _GetTime() - 0.4
+		_details.encounter_table["end"] = _GetTime()
 		
 		
 		if (_in_combat) then

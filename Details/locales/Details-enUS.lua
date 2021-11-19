@@ -66,6 +66,7 @@ L["STRING_CCBROKE"] = "Crowd Control Removed"
 L["STRING_CENTER"] = "center"
 L["STRING_CENTER_UPPER"] = "Center"
 L["STRING_CHANGED_TO_CURRENT"] = "Segment changed to current"
+L["STRING_CHANNEL_PRINT"] = "Observer"
 L["STRING_CHANNEL_RAID"] = "Raid"
 L["STRING_CHANNEL_SAY"] = "Say"
 L["STRING_CHANNEL_WHISPER"] = "Whisper"
@@ -219,6 +220,7 @@ L["STRING_IMAGEEDIT_CROPTOP"] = "Crop Top"
 L["STRING_IMAGEEDIT_DONE"] = "DONE"
 L["STRING_IMAGEEDIT_FLIPH"] = "Flip Horizontal"
 L["STRING_IMAGEEDIT_FLIPV"] = "Flip Vertical"
+L["STRING_INSTANCE_CHAT"] = "Instance Chat"
 L["STRING_INSTANCE_LIMIT"] = "max window amount has been reached, you can modify this limit on options panel. Also you can reopen closed windows over (#) window menu." -- Needs review
 L["STRING_INTERFACE_OPENOPTIONS"] = "Open Options Panel"
 L["STRING_ISA_PET"] = "This Actor is a Pet"
@@ -284,6 +286,7 @@ L["STRING_MINITUTORIAL_BOOKMARK1"] = "Right click at any point over the window t
 L["STRING_MINITUTORIAL_BOOKMARK2"] = "Bookmarks gives quick access to favorite displays."
 L["STRING_MINITUTORIAL_BOOKMARK3"] = "Use right click to close the bookmark panel."
 L["STRING_MINITUTORIAL_BOOKMARK4"] = "Don't show this again."
+L["STRING_MIRROR_IMAGE"] = "Mirror Image"
 L["STRING_MISS"] = "Miss"
 L["STRING_MODE_ALL"] = "Everything"
 L["STRING_MODE_GROUP"] = "Group & Raid"
@@ -429,6 +432,9 @@ L["STRING_OPTIONS_BARSTART_DESC"] = "When disabled the top texture starts at the
 L["STRING_OPTIONS_BAR_TEXTURE"] = "Texture"
 L["STRING_OPTIONS_BAR_TEXTURE_DESC"] = [=[This is the texture used on the top of bar.
 The size is changed according with the percentage.]=]
+L["STRING_OPTIONS_BARUR_ANCHOR"] = "Fast Updates:"
+L["STRING_OPTIONS_BARUR_DESC"] = "When enabled, DPS and HPS values are updated just a little bit faster than usual."
+L["STRING_OPTIONS_BARUR_ENABLED"] = "Enabled"
 L["STRING_OPTIONS_CAURAS"] = "Collect Auras"
 L["STRING_OPTIONS_CAURAS_DESC"] = [=[Enable capture of:
 
@@ -941,7 +947,9 @@ L["STRING_OPTIONS_RT_COOLDOWN1"] = "%s used on %s!"
 L["STRING_OPTIONS_RT_COOLDOWN2"] = "%s used!"
 L["STRING_OPTIONS_RT_COOLDOWNS_ANCHOR"] = "Announce Cooldowns:"
 L["STRING_OPTIONS_RT_COOLDOWNS_CHANNEL"] = "Channel"
-L["STRING_OPTIONS_RT_COOLDOWNS_CHANNEL_DESC"] = "Which chat channel is used to send the alert message."
+L["STRING_OPTIONS_RT_COOLDOWNS_CHANNEL_DESC"] = [=[Which chat channel is used to send the alert message.
+
+If |cFFFFFF00Observer|r is selected, all cooldowns are printed in your chat, except individual cooldowns.]=]
 L["STRING_OPTIONS_RT_COOLDOWNS_CUSTOM"] = "Custom Text"
 L["STRING_OPTIONS_RT_COOLDOWNS_CUSTOM_DESC"] = [=[Type your own phrase to send.
 
@@ -966,7 +974,9 @@ L["STRING_OPTIONS_RT_DEATHS_WHERE2"] = "Only Raid"
 L["STRING_OPTIONS_RT_DEATHS_WHERE3"] = "Only Dungeon"
 L["STRING_OPTIONS_RT_DEATHS_WHERE_DESC"] = [=[Select where deaths can be reported.
 
-|cFFFFFF00Important|r for raids /raid channel is used, /p while in dungeons.]=]
+|cFFFFFF00Important|r for raids /raid channel is used, /p while in dungeons.
+
+If |cFFFFFF00Observer|r is selected, deaths are shown only for you in the chat.]=]
 L["STRING_OPTIONS_RT_FIRST_HIT"] = "First Hit"
 L["STRING_OPTIONS_RT_FIRST_HIT_DESC"] = "Prints over chat panel (|cFFFFFF00only for you|r) who delivered the first hit, usually is who started the fight."
 L["STRING_OPTIONS_RT_IGNORE_TITLE"] = "Ignore Cooldowns"
@@ -977,7 +987,9 @@ L["STRING_OPTIONS_RT_INTERRUPT"] = "%s interrupted!"
 L["STRING_OPTIONS_RT_INTERRUPT_ANCHOR"] = "Announce Interrupts:"
 L["STRING_OPTIONS_RT_INTERRUPT_NEXT"] = "Next: %s"
 L["STRING_OPTIONS_RT_INTERRUPTS_CHANNEL"] = "Channel"
-L["STRING_OPTIONS_RT_INTERRUPTS_CHANNEL_DESC"] = "Which chat channel is used to send the alert message."
+L["STRING_OPTIONS_RT_INTERRUPTS_CHANNEL_DESC"] = [=[Which chat channel is used to send the alert message.
+
+If |cFFFFFF00Observer|r is selected, all interrupts are printed only to you in the chat.]=]
 L["STRING_OPTIONS_RT_INTERRUPTS_CUSTOM"] = "Custom Text"
 L["STRING_OPTIONS_RT_INTERRUPTS_CUSTOM_DESC"] = [=[Type your own phrase to send.
 
@@ -1287,7 +1299,9 @@ L["STRING_OPTIONS_WINDOW_ANCHOR_ANCHORS"] = "Anchors:"
 L["STRING_OPTIONS_WINDOW_SCALE"] = "Scale"
 L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = [=[Adjust the scale of the window.
 
-|cFFFFFF00Tip|r: right click to type the value.]=]
+|cFFFFFF00Tip|r: right click to type the value.
+
+|cFFFFFF00Current|r: %s]=]
 L["STRING_OPTIONS_WINDOWSPEED"] = "Update Interval"
 L["STRING_OPTIONS_WINDOWSPEED_DESC"] = [=[Seconds between each update on opened windows.
 
@@ -1362,6 +1376,8 @@ L["STRING_PLUGIN_TIME"] = "Clock"
 L["STRING_PLUGIN_TIMEDIFF"] = "Last Combat Difference"
 L["STRING_PLUGIN_TOOLTIP_LEFTBUTTON"] = "Config current plugin"
 L["STRING_PLUGIN_TOOLTIP_RIGHTBUTTON"] = "Choose another plugin"
+L["STRING_RAIDCHECK_PLUGIN_DESC"] = "While inside a raid instance, shows up a icon on Details! title bar showing flask, food, pre-potion usage."
+L["STRING_RAIDCHECK_PLUGIN_NAME"] = "Raid Check"
 L["STRING_RAID_WIDE"] = "[*] raid wide cooldown"
 L["STRING_REPORT"] = "for"
 L["STRING_REPORT_BUTTON_TOOLTIP"] = "Click to open Report Dialog"

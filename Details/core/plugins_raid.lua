@@ -1,8 +1,3 @@
---File Revision: 1
---Last Modification: 27/07/2013
--- Change Log:
-	-- 27/07/2013: Finished alpha version.
-	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	local _details = _G._details
@@ -280,6 +275,14 @@
 				spellname = _GetSpellInfo(extraSpellID)
 			end
 
+			if (channel == "RAID") then
+				local zone = _details:GetZoneType()
+
+				if (zone ~= "raid") then
+					channel = "PARTY"
+				end
+			end
+
 			if (custom ~= "") then
 				custom = custom:gsub("{spell}", spellname)
 				custom = custom:gsub("{next}", next)
@@ -305,11 +308,15 @@
 			local channel = _details.announce_cooldowns.channel
 			
 			if (channel == "WHISPER") then
-				if (dst_name == _details.playername) then
-					return
-				end
 				if (dst_name == Loc["STRING_RAID_WIDE"]) then
 					channel = "RAID"
+				end
+			end
+			if (channel == "RAID") then
+				local zone = _details:GetZoneType()
+
+				if (zone ~= "raid") then
+					channel = "PARTY"
 				end
 			end
 
