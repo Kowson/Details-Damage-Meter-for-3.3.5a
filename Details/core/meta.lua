@@ -315,6 +315,14 @@
 		end
 	end
 
+	function _details:DoContainerIndexCleanup()
+		for index, combat in _ipairs (_details.table_history.tables or {}) do
+			for index, container in _ipairs(combat) do
+				_details.clear:c_container_combatants_index(container)
+			end
+		end
+	end
+
 	--> limpa indexes, metatables e shadows
 		function _details:PrepareTablesForSave()
 
@@ -496,6 +504,8 @@
 			--> clear owners
 			_details:DoOwnerCleanup()
 
+			--> clear container indexes
+			_details:DoContainerIndexCleanup()
 		end
 	
 	function _details:reset_window(instance)

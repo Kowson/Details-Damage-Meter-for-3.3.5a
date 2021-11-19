@@ -589,7 +589,7 @@ local function cria_texts(this_gump)
 	this_gump.attribute_name = this_gump:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	
 	this_gump.targets = this_gump:CreateFontString(nil, "OVERLAY", "QuestFont_Large")
-	this_gump.targets:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 24, -235)
+	this_gump.targets:SetPoint("TOPLEFT", this_gump, "TOPLEFT", 24, -233)
 	this_gump.targets:SetText(Loc["STRING_TARGETS"] .. ":")
 
 	this_gump.avatar = this_gump:CreateTexture(nil, "overlay")
@@ -3221,6 +3221,19 @@ function _details.window_info:prepare_report(button)
 	return instance:send_report (report_lines)
 end
 
+local row_backdrop = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	insets = {left = 0, right = 0, top = 0, bottom = 0}
+	}
+local row_backdrop_onleave = {
+	bgFile = "",
+	edgeFile = "",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 32,
+	insets = {left = 1, right = 1, top = 0, bottom = 1}
+	}
+
 local row_on_enter = function(self)
 	if (info.fading_in or info.faded) then
 		return
@@ -3228,33 +3241,31 @@ local row_on_enter = function(self)
 	
 	self.mouse_over = true
 
+	for index, block in pairs(_details.window_info.groups_details) do
+		detail_infobg_onleave(block.bg)
+	end
+
 	--> aumenta o tamanho da bar
 	self:SetHeight(17) --> altura determinada pela inst�ncia
 	--> poe a bar com alfa 1 ao inv�s de 0.9
 	self:SetAlpha(1)
 
 	--> troca a cor da bar enquanto o mouse estiver em cima dela
-	self:SetBackdrop({
-		--bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", 
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", tile = true, tileSize = 16, edgeSize = 10,
-		insets = {left = 1, right = 1, top = 0, bottom = 1},})	
-	self:SetBackdropBorderColor(0.666, 0.666, 0.666)
-	self:SetBackdropColor(0.0941, 0.0941, 0.0941)
+	self:SetBackdrop(row_backdrop)
+	self:SetBackdropColor(0.8, 0.8, 0.8, 0.3)
 	
 	if (self.isTarget) then --> prepare o tooltip do dst
 		--> talvez devesse escurecer a window no fundo... pois o tooltip � transparente e pode confundir
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
-		
-		-- ~erro
+
 		if (self.spellid == "enemies") then --> damage taken enemies
 			if (not self.my_table or not self.my_table:SetTooltipDamageTaken(self, self._index, info.instance)) then  -- > poderia ser aprimerado para uma tailcall
 				return
 			end
-		
 		elseif (not self.my_table or not self.my_table:SetTooltipTargets(self, self._index, info.instance)) then  -- > poderia ser aprimerado para uma tailcall
 			return
-			
 		end
+
 		GameTooltip:Show()
 		
 	elseif (self.isMain) then
@@ -3298,9 +3309,7 @@ local row_on_leave = function(self)
 	self:SetAlpha(0.9)
 	
 	--> volto o background ao normal
-	self:SetBackdrop({
-		bgFile = "", edgeFile = "", tile = true, tileSize = 16, edgeSize = 32,
-		insets = {left = 1, right = 1, top = 0, bottom = 1},})	
+	self:SetBackdrop(row_backdrop_onleave)
 	self:SetBackdropBorderColor(0, 0, 0, 0)
 	self:SetBackdropColor(0, 0, 0, 0)
 	
@@ -3311,7 +3320,7 @@ local row_on_leave = function(self)
 		self.icon:SetWidth(14)
 		self.icon:SetHeight(14)
 		--> volta com a alfa antiga da bar
-		self.icon:SetAlpha(0.8)
+		self.icon:SetAlpha(1)
 		
 		--> remover o conte�do que thisva sendo mostrado na right
 		if (info.showing_mouse_over) then
@@ -3412,18 +3421,25 @@ end
 
 local function CreateTexturaBar(instance, bar)
 	bar.texture = _CreateFrame("StatusBar", nil, bar)
+	bar.texture:SetFrameLevel(bar:GetFrameLevel()-1)
 	bar.texture:SetAllPoints(bar)
-	--bar.texture:SetStatusBarTexture(instance.row_info.texture_file)
-	bar.texture:SetStatusBarTexture(_details.default_texture)
+	bar.texture:SetAlpha(0.5)
+	--bar.texture:SetStatusBarTexture([[Interface\AddOns\Details\images\bar_serenity]])
+	bar.texture:SetStatusBarTexture([[Interface\AddOns\Details\images\bar_skyline]])
+	--bar.texture:SetStatusBarTexture(_details.default_texture)
 	bar.texture:SetStatusBarColor(.5, .5, .5, 0)
 	bar.texture:SetMinMaxValues(0,100)
-	
+
+	bar.texture.bg = bar.texture:CreateTexture(nil, "background")
+	bar.texture.bg:SetAllPoints()
+	bar.texture.bg:SetTexture(1, 1, 1, 0.08)
+
 	if (bar.targets) then
 		bar.targets:SetParent(bar.texture)
 		bar.targets:SetFrameLevel(bar.texture:GetFrameLevel()+2)
 	end
 	
-	bar.text_left = bar.texture:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	bar.text_left = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	bar.text_left:SetPoint("LEFT", bar.texture, "LEFT", 22, 0)
 	bar.text_left:SetJustifyH("LEFT")
 	bar.text_left:SetTextColor(1,1,1,1)
@@ -3431,7 +3447,7 @@ local function CreateTexturaBar(instance, bar)
 	bar.text_left:SetNonSpaceWrap(true)
 	bar.text_left:SetWordWrap(false)
 	
-	bar.text_right = bar.texture:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	bar.text_right = bar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 	if (bar.targets) then
 		bar.text_right:SetPoint("RIGHT", bar.targets, "LEFT", -2, 0)
 	else
@@ -3597,18 +3613,18 @@ function gump:CreateNewBarInfo1(instance, index)
 	--> icon
 	this_bar.miniframe = CreateFrame("frame", nil, this_bar)
 	this_bar.miniframe:SetSize(14, 14)
-	this_bar.miniframe:SetPoint("RIGHT", this_bar.texture, "LEFT", 20, 0)
+	this_bar.miniframe:SetPoint("RIGHT", this_bar.texture, "LEFT", 18, 0)
 	
 	this_bar.miniframe:SetScript("OnEnter", miniframe_func_on_enter)
 	this_bar.miniframe:SetScript("OnLeave", miniframe_func_on_leave)
 	
-	this_bar.icon = this_bar.texture:CreateTexture(nil, "OVERLAY")
+	this_bar.icon = this_bar:CreateTexture(nil, "OVERLAY")
 	this_bar.icon:SetWidth(14)
 	this_bar.icon:SetHeight(14)
-	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 20, 0)
+	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 18, 0)
 	
 	this_bar:SetAlpha(0.9)
-	this_bar.icon:SetAlpha(0.8)
+	this_bar.icon:SetAlpha(1)
 	
 	this_bar.isMain = true
 	
@@ -3649,13 +3665,13 @@ function gump:CreateNewBarInfo2(instance, index)
 	CreateTexturaBar(instance, this_bar)
 
 	--> icon
-	this_bar.icon = this_bar.texture:CreateTexture(nil, "OVERLAY")
+	this_bar.icon = this_bar:CreateTexture(nil, "OVERLAY")
 	this_bar.icon:SetWidth(14)
 	this_bar.icon:SetHeight(14)
-	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 0+20, 0)
+	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 18, 0)
 	
 	this_bar:SetAlpha(0.9)
-	this_bar.icon:SetAlpha(0.8)
+	this_bar.icon:SetAlpha(1)
 	
 	this_bar.isTarget = true
 	
@@ -3694,13 +3710,13 @@ function gump:CreateNewBarInfo3(instance, index)
 	CreateTexturaBar(instance, this_bar)
 
 	--> icon
-	this_bar.icon = this_bar.texture:CreateTexture(nil, "OVERLAY")
+	this_bar.icon = this_bar:CreateTexture(nil, "OVERLAY")
 	this_bar.icon:SetWidth(14)
 	this_bar.icon:SetHeight(14)
-	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 0+20, 0)
+	this_bar.icon:SetPoint("RIGHT", this_bar.texture, "LEFT", 18, 0)
 	
 	this_bar:SetAlpha(0.9)
-	this_bar.icon:SetAlpha(0.8)
+	this_bar.icon:SetAlpha(1)
 	
 	this_bar.isDetail = true
 		

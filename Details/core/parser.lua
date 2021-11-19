@@ -846,7 +846,8 @@
 	--> group checks
 
 		if (this_player.group) then 
-			_current_combat.totals_group[2] = _current_combat.totals_group[2] + heal_efetiva
+			--_current_combat.totals_group[2] = _current_combat.totals_group[2] + heal_efetiva
+			_current_gtotal[2] = _current_gtotal[2] + heal_efetiva
 		end
 		
 		if (player_dst.group and amount > 200) then
@@ -2819,7 +2820,10 @@
 
 		if (_details.schedule_store_boss_encounter) then
 			if (not _details.logoff_saving_data) then
-				pcall(_details.StoreEncounter)
+				local successful, errortext = pcall(_details.StoreEncounter)
+				if (not successful) then
+					_details:Msg("error occurred on StoreEncounter():", errortext)
+				end
 			end
 			_details.schedule_store_boss_encounter = nil
 		end

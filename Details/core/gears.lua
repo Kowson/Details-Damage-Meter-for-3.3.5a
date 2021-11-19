@@ -273,6 +273,8 @@ function _details:StoreEncounter(combat)
 		if (not db) then
 			return
 		end
+	elseif (not db) then
+		return
 	end
 
 	local raid_database = db.RAID_STORAGE

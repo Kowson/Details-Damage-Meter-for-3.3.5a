@@ -533,7 +533,10 @@
 	function _details.clear:c_container_combatants(container)
 		container.__index = nil
 		container.shadow = nil
-		container._NameIndexTable = nil
+		--container._NameIndexTable = nil
 		container.need_refresh = nil
 		container.creation_func = nil
+	end
+	function _details.clear:c_container_combatants_index(container)
+		container._NameIndexTable = nil
 	end

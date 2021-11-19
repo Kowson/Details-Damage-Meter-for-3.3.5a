@@ -738,7 +738,7 @@ L["STRING_OPTIONSMENU_ROWSETTINGS"] = "Rows: Settings"
 L["STRING_OPTIONSMENU_ROWTEXTS"] = "Rows: Texts"
 L["STRING_OPTIONS_MENU_SHOWBUTTONS"] = "Show Buttons"
 L["STRING_OPTIONS_MENU_SHOWBUTTONS_DESC"] = "Choose which buttons are shown on the toolbar."
-L["STRING_OPTIONSMENU_SHOWHIDE"] = "Show & Hide Settings"
+L["STRING_OPTIONSMENU_SHOWHIDE"] = "Auto Hide Settings"
 L["STRING_OPTIONSMENU_SKIN"] = "Skin Selection"
 L["STRING_OPTIONSMENU_SPELLS"] = "Spell Customization"
 L["STRING_OPTIONS_MENUS_SHADOW"] = "Shadow"
@@ -1285,7 +1285,9 @@ L["STRING_OPTIONS_WINDOW"] = "Options Panel"
 L["STRING_OPTIONS_WINDOW_ANCHOR"] = "Appearance Adjustments:"
 L["STRING_OPTIONS_WINDOW_ANCHOR_ANCHORS"] = "Anchors:"
 L["STRING_OPTIONS_WINDOW_SCALE"] = "Scale"
-L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = "Adjust the scale of the window."
+L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = [=[Adjust the scale of the window.
+
+|cFFFFFF00Tip|r: right click to type the value.]=]
 L["STRING_OPTIONS_WINDOWSPEED"] = "Update Interval"
 L["STRING_OPTIONS_WINDOWSPEED_DESC"] = [=[Seconds between each update on opened windows.
 
@@ -1395,9 +1397,9 @@ L["STRING_RESISTED"] = "Resisted"
 L["STRING_RESIZE_ALL"] = "Freely resize all windows"
 L["STRING_RESIZE_COMMON"] = [=[Resize
 ]=]
-L["STRING_RESIZE_HORIZONTAL"] = [=[Resize the width off all
+L["STRING_RESIZE_HORIZONTAL"] = [=[Resize the width of all
  windows in the group]=]
-L["STRING_RESIZE_VERTICAL"] = [=[Resize the heigth off all
+L["STRING_RESIZE_VERTICAL"] = [=[Resize the heigth of all
  windows in the group]=]
 L["STRING_RIGHT"] = "right"
 L["STRING_RIGHTCLICK_CLOSE_LARGE"] = "Click with right mouse button to close this window."
@@ -1434,6 +1436,9 @@ L["STRING_SLASH_NEW"] = "new"
 L["STRING_SLASH_NEW_DESC"] = "create a new window."
 L["STRING_SLASH_OPTIONS"] = "options"
 L["STRING_SLASH_OPTIONS_DESC"] = "open the options panel."
+L["STRING_SLASH_RESET"] = "reset"
+L["STRING_SLASH_RESET_ALIAS1"] = "clear"
+L["STRING_SLASH_RESET_DESC"] = "clear all segments."
 L["STRING_SLASH_SHOW"] = "show"
 L["STRING_SLASH_SHOW_ALIAS1"] = "open"
 L["STRING_SLASH_SHOW_DESC"] = "reopen all closed windows."
@@ -1445,7 +1450,7 @@ L["STRING_SLASH_WORLDBOSS_DESC"] = "run a macro showing which boss you killed th
 L["STRING_SPELL_INTERRUPTED"] = "Spells interrupted"
 L["STRING_SPELLS"] = "Spells"
 L["STRING_STATUSBAR_NOOPTIONS"] = "This widget doesn't have options."
-L["STRING_SWITCH_CLICKME"] = "left click me"
+L["STRING_SWITCH_CLICKME"] = "add bookmark"
 L["STRING_SWITCH_WARNING"] = "Role changed. Switching: |cFFFFAA00%s|r  "
 L["STRING_TARGET"] = "Target"
 L["STRING_TARGETS"] = "Targets"
@@ -1453,6 +1458,7 @@ L["STRING_TIME_OF_DEATH"] = "Death"
 L["STRING_TOOOLD"] = "could not be installed because your Details! version is too old."
 L["STRING_TOP"] = "top"
 L["STRING_TOTAL"] = "Total"
+L["STRING_TRANSLATE_LANGUAGE"] = "Help Translate Details!"
 L["STRING_UNKNOW"] = "Unknown"
 L["STRING_UNKNOWSPELL"] = "Unknow Spell"
 L["STRING_UNLOCK"] = [=[Spread out windows

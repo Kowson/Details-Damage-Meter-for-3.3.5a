@@ -137,7 +137,7 @@ local _UISpecialFrames = UISpecialFrames --> wow api locals
 	
 --> internal details report functions -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	function _details:Report(param2, options, arg3)
+	function _details:Report(param2, options, arg3, id)
 
 		if (not _details.window_report) then
 			_details.window_report = gump:CreateWindowReport()
@@ -146,6 +146,18 @@ local _UISpecialFrames = UISpecialFrames --> wow api locals
 		if (options and options.mine_id) then
 			self = options
 		end
+
+		if (type(param2) == "string") then
+			id = param2
+		end
+
+		if (_details.last_report_id and id and _details.last_report_id == id) then
+			_details.last_report_id = nil
+			_details.window_report.close:Click()
+			return
+		end
+
+		_details.last_report_id = id
 		
 		--> trabalha com as opções:
 		if (options and options._no_current) then

@@ -2446,7 +2446,7 @@ function CreateAlertFrame(baseframe, instance)
 	frame_upper:SetPoint("left", baseframe, "left", 3, 0)
 	frame_upper:SetPoint("right", baseframe, "right", -3, 0)
 	frame_upper:SetHeight(13)
-	frame_upper:SetFrameStrata("fullscreen")
+	frame_upper:SetFrameStrata("TOOLTIP")
 	
 	local frame_lower = CreateFrame("frame", "DetailsAlertFrameScrollChild" .. instance.mine_id, frame_upper)
 	frame_lower:SetHeight(25)
@@ -2462,7 +2462,7 @@ function CreateAlertFrame(baseframe, instance)
 	alert_bg:SetBackdrop({bgFile =[[Interface\AddOns\Details\images\background]], tile = true, tileSize = 16,
 	insets = {left = 0, right = 0, top = 0, bottom = 0}})
 	alert_bg:SetBackdropColor(.1, .1, .1, 1)
-	alert_bg:SetFrameStrata("HIGH")
+	alert_bg:SetFrameStrata("FULLSCREEN")
 	alert_bg:SetFrameLevel(baseframe:GetFrameLevel() + 6)
 	alert_bg:Hide()
 
@@ -2484,6 +2484,7 @@ function CreateAlertFrame(baseframe, instance)
 	rotate_frame:SetWidth(12)
 	rotate_frame:SetPoint("right", alert_bg, "right", -2, 0)
 	rotate_frame:SetHeight(alert_bg:GetWidth())
+	rotate_frame:SetFrameStrata("FULLSCREEN")
 	
 	local icon = rotate_frame:CreateTexture(nil, "overlay")
 	icon:SetPoint("center", rotate_frame, "center")
@@ -2493,6 +2494,7 @@ function CreateAlertFrame(baseframe, instance)
 	local button = gump:NewButton(alert_bg, nil, "DetailsInstance"..instance.mine_id.."AlertButton", nil, 1, 1)
 	button:SetAllPoints()
 	button:SetHook("OnMouseUp", function() alert_bg:Hide() end)
+	button:SetFrameStrata("FULLSCREEN")
 	
 	local RotateAnimGroup = rotate_frame:CreateAnimationGroup()
 	local rotate = RotateAnimGroup:CreateAnimation("Rotation")
@@ -4584,6 +4586,14 @@ local build_mode_list = function(self, elapsed)
 				CoolTip:SetOption("TextSize", _details.font_sizes.menus)
 			end
 		end
+
+		if (ClosedInstances > 0 or _details:GetNumInstancesAmount() < _details:GetMaxInstancesAmount()) then
+			GameCooltip:AddLine("$div", nil, 2, nil, -5, -11)
+		end
+
+		GameCooltip:AddLine(Loc["STRING_MENU_CLOSE_INSTANCE"], nil, 2, "white", nil, _details.font_sizes.menus)
+		GameCooltip:AddIcon([[Interface\Buttons\UI-Panel-MinimizeButton-Up]], 2, 1, 14, 14, 0.2, 0.8, 0.2, 0.8)
+		GameCooltip:AddMenu(2, _details.close_instance_func, instance.baseframe.header.close)
 
 		CoolTip:SetWallpaper(2, [[Interface\AddOns\Details\images\Spellbook-Page-1]], menu_wallpaper_tex, menu_wallpaper_color, true)
 
@@ -6735,7 +6745,7 @@ function gump:CreateHeader(baseframe, instance)
 	_G.GameCooltip:CoolTipInject(baseframe.header.attribute)
 
 	--> REPORTAR ~report ----------------------------------------------------------------------------------------------------------------------------------------------------
-			baseframe.header.report = gump:NewButton(baseframe, nil, "DetailsReportButton"..instance.mine_id, nil, 8, 16, _details.Report, instance, nil,[[Interface\Addons\Details\Images\report_button]])
+			baseframe.header.report = gump:NewButton(baseframe, nil, "DetailsReportButton"..instance.mine_id, nil, 8, 16, _details.Report, instance, "INSTANCE" .. instance.mine_id, [[Interface\Addons\Details\Images\report_button]])
 			--baseframe.header.report = gump:NewDetailsButton(baseframe, _, instance, _details.Report, instance, nil, 16, 16,[[Interface\COMMON\VOICECHAT-ON]])
 			baseframe.header.report:SetPoint("left", baseframe.header.attribute, "right", -6, 0)
 			baseframe.header.report:SetFrameLevel(baseframe.UPFrame:GetFrameLevel()+1)
@@ -6769,7 +6779,7 @@ function gump:CreateHeader(baseframe, instance)
 				
 				GameCooltip:AddLine("Report Results", nil, 1, "white", nil, _details.font_sizes.menus, SharedMedia:Fetch("font", "Friz Quadrata TT"))
 				GameCooltip:AddIcon([[Interface\Addons\Details\Images\report_button]], 1, 1, 12, 19)
-				GameCooltip:AddMenu(1, _details.Report, instance)
+				GameCooltip:AddMenu(1, _details.Report, instance, nil, "INSTANCE" .. instance.mine_id)
 				
 				GameCooltip:SetWallpaper(1,[[Interface\AddOns\Details\images\Spellbook-Page-1]], menu_wallpaper_tex, menu_wallpaper_color, true)
 				GameCooltip:SetBackdrop(1, _details.tooltip_backdrop, nil, _details.tooltip_border_color)
