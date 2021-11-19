@@ -4764,8 +4764,8 @@ local build_segment_list = function(self, elapsed)
 					CoolTip:AddMenu(1, instance.SwitchTable, i)
 					
 					CoolTip:AddLine(Loc["STRING_SEGMENT_ENEMY"] .. ":", enemy, 2, "white", "white")
-					
-					local elapsed =(thisCombat.end_time or _details._time) - thisCombat.start_time
+
+					local elapsed = thisCombat:GetCombatTime()
 					local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 					CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", minutes.."m "..seconds.."s", 2, "white", "white")
 					
@@ -4826,16 +4826,16 @@ local build_segment_list = function(self, elapsed)
 			
 			CoolTip:AddLine(Loc["STRING_SEGMENT_ENEMY"] .. ":", enemy, 2, "white", "white")
 			
-			if (not _details.table_current.end_time) then
+			if (not _details.table_current:GetEndTime()) then
 				if (_details.in_combat) then
-					local elapsed = _details._time - _details.table_current.start_time
+					local elapsed = _details.table_current:GetCombatTime()
 					local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 					CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", minutes.."m "..seconds.."s", 2, "white", "white") 
 				else
 					CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", "--x--x--", 2, "white", "white")
 				end
 			else
-				local elapsed =(_details.table_current.end_time) - _details.table_current.start_time
+				local elapsed = _details.table_current:GetCombatTime()
 				local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 				CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", minutes.."m "..seconds.."s", 2, "white", "white") 
 			end
@@ -4865,16 +4865,16 @@ local build_segment_list = function(self, elapsed)
 		
 			CoolTip:AddLine(Loc["STRING_SEGMENT_ENEMY"] .. ":", "--x--x--", 2, "white", "white")
 			
-			if (not _details.table_overall.end_time) then
+			if (not _details.table_overall:GetEndTime()) then
 				if (_details.in_combat) then
-					local elapsed = _details._time - _details.table_overall.start_time
+					local elapsed = _details.table_overall:GetCombatTime()
 					local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 					CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", minutes.."m "..seconds.."s", 2, "white", "white") 
 				else
 					CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", "--x--x--", 2, "white", "white")
 				end
 			else
-				local elapsed =(_details.table_overall.end_time) - _details.table_overall.start_time
+				local elapsed = _details.table_overall:GetCombatTime()
 				local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 				CoolTip:AddLine(Loc["STRING_SEGMENT_TIME"] .. ":", minutes.."m "..seconds.."s", 2, "white", "white") 
 			end

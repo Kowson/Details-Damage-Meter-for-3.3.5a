@@ -24,6 +24,7 @@
 	local _IsInGroup = IsInGroup --wow api local
 	local _GetNumGroupMembers = GetNumGroupMembers --wow api local
 	local _UnitGroupRolesAssigned = UnitGroupRolesAssigned --wow api local
+	local _GetTime = GetTime
 
 	local _cstr = string.format --lua local
 	local _table_insert = table.insert --lua local
@@ -675,7 +676,7 @@
 		--> 'misser'
 		local this_player = damage_cache[src_name]
 		if (not this_player) then
-			this_player, mine_owner, src_name = _current_damage_container:CatchCombatant(nil, src_name)
+			this_player, mine_owner, src_name = _current_damage_container:CatchCombatant(src_serial, src_name, src_flags, true)
 			if (not this_player) then
 				return --> just return if actor doen't exist yet
 			end
@@ -2261,7 +2262,7 @@
 
 				if (_hook_deaths) then
 					--> send event to registred functions
-					local death_at = _timestamp - _current_combat.start_time
+					local death_at = _timestamp - _current_combat:GetStartTime()
 					local max_health = _UnitHealthMax(dst_name)
 
 					for _, func in _ipairs(_hook_deaths_container) do 
@@ -2296,7 +2297,7 @@
 					this_death[#this_death+1] = t
 				end
 				
-				local elapsed = _timestamp - _current_combat.start_time
+				local elapsed = _timestamp - _current_combat:GetStartTime()
 				local minutes, seconds = _math_floor(elapsed/60), _math_floor(elapsed%60)
 				
 				local t = {this_death, time, this_player.name, this_player.class, _UnitHealthMax(dst_name), minutes.."m "..seconds.."s", ["dead"] = true,["last_cooldown"] = this_player.last_cooldown,["dead_at"] = elapsed}
@@ -2444,6 +2445,7 @@
 			token_list["SWING_MISSED"] = nil
 			token_list["SPELL_MISSED"] = nil
 			token_list["ENVIRONMENTAL_DAMAGE"] = nil
+			token_list["SPELL_BUILDING_DAMAGE"] = nil
 		
 		elseif (capture_type == "heal") then
 			token_list["SPELL_HEAL"] = nil
@@ -2498,6 +2500,7 @@
 			token_list["SPELL_PERIODIC_DAMAGE"] = parser.spell_dmg
 			token_list["SPELL_EXTRA_ATTACKS"] = parser.spell_dmg
 			token_list["SPELL_DAMAGE"] = parser.spell_dmg
+			token_list["SPELL_BUILDING_DAMAGE"] = parser.spell_dmg
 			token_list["SWING_DAMAGE"] = parser.swing
 			token_list["RANGE_DAMAGE"] = parser.range
 			token_list["DAMAGE_SHIELD"] = parser.spell_dmg
@@ -2626,7 +2629,7 @@
 		end
 
 		_details.latest_ENCOUNTER_END = _details.latest_ENCOUNTER_END or 0
-		if (_details.latest_ENCOUNTER_END + 10 > _details._time) then
+		if (_details.latest_ENCOUNTER_END + 10 > _GetTime()) then
 			return
 		end
 	
@@ -2649,7 +2652,7 @@
 		
 		_details.encounter_table.phase = 1
 		
-		_details.encounter_table["start"] = time()
+		_details.encounter_table["start"] = _GetTime()
 		_details.encounter_table["end"] = nil
 		
 		_details.encounter_table.id = encounterID
@@ -2669,10 +2672,10 @@
 				if (type(encounter_start_table.delay) == "function") then
 					local delay = encounter_start_table.delay()
 					if (delay) then
-						_details.encounter_table["start"] = time() + delay
+						_details.encounter_table["start"] = _GetTime() + delay
 					end
 				else
-					_details.encounter_table["start"] = time() + encounter_start_table.delay
+					_details.encounter_table["start"] = _GetTime() + encounter_start_table.delay
 				end
 			end
 			if (encounter_start_table.func) then
@@ -2704,9 +2707,9 @@
 		if (_details.latest_ENCOUNTER_END + 15 > _details._time) then
 			return
 		end
-		_details.latest_ENCOUNTER_END = _details._time
+		_details.latest_ENCOUNTER_END = _GetTime()
 		
-		_details.encounter_table["end"] = time() - 0.4
+		_details.encounter_table["end"] = _GetTime() - 0.4
 		
 		
 		if (_in_combat) then
@@ -2718,9 +2721,9 @@
 				_details:EndCombat(true, true) --killed
 			end
 		else
-			if ((_details.table_current.end_time or 0) and _details.table_current.end_time + 2 >= _details.encounter_table["end"]) then
+			if ((_details.table_current:GetEndTime() or 0) + 2 >= _details.encounter_table["end"]) then
 				--_details.table_current.start_time = _details.encounter_table["start"]
-				_details.table_current.end_time = _details.encounter_table["end"]
+				_details.table_current:SetEndTime(_details.encounter_table["end"])
 				_details:UpdateGumpMain(-1, true)
 			end
 		end
@@ -2732,9 +2735,9 @@
 		local frase = _select(1, ...)
 		--> reset combat timer
 		if ((frase:find("The battle") and frase:find("has begun!") ) and _current_combat.pvp) then
-			local time_of_combat = _timestamp - _current_combat.start_time
-			_details.table_overall.start_time = _details.table_overall.start_time + time_of_combat
-			_current_combat.start_time = _timestamp
+			local time_of_combat = _GetTime() - _current_combat:GetStartTime()
+			_details.table_overall:SetStartTime(_details.table_overall:GetStartTime() + time_of_combat)
+			_current_combat:SetStartTime(_GetTime())
 			_details.listener:UnregisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 		end
 	end

@@ -14,6 +14,7 @@
 	local _bit_band = bit.band --lua local
 	local _table_wipe = table.wipe --lua local
 	local _time = time --lua local
+	local _GetTime = GetTime
 	
 	local _InCombatLockdown = InCombatLockdown --wow api local
 	
@@ -78,8 +79,8 @@
 				end
 	
 			--> time padrao do overall
-				combat_overall.start_time = _timestamp
-				combat_overall.end_time = _timestamp
+				combat_overall.start_time = _GetTime()
+				combat_overall.end_time = _GetTime()
 			
 			--> inicia a recuperação das tables e preparegem do overall
 				if (#tables_of_history > 0) then

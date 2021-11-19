@@ -25,6 +25,7 @@
 	local _UnitExists = UnitExists --wow api local
 	local _UnitGUID = UnitGUID --wow api local
 	local _UnitName = UnitName --wow api local
+	local _GetTime = GetTime --wow api local
 
 	local _IsAltKeyDown = IsAltKeyDown
 	local _IsShiftKeyDown = IsShiftKeyDown
@@ -246,11 +247,12 @@
 			end
 
 			--> conta o time na table overall -- start time at overall table
-			if (_details.table_overall.end_time) then
-				_details.table_overall.start_time = _timestamp -(_details.table_overall.end_time - _details.table_overall.start_time)
-				_details.table_overall.end_time = nil
+			if (_details.table_overall:GetEndTime()) then
+				--_details.table_overall.start_time = _timestamp -(_details.table_overall.end_time - _details.table_overall.start_time)
+				_details.table_overall:SetStartTime(_GetTime() - _details.table_overall:GetCombatTime())
+				_details.table_overall:SetEndTime(nil)
 			else
-				_details.table_overall.start_time = _timestamp
+				_details.table_overall:SetStartTime(_GetTime())
 			end
 
 			--> re-lock nos times da table passada -- lock again last table times
@@ -410,8 +412,8 @@
 
 			_details.table_current:seta_data(_details._details_props.DATA_TYPE_END) --> salva hora, minuto, segundo do end da fight
 			_details.table_overall:seta_data(_details._details_props.DATA_TYPE_END) --> salva hora, minuto, segundo do end da fight
-			_details.table_current:seta_time_elapsed() --> salva o end_time
-			_details.table_overall:seta_time_elapsed() --seta o end_time
+			_details.table_current:seta_time_elapsed()
+			_details.table_overall:seta_time_elapsed()
 			
 			--> drop last events table to garbage collector
 			_details.table_current.player_last_events = {}
@@ -484,7 +486,7 @@
 					end
 					
 					if (from_encounter_end) then
-						_details.table_current.end_time = _details.encounter_table["end"]
+						_details.table_current:SetEndTime(_details.encounter_table["end"])
 					end
 
 					--> encounter boss function
@@ -527,7 +529,7 @@
 				_details.CloseSoloDebuffs()
 			end
 			
-			local time_of_combat = _details.table_current.end_time - _details.table_current.start_time
+			local time_of_combat = _details.table_current:GetCombatTime()
 			local invalid_combat
 			
 			--if ( time_of_combat >= _details.minimum_combat_time) then --> minimum time has to be 5 seconds to add table to history
@@ -540,9 +542,9 @@
 				invalid_combat = _details.table_current
 				_details.table_current = _details.table_history.tables[1] --> take the table of the last combat
 
-				if (_details.table_current.start_time == 0) then
-					_details.table_current.start_time = _details._time
-					_details.table_current.end_time = _details._time
+				if (_details.table_current:GetStartTime() == 0) then
+					_details.table_current:SetStartTime(_GetTime())
+					_details.table_current:SetEndTime(_GetTime())
 				end
 				
 				_details.table_current.resincked = true

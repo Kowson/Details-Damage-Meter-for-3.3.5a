@@ -10,6 +10,7 @@
 	local _type = type --lua local
 	local _math_abs = math.abs --lua local
 	local _ipairs = ipairs --lua local
+	local _GetTime = GetTime
 	
 	local _GetScreenWidth = GetScreenWidth --wow api local
 	local _GetScreenHeight = GetScreenHeight --wow api local
@@ -2267,8 +2268,8 @@ end
 			
 		end
 		
-		current_combat.start_time = time()-360
-		current_combat.end_time = time()
+		current_combat.start_time = _GetTime() - 360
+		current_combat.end_time = _GetTime()
 		
 		current_combat.totals_group[1] = total_damage
 		current_combat.totals_group[2] = total_heal
