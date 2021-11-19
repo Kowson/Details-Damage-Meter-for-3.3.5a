@@ -1469,8 +1469,8 @@ function _details:CatchRaidBuffUptime(in_or_out)
 			for playername, potspellid in _pairs(pot_usage) do
 				local name, _, icon = _GetSpellInfo(potspellid)
 				local _, class = UnitClass(playername)
-				local class_color = RAID_CLASS_COLORS[class].colorStr
-				string_output = string_output .. "|c" .. class_color .. playername .. "|r |T" .. icon .. ":14:14:0:0:64:64:0:64:0:64|t "
+				local class_color = _details:ColorString(RAID_CLASS_COLORS[class])
+				string_output = string_output .. class_color .. playername .. "|r |T" .. icon .. ":14:14:0:0:64:64:0:64:0:64|t "
 			end
 
 			_details.pre_pot_used = string_output

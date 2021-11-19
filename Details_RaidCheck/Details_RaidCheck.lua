@@ -307,7 +307,7 @@ local food_list = {
 
 					if (class) then
 						local coords = CLASS_ICON_TCOORDS[class]
-						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 					end
 					s = s .. class_color .. DetailsRaidCheck:GetOnlyName(name) .. "|r\n"
 					amount1 = amount1 + 1
@@ -319,7 +319,7 @@ local food_list = {
 
 					if (class) then
 						local coords = CLASS_ICON_TCOORDS[class]
-						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 					end
 					f = f .. class_color .. DetailsRaidCheck:GetOnlyName (name) .. "|r\n"
 					amount2 = amount2 + 1
@@ -336,10 +336,10 @@ local food_list = {
 				local class_color = "FFFFFFFF"
 
 				if (class) then
-					class_color = RAID_CLASS_COLORS[class].colorStr
+					class_color = _details:ColorString(RAID_CLASS_COLORS[class])
 				end
 
-				p = p .. "|T" .. icon .. ":12:12:0:-5:64:64:0:64:0:64|t |c" .. class_color .. DetailsRaidCheck:GetOnlyName(player_name) .. "|r\n"
+				p = p .. "|T" .. icon .. ":12:12:0:-5:64:64:0:64:0:64|t " .. class_color .. DetailsRaidCheck:GetOnlyName(player_name) .. "|r\n"
 				amount3 = amount3 + 1
 			end
 
@@ -356,7 +356,7 @@ local food_list = {
 
 					if (class) then
 						local coords = CLASS_ICON_TCOORDS[class]
-						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+						class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:-5:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 					end
 
 					n = n .. class_color .. DetailsRaidCheck:GetOnlyName(playerName) .. "|r\n"

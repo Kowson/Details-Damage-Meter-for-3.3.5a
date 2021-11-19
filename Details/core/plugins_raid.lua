@@ -319,7 +319,7 @@
 
 				if (class) then
 					local coords = CLASS_ICON_TCOORDS [class]
-					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 				end
 
 				if (second < 10) then
@@ -404,12 +404,12 @@
 
 			if (class) then
 				local coords = CLASS_ICON_TCOORDS[class]
-				class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+				class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 			end
 
 			if (class2) then
 				local coords = CLASS_ICON_TCOORDS[class2]
-				class_color2 = " -> |TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class2].colorStr
+				class_color2 = " -> |TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class2])
 				dst_name = _details:GetOnlyName(dst_name)
 			else
 				dst_name = ""
@@ -481,7 +481,7 @@
 
 				if (class) then
 					local coords = CLASS_ICON_TCOORDS[class]
-					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t |c" .. RAID_CLASS_COLORS[class].colorStr
+					class_color = "|TInterface\\AddOns\\Details\\images\\classes_small_alpha:12:12:0:0:128:128:" .. coords[1]*128 .. ":" .. coords[2]*128 .. ":" .. coords[3]*128 .. ":" .. coords[4]*128 .. "|t " .. _details:ColorString(RAID_CLASS_COLORS[class])
 				end
 				msg = "Death: " .. class_color .. dst_name .. "|r ->"
 			else

@@ -235,6 +235,16 @@
 		return s
 	end
 
+	function _details:ColorString(color_table)
+		local r = color_table.r
+		local g = color_table.g
+		local b = color_table.b
+		r = r <= 1 and r >= 0 and r or 1
+		g = g <= 1 and g >= 0 and g or 1
+		b = b <= 1 and b >= 0 and b or 1
+		return _string_format("|cff%02x%02x%02x", r*255, g*255, b*255)
+	end
+
 	function _details:percent_color(value)
 		local r, g
 		if (value < 50) then
