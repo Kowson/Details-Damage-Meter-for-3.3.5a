@@ -1345,6 +1345,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 		dps = _math_floor(dps)
 		local formated_damage = SelectedToKFunction(_, damage_total)
 		local formated_dps = SelectedToKFunction(_, dps)
+		this_bar.ps_text = formated_dps
 
 		if (UsingCustomRightText) then
 			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))
@@ -1358,6 +1359,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 		dps = _math_floor(dps)
 		local formated_damage = SelectedToKFunction(_, damage_total)
 		local formated_dps = SelectedToKFunction(_, dps)
+		this_bar.ps_text = formated_dps
 
 		if (UsingCustomRightText) then
 			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_dps, formated_damage, percentage, self))
@@ -1372,6 +1374,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 
 		local formated_damage_taken = SelectedToKFunction(_, self.damage_taken)
 		local formated_dtps = SelectedToKFunction(_, dtps)
+		this_bar.ps_text = formated_dtps
 
 		if (UsingCustomRightText) then
 			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, percentage, self))
@@ -1396,6 +1399,7 @@ function attribute_damage:UpdateBar(instance, bars_container, which_bar, place, 
 		dps = _math_floor(dps)
 		local formated_damage = SelectedToKFunction(_, damage_total)
 		local formated_dps = SelectedToKFunction(_, dps)
+		this_bar.ps_text = formated_dps
 
 		if (UsingCustomRightText) then
 			this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_damage, formated_dps, percentage, self))

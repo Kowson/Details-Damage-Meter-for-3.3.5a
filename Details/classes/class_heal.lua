@@ -619,6 +619,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			hps = _math_floor(hps)
 			local formated_heal = SelectedToKFunction(_, healing_total)
 			local formated_hps = SelectedToKFunction(_, hps)
+			this_bar.ps_text = formated_hps
 		
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_heal, formated_hps, percentage, self))
@@ -632,6 +633,7 @@ function attribute_heal:UpdateBar(instance, bars_container, which_bar, place, to
 			hps = _math_floor(hps)
 			local formated_heal = SelectedToKFunction(_, healing_total)
 			local formated_hps = SelectedToKFunction(_, hps)
+			this_bar.ps_text = formated_hps
 			
 			if (UsingCustomRightText) then
 				this_bar.text_right:SetText(_string_replace(instance.row_info.textR_custom_text, formated_hps, formated_heal, percentage, self))

@@ -494,7 +494,7 @@ function _G._details:Start()
 					if (actor) then
 						local dps_text = row.ps_text
 						if (dps_text) then
-							local new_dps = math.floor(actor.total / (GetTime() - instance.showing.start_time_float))
+							local new_dps = floor(actor.total / instance.showing:GetCombatTime())
 							local formated_dps = _details.ToKFunctions[_details.ps_abbreviation](_, new_dps)
 
 							row.text_right:SetText(row.text_right:GetText():gsub(dps_text, formated_dps))
