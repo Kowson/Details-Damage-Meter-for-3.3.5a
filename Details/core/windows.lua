@@ -2338,13 +2338,13 @@ end
 			if (not instance.initiated) then
 				instance:RestoreWindow()
 				local skin = instance.skin
-				instance:ChangeSkin("Default Skin")
+				instance:ChangeSkin("WoW Interface")
 				instance:ChangeSkin("Minimalistic")
 				instance:ChangeSkin(skin)
 				instance:DisableInstance()
 			else
 				local skin = instance.skin
-				instance:ChangeSkin("Default Skin")
+				instance:ChangeSkin("WoW Interface")
 				instance:ChangeSkin("Minimalistic")
 				instance:ChangeSkin(skin)
 			end

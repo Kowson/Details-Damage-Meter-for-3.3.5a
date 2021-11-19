@@ -314,6 +314,12 @@ function _details:ApplyProfile(profile_name, nosave, is_copy)
 				if (skin.skin == "Flat Color") then
 					skin.skin = "Serenity"
 				end
+				if (skin.skin == "Simply Gray") then
+					skin.skin = "Forced Square"
+				end
+				if (skin.skin == "Default Skin") then
+					skin.skin = "WoW Interface"
+				end
 
 				--> fix for old left and right menus
 				if (skin.menu_icons and type (skin.menu_icons[5]) ~= "boolean") then
@@ -842,7 +848,7 @@ local default_profile = {
 	
 	--> skins
 		standard_skin = false,
-		skin = "Default Skin",
+		skin = "WoW Interface",
 		profile_save_pos = true,
 		
 	--> tooltip
