@@ -272,7 +272,8 @@
 			_details.in_combat = true --sinaliza ao addon que h� um combat em andamento -- in combat flag up
 			
 			_details.table_current.combat_id = n_combat --> grava o n�mero dthis combat na table atual -- setup combat id on new table
-			
+			_details.last_combat_pre_pot_used = nil
+
 			--> � o timer que ve se o player ta em combat ou n�o -- check if any party or raid members are in combat
 			_details.table_current.verifica_combat = _details:ScheduleRepeatingTimer("EstaEmCombate", 1) 
 
@@ -478,6 +479,10 @@
 					
 						_details.last_encounter2 = _details.last_encounter
 						_details.last_encounter = _details.table_current.is_boss.name
+
+						if (_details.pre_pot_used) then
+							_details.last_combat_pre_pot_used = table_deepcopy(_details.pre_pot_used)
+						end
 
 						if (_details.pre_pot_used and _details.announce_prepots.enabled) then
 							_details:Msg(_details.pre_pot_used or "")
